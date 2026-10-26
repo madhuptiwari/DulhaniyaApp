@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dulhaniya - Luxury Salon & Bridal Studio at Home</title>
+  <meta name="description" content="India's premier bridal makeover and salon-at-home service. Transparent pricing, verified female beauticians, sealed monodose kits, and 100% hygiene." />
+  
+  <!-- Google Fonts for Editorial Luxury Feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <aside class="top-announcement" aria-label="Special Offers">
+    <div class="banner-content">
+      <span class="tag">BRIDAL FESTIVAL 2026</span>
+      <span>Use code <strong>BRIDALQUEEN</strong> for flat ₹1,500 off on bridal packages | 100% Background-Verified Female Artists</span>
+    </div>
+  </aside>
+
+  <!-- Sticky Header Navigation -->
+  <header class="header-nav">
+    <div class="nav-container">
+      <!-- Brand Logo -->
+      <a href="#" class="brand-wrapper" onclick="App.setViewMode('customer'); return false;">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Dulhaniya</h1>
+          <span>Bridal Studio & Salon</span>
+        </div>
+      </a>
+
+      <!-- City Selector -->
+      <div class="location-picker">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <select id="city-selector" style="border:none; background:transparent; font-weight:600; font-size:0.85rem; color:inherit; outline:none; cursor:pointer;">
+          <option value="New Delhi">New Delhi (Saket, CP, Dwarka)</option>
+          <option value="Gurugram">Gurugram (Cyber City, Golf Course)</option>
+          <option value="Noida">Noida (Sec 18, Expressway)</option>
+          <option value="Mumbai">Mumbai (Bandra, Juhu, South)</option>
+          <option value="Bengaluru">Bengaluru (Indiranagar, Koramangala)</option>
+          <option value="Hyderabad">Hyderabad (Jubilee Hills, Gachibowli)</option>
+          <option value="Jaipur">Jaipur (Pink City, C-Scheme)</option>
+          <option value="Chandigarh">Chandigarh (Sec 17, Panchkula)</option>
+        </select>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-box-wrapper">
+        <svg class="search-icon-pos" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" class="search-box" placeholder="Search bridal makeup, facials, Rica wax, hair spa..." />
+      </div>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- View Mode Switcher -->
+        <div class="mode-pills">
+          <button class="mode-btn active" id="btn-mode-customer" onclick="App.setViewMode('customer')">Customer</button>
+          <button class="mode-btn" id="btn-mode-partner" onclick="App.setViewMode('partner')">Partner App</button>
+          <button class="mode-btn" id="btn-mode-admin" onclick="App.setViewMode('admin')">Admin</button>
+        </div>
+
+        <!-- Cart Button -->
+        <button class="cart-btn" onclick="App.openCartDrawer()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span id="nav-cart-total">Cart</span>
+          <span class="cart-badge" id="nav-cart-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= CUSTOMER VIEW ================= -->
+  <main id="customer-view-container">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-card">
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span>👑 INDIA'S #1 BRIDAL & SALON-AT-HOME CONCIERGE</span>
+          </div>
+          <h2 class="hero-title">
+            The Royal <span>Dulhaniya</span> Experience at Your Doorstep
+          </h2>
+          <p class="hero-subtitle">
+            Flawless HD & Airbrush bridal makeovers, pre-wedding skin rituals, Rica waxing, and rejuvenating spas delivered in the comfort and privacy of your living room.
+          </p>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h4>50,000+</h4>
+              <p>Happy Brides</p>
+            </div>
+            <div class="stat-item">
+              <h4>4.98 ★</h4>
+              <p>CSAT Rating</p>
+            </div>
+            <div class="stat-item">
+              <h4>100%</h4>
+              <p>Female Certified Pros</p>
+            </div>
+            <div class="stat-item">
+              <h4>0 mins</h4>
+              <p>Travel or Waiting</p>
+            </div>
+          </div>
+
+          <div class="hero-cta-group">
+            <button class="btn-primary" onclick="App.selectCategory('bridal-wedding')">
+              Book Bridal Makeover
+            </button>
+            <button class="btn-secondary" onclick="App.selectCategory('facials-cleanups')">
+              Explore Salon Services
+            </button>
+          </div>
+        </div>
+
+        <!-- Hygiene & Trust Badge Box -->
+        <div class="hero-badge-box">
+          <div class="hero-badge-header">
+            <div>
+              <div class="hygiene-score">100%</div>
+              <div style="font-size:0.75rem; color:var(--gold-light); font-weight:700; text-transform:uppercase;">Dulhaniya SafeSeal™</div>
+            </div>
+            <div style="font-size:2.2rem; margin-left:auto;">🛡️</div>
+          </div>
+          <div class="hygiene-badge-list">
+            <div class="hygiene-badge-item">
+              <span>✓</span>
+              <span>100% Sealed Single-Client Kits</span>
+            </div>
+            <div class="hygiene-badge-item">
+              <span>✓</span>
+              <span>Police Background-Verified Female Artists</span>
+            </div>
+            <div class="hygiene-badge-item">
+              <span>✓</span>
+              <span>Autoclaved & Sterilized Stainless Tools</span>
+            </div>
+            <div class="hygiene-badge-item">
+              <span>✓</span>
+              <span>4-Digit Service Start OTP Verification</span>
+            </div>
+            <div class="hygiene-badge-item">
+              <span>✓</span>
+              <span>Transparent Labor Pricing (BYOP Option)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Freedom Notice (Patent-Free Distinction) -->
+    <section class="freedom-banner">
+      <div class="freedom-card">
+        <div class="freedom-info">
+          <div class="freedom-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="freedom-text">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h3>Ethical Product Freedom: Choose Your Way</h3>
+              <span class="freedom-pill-tag">Customer-Centric Pricing</span>
+            </div>
+            <p>
+              Unlike restrictive platforms, Dulhaniya offers you complete freedom: Choose our <strong>Sealed Deluxe Monodose Kits</strong> (L'Oreal, O3+, Cheryl's, Rica) OR switch to <strong>Bring Your Own Products (BYOP)</strong> to pay only for expert beautician labor and save up to 40%!
+            </p>
+          </div>
+        </div>
+        <div>
+          <button class="btn-primary" style="white-space:nowrap; padding:10px 20px; font-size:0.85rem;" onclick="App.openCartDrawer()">
+            Customize Kit Mode
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Tabs Navigation -->
+    <section class="category-section">
+      <div class="section-header">
+        <div>
+          <h2>Explore Salon & Bridal Services</h2>
+          <p>Handcrafted rituals performed by certified senior aestheticians.</p>
+        </div>
+      </div>
+      <div class="category-scroll" id="categories-container">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- Filter Bar -->
+    <section class="filter-bar" id="services-section-wrapper">
+      <div class="filter-tags">
+        <button class="filter-tag active" data-filter="all" onclick="App.setFilter('all')">All Offerings</button>
+        <button class="filter-tag" data-filter="bestseller" onclick="App.setFilter('bestseller')">⭐ Bestsellers</button>
+        <button class="filter-tag" data-filter="bridal" onclick="App.setFilter('bridal')">👑 Bridal Exclusive</button>
+        <button class="filter-tag" data-filter="under60" onclick="App.setFilter('under60')">⚡ Quick Glow (≤ 60 mins)</button>
+        <button class="filter-tag" data-filter="under1500" onclick="App.setFilter('under1500')">🏷️ Under ₹1,500</button>
+      </div>
+
+      <div class="product-mode-selector">
+        <span style="font-size:0.8rem; font-weight:600; color:var(--slate-600);">Product Mode:</span>
+        <button class="mode-toggle-btn active" id="filter-mode-sealed" onclick="Cart.setKitType('dulhaniya_kit'); App.renderServicesGrid();">
+          Sealed Kit
+        </button>
+        <button class="mode-toggle-btn" id="filter-mode-byo" onclick="Cart.setKitType('byo_product'); App.renderServicesGrid();">
+          Bring My Own (-₹150 to -₹1500)
+        </button>
+      </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section class="services-section">
+      <div class="services-grid" id="services-grid">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- Curated Wedding Rituals Showcase -->
+    <section class="comparison-section">
+      <div class="section-header">
+        <div>
+          <h2>The Dulhaniya Bridal Journey</h2>
+          <p>Tailored countdown packages from Roka to Reception.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; margin-top:20px;">
+        <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); border-top:4px solid #f59e0b;">
+          <span style="font-size:1.8rem;">🌼</span>
+          <h4 style="margin:8px 0 4px; font-size:1.15rem;">Haldi Sunshine Look</h4>
+          <p style="font-size:0.85rem; color:var(--slate-600); margin-bottom:12px;">Sweat-proof floral dewy makeup, floral braids and turmeric-safe skincare prep.</p>
+          <span style="font-weight:700; color:var(--primary);">From ₹4,999</span>
+        </div>
+
+        <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); border-top:4px solid #059669;">
+          <span style="font-size:1.8rem;">🌿</span>
+          <h4 style="margin:8px 0 4px; font-size:1.15rem;">Mehendi & Sangeet Glam</h4>
+          <p style="font-size:0.85rem; color:var(--slate-600); margin-bottom:12px;">Glitter smokey eyes, Hollywood waves and long-wear transfer-resistant base.</p>
+          <span style="font-weight:700; color:var(--primary);">From ₹6,499</span>
+        </div>
+
+        <div style="background:var(--white); border:1px solid var(--primary-border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-md); border-top:4px solid var(--primary);">
+          <span style="font-size:1.8rem;">👑</span>
+          <h4 style="margin:8px 0 4px; font-size:1.15rem;">Shaadi D-Day Royal HD</h4>
+          <p style="font-size:0.85rem; color:var(--slate-600); margin-bottom:12px;">Complete HD Airbrush makeover, regal bun styling, jewelry & double-dupatta draping.</p>
+          <span style="font-weight:700; color:var(--primary);">From ₹10,999</span>
+        </div>
+
+        <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); border-top:4px solid #8b5cf6;">
+          <span style="font-size:1.8rem;">✨</span>
+          <h4 style="margin:8px 0 4px; font-size:1.15rem;">7-Day Bridal Radiance</h4>
+          <p style="font-size:0.85rem; color:var(--slate-600); margin-bottom:12px;">Full body detan, Rica chocolate wax, O3+ facial, crystal mani-pedi & hair spa.</p>
+          <span style="font-weight:700; color:var(--primary);">From ₹8,499</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dulhaniya vs Local Parlor Comparison Table -->
+    <section class="comparison-section">
+      <div class="comparison-box">
+        <h2 style="font-size: 1.85rem; text-align:center;">Why India Chooses Dulhaniya</h2>
+        <p style="text-align:center; color:var(--slate-600); font-size:0.95rem; margin-top:4px;">
+          Comparing modern salon-at-home excellence against traditional parlor visits.
+        </p>
+
+        <div style="overflow-x:auto;">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th style="width: 30%;">Safety & Service Features</th>
+                <th class="brand-col" style="width: 35%;">Dulhaniya Salon at Home</th>
+                <th style="width: 35%;">Traditional Local Parlor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Comfort & Convenience</strong></td>
+                <td class="brand-col">✓ 100% in your bedroom/living room. Zero travel in pollution or traffic.</td>
+                <td>❌ Travel through city traffic, search parking, sit in crowded waiting areas.</td>
+              </tr>
+              <tr>
+                <td><strong>Cosmetic Authenticity</strong></td>
+                <td class="brand-col">✓ 100% Sealed single-use monodoses opened directly in front of you.</td>
+                <td>❌ Bulk open tubs and unsealed jars of unknown age or dilution.</td>
+              </tr>
+              <tr>
+                <td><strong>Product Freedom (Patent-Free)</strong></td>
+                <td class="brand-col">✓ Choose our sealed kit OR use your own cosmetics (pay labor only).</td>
+                <td>❌ Mandatory parlor products with high retail markups.</td>
+              </tr>
+              <tr>
+                <td><strong>Professional Verification</strong></td>
+                <td class="brand-col">✓ Police background-verified, vaccinated, certified female experts.</td>
+                <td>❌ Random parlor helpers with unverified background or training.</td>
+              </tr>
+              <tr>
+                <td><strong>Sanitization & Hygiene</strong></td>
+                <td class="brand-col">✓ Autoclaved tools, disposable bedsheet, single-use customer cape.</td>
+                <td>❌ Reused cloth towels, non-sterilized tools shared between walk-ins.</td>
+              </tr>
+              <tr>
+                <td><strong>Live Safety & OTP Lock</strong></td>
+                <td class="brand-col">✓ 4-Digit start OTP, live arrival tracking, one-tap SOS safety button.</td>
+                <td>❌ No tracking, unpredictable waiting queues.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Verified Reviews & Testimonials -->
+    <section class="reviews-section">
+      <div class="section-header">
+        <div>
+          <h2>Real Stories from Real Brides</h2>
+          <p>Read experiences from brides and women who trusted Dulhaniya.</p>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-card-stars">★★★★★</div>
+          <p class="review-card-comment">
+            "Pooja did my bridal makeup for my wedding in Connaught Place. Everyone in the mandap was gasping! Flawless, didn't crack at all even after 8 hours of rituals. True artist!"
+          </p>
+          <div class="review-author">
+            <div class="author-info">
+              <h5>Kritika Mehra</h5>
+              <span>Bride • New Delhi</span>
+            </div>
+            <span class="verified-pill">✓ Verified Bride</span>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card-stars">★★★★★</div>
+          <p class="review-card-comment">
+            "I had severe tanning after my bachelorette trip. Meena arrived exactly on time with a sealed kit, showed me the expiry date, and the facial glow was insane. My skin feels like butter!"
+          </p>
+          <div class="review-author">
+            <div class="author-info">
+              <h5>Rhea Sengupta</h5>
+              <span>Gurugram</span>
+            </div>
+            <span class="verified-pill">✓ Verified Booking</span>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card-stars">★★★★★</div>
+          <p class="review-card-comment">
+            "Sunita is so gentle! Rica wax made a huge difference, practically painless compared to normal salon wax. Loved the disposable sheets and hygiene standard."
+          </p>
+          <div class="review-author">
+            <div class="author-info">
+              <h5>Sneha Kapoor</h5>
+              <span>Noida</span>
+            </div>
+            <span class="verified-pill">✓ Verified Booking</span>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card-stars">★★★★★</div>
+          <p class="review-card-comment">
+            "Such a relaxing pedicure at home! The rose crystal soak and foot massage took away all my wedding shopping fatigue. Ananya was fantastic!"
+          </p>
+          <div class="review-author">
+            <div class="author-info">
+              <h5>Tanvi Rao</h5>
+              <span>Bengaluru</span>
+            </div>
+            <span class="verified-pill">✓ Verified Booking</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= PARTNER PORTAL VIEW (BEAUTICIAN DASHBOARD) ================= -->
+  <section id="partner-view-container" style="display:none;" class="portal-container">
+    <div id="partner-portal-content">
+      <!-- Rendered by partner.js -->
+    </div>
+  </section>
+
+  <!-- ================= ADMIN CONTROL ROOM VIEW ================= -->
+  <section id="admin-view-container" style="display:none;" class="portal-container">
+    <div id="admin-portal-content">
+      <!-- Rendered by admin.js -->
+    </div>
+  </section>
+
+  <!-- ================= FLOATING ACTIVE ORDER TRACKER PILL ================= -->
+  <aside class="floating-order-tracker" id="floating-order-tracker" style="display:none;" onclick="Tracker.openTracker()" aria-label="Live Active Service Tracker">
+    <div class="pulse-dot"></div>
+    <div style="font-size:0.85rem;" id="floating-tracker-text">
+      <strong>Active Booking</strong>: Tap to track
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </aside>
+
+  <!-- ================= CART DRAWER ================= -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="App.closeCartDrawer()"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Bridal Shopping Cart">
+    <div class="cart-header">
+      <h3 style="font-size:1.25rem;">Your Bridal Cart</h3>
+      <button class="btn-close" onclick="App.closeCartDrawer()">✕</button>
+    </div>
+
+    <!-- Product Kit Mode Switcher inside Cart -->
+    <div style="padding: 16px 20px 0;">
+      <div class="cart-kit-toggle">
+        <div class="cart-kit-toggle-header">
+          <span>📦 Product Supply Choice:</span>
+          <span style="font-size:0.75rem; color:var(--gold); font-weight:600;">Fair Pricing</span>
+        </div>
+        <div class="kit-toggle-options">
+          <button class="kit-option-btn selected" id="btn-kit-sealed" onclick="Cart.setKitType('dulhaniya_kit')">
+            Dulhaniya Sealed Kit
+            <div style="font-size:0.68rem; color:var(--slate-500); font-weight:normal;">Branded single-use pack</div>
+          </button>
+          <button class="kit-option-btn" id="btn-kit-byo" onclick="Cart.setKitType('byo_product')">
+            Bring My Own (BYOP)
+            <div style="font-size:0.68rem; color:var(--emerald); font-weight:bold;">Save on Labor only</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Items List -->
+    <div class="cart-items-list" id="cart-items-list">
+      <!-- Rendered by cart.js -->
+    </div>
+
+    <!-- Cart Footer & Bill Breakdown -->
+    <div class="cart-footer">
+      <!-- Coupon Section -->
+      <div class="coupon-section">
+        <input type="text" class="coupon-input" id="cart-coupon-input" placeholder="Promo code (e.g. BRIDALQUEEN)" />
+        <button class="btn-apply-coupon" onclick="Cart.applyCouponCode(document.getElementById('cart-coupon-input').value)">Apply</button>
+      </div>
+
+      <!-- Quick Coupon Chips -->
+      <div style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
+        <button onclick="document.getElementById('cart-coupon-input').value='DULHANIYA500'; Cart.applyCouponCode('DULHANIYA500')" style="font-size:0.72rem; background:var(--gold-subtle); color:var(--gold); padding:2px 8px; border-radius:4px; font-weight:600;">
+          DULHANIYA500 (-₹500)
+        </button>
+        <button onclick="document.getElementById('cart-coupon-input').value='FIRSTGLOW'; Cart.applyCouponCode('FIRSTGLOW')" style="font-size:0.72rem; background:var(--gold-subtle); color:var(--gold); padding:2px 8px; border-radius:4px; font-weight:600;">
+          FIRSTGLOW (20% off)
+        </button>
+      </div>
+
+      <!-- Beautician Tip Option -->
+      <div style="margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem;">
+        <span style="font-weight:600; color:var(--slate-600);">Tip your Beautician:</span>
+        <div style="display:flex; gap:4px;">
+          <button onclick="Cart.setTip(0)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--slate-300); font-size:0.75rem;">₹0</button>
+          <button onclick="Cart.setTip(50)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--slate-300); font-size:0.75rem;">₹50</button>
+          <button onclick="Cart.setTip(100)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--slate-300); font-size:0.75rem;">₹100</button>
+          <button onclick="Cart.setTip(200)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--slate-300); font-size:0.75rem;">₹200</button>
+        </div>
+      </div>
+
+      <!-- Detailed Breakdown -->
+      <div class="bill-row">
+        <span>Estimated Service Duration:</span>
+        <span id="bill-duration">0 mins</span>
+      </div>
+      <div class="bill-row">
+        <span>Services Subtotal:</span>
+        <span id="bill-subtotal">₹0</span>
+      </div>
+      <div class="bill-row" id="bill-byo-row" style="display:none; color:var(--emerald); font-weight:600;">
+        <span>BYO Product Labor Savings:</span>
+        <span id="bill-byo-val">-₹0</span>
+      </div>
+      <div class="bill-row" id="bill-coupon-row" style="display:none; color:var(--emerald); font-weight:600;">
+        <span>Promo Discount:</span>
+        <span id="bill-coupon-val">-₹0</span>
+      </div>
+      <div class="bill-row">
+        <span>Sanitized Hygiene & Disposable Kit:</span>
+        <span id="bill-hygiene">₹49</span>
+      </div>
+      <div class="bill-row">
+        <span>Beautician Tip:</span>
+        <span id="bill-tip">₹0</span>
+      </div>
+      <div class="bill-row total-row">
+        <span>Total Payable:</span>
+        <span id="bill-final" style="color:var(--primary-dark);">₹0</span>
+      </div>
+
+      <button class="btn-checkout" id="btn-proceed-checkout" onclick="App.proceedToCheckout()">
+        Select Date & Time Slot →
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= CHECKOUT MODAL ================= -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Schedule Your Appointment</h3>
+        <button class="btn-close" onclick="App.closeModal('checkout-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="App.submitBooking(event)">
+          <!-- Date Selection -->
+          <div style="margin-bottom:16px;">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">1. Select Service Date:</label>
+            <div style="display:flex; gap:10px;">
+              <button type="button" class="btn-secondary date-pill-btn" data-date="Today" onclick="App.selectDate('Today')" style="flex:1; padding:10px; color:var(--slate-800); border-color:var(--slate-300);">Today</button>
+              <button type="button" class="btn-secondary date-pill-btn selected" data-date="Tomorrow" onclick="App.selectDate('Tomorrow')" style="flex:1; padding:10px; color:var(--primary); border-color:var(--primary); font-weight:700; background:var(--primary-subtle);">Tomorrow</button>
+              <button type="button" class="btn-secondary date-pill-btn" data-date="Pick Date" onclick="App.selectDate('Pick Date')" style="flex:1; padding:10px; color:var(--slate-800); border-color:var(--slate-300);">Pick Date</button>
+            </div>
+          </div>
+
+          <!-- Time Slot Selection -->
+          <div style="margin-bottom:20px;">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">2. Select Preferred Time Slot:</label>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+              <button type="button" class="slot-pill-btn" data-slot="08:00 AM - 09:30 AM" onclick="App.selectSlot('08:00 AM - 09:30 AM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">08:00 AM (Early)</button>
+              <button type="button" class="slot-pill-btn selected" data-slot="10:00 AM - 11:30 AM" onclick="App.selectSlot('10:00 AM - 11:30 AM')" style="padding:8px; border:1.5px solid var(--primary); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center; background:var(--primary-subtle); color:var(--primary-dark); font-weight:700;">10:00 AM (Popular)</button>
+              <button type="button" class="slot-pill-btn" data-slot="12:30 PM - 02:00 PM" onclick="App.selectSlot('12:30 PM - 02:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">12:30 PM (Noon)</button>
+              <button type="button" class="slot-pill-btn" data-slot="03:00 PM - 04:30 PM" onclick="App.selectSlot('03:00 PM - 04:30 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">03:00 PM (Afternoon)</button>
+              <button type="button" class="slot-pill-btn" data-slot="05:30 PM - 07:00 PM" onclick="App.selectSlot('05:30 PM - 07:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">05:30 PM (Evening)</button>
+              <button type="button" class="slot-pill-btn" data-slot="07:30 PM - 09:00 PM" onclick="App.selectSlot('07:30 PM - 09:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">07:30 PM (Night)</button>
+            </div>
+          </div>
+
+          <!-- Address Form -->
+          <div style="margin-bottom:16px;">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">3. Service Delivery Address:</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+              <input type="text" name="customer_name" required placeholder="Full Name *" value="Komal Singhania" style="padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem;" />
+              <input type="tel" name="customer_phone" required placeholder="Mobile Number *" value="+91 98765 12345" style="padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem;" />
+            </div>
+            <input type="email" name="customer_email" placeholder="Email Address for Invoice (optional)" value="komal.s@example.com" style="width:100%; padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:10px;" />
+            <input type="text" name="address" required placeholder="House/Flat No., Building & Street *" value="Flat 402, Tower B, Palm Meadows, Saket" style="width:100%; padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:10px;" />
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <input type="text" name="landmark" placeholder="Nearby Landmark" value="Opposite Saket City Club" style="padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem;" />
+              <input type="text" name="pincode" placeholder="Pincode" value="110017" style="padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem;" />
+            </div>
+          </div>
+
+          <!-- Payment Mode -->
+          <div style="margin-bottom:16px;">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">4. Payment Option:</label>
+            <select name="payment_mode" style="width:100%; padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
+              <option value="Pay After Service">💵 Pay After Service (Cash / GPay / PhonePe to Beautician)</option>
+              <option value="Online UPI / QR">📱 Instant UPI / QR Code</option>
+              <option value="Credit / Debit Card">💳 Credit / Debit Card</option>
+            </select>
+          </div>
+
+          <!-- Special Notes -->
+          <div style="margin-bottom:20px;">
+            <textarea name="special_notes" rows="2" placeholder="Special instructions (e.g., Sensitive skin, please bring fresh rose petals for bridal bun)..." style="width:100%; padding:10px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem; resize:none;"></textarea>
+          </div>
+
+          <!-- Calculation Summary Box -->
+          <div id="checkout-calc-summary" style="background:var(--slate-50); border:1px solid var(--slate-200); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; font-size:0.9rem;">
+            <!-- Populated dynamically -->
+          </div>
+
+          <button type="submit" id="btn-confirm-booking" class="btn-checkout" style="margin-top:0;">
+            Confirm Dulhaniya Booking
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LIVE ORDER TRACKER & SAFETY MODAL ================= -->
+  <div class="modal-overlay" id="tracker-modal">
+    <div class="modal-content" style="max-width:720px;">
+      <div class="modal-header">
+        <div>
+          <h3>Live Booking Journey</h3>
+          <span style="font-size:0.85rem; color:var(--primary); font-weight:700;" id="tracker-modal-ref">DLH-9842</span>
+        </div>
+        <button class="btn-close" onclick="Tracker.closeTracker()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Status Stepper -->
+        <div class="tracker-status-timeline">
+          <div class="status-step" id="step-confirmed">
+            <div class="step-circle">1</div>
+            <div class="step-label">Placed</div>
+          </div>
+          <div class="status-step" id="step-assigned">
+            <div class="step-circle">2</div>
+            <div class="step-label">Assigned</div>
+          </div>
+          <div class="status-step active" id="step-on_the_way">
+            <div class="step-circle">3</div>
+            <div class="step-label">On The Way</div>
+          </div>
+          <div class="status-step" id="step-in_service">
+            <div class="step-circle">4</div>
+            <div class="step-label">In Service</div>
+          </div>
+          <div class="status-step" id="step-completed">
+            <div class="step-circle">5</div>
+            <div class="step-label">Completed</div>
+          </div>
+        </div>
+
+        <!-- 4-Digit Secure Service Start OTP Highlight Card -->
+        <div class="otp-highlight-card">
+          <div>
+            <h4 style="font-size:1rem; color:#78350f; margin-bottom:2px;">🔒 4-Digit Service Start OTP</h4>
+            <p style="font-size:0.8rem; color:#92400e;">Share with beautician ONLY when she arrives at your door:</p>
+          </div>
+          <div class="otp-number" id="tracker-otp-code">7421</div>
+        </div>
+
+        <!-- Beautician Profile Card -->
+        <div class="beautician-profile-card">
+          <img id="tracker-beautician-photo" class="beautician-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Beautician" />
+          <div class="beautician-details">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 class="beautician-name" id="tracker-beautician-name">Pooja Sharma</h4>
+              <span class="star-box" id="tracker-beautician-rating">★ 4.98</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--slate-600);" id="tracker-beautician-exp">9 Years Exp • Verified Female Specialist</p>
+            <div class="beautician-badge">
+              <span>✓ Police Background Verified</span>
+              <span>• Sterilization Certified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Live Map View -->
+        <div class="map-canvas-container">
+          <div class="simulated-map" id="simulated-map">
+            <!-- Client Home Marker -->
+            <div class="map-marker marker-destination" style="left:82%; top:35%;">
+              <div class="marker-pin marker-destination">🏠</div>
+              <div class="marker-label">Your Address</div>
+            </div>
+
+            <!-- Moving Beautician Vehicle Marker -->
+            <div class="map-marker" id="sim-driver-marker" style="left:38%; top:55%;">
+              <div class="marker-pin marker-driver">🚗</div>
+              <div class="marker-label">Beautician En Route</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Meta Details -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem; background:var(--slate-50); padding:14px; border-radius:var(--radius-md); border:1px solid var(--slate-200); margin-bottom:16px;">
+          <div>
+            <div style="color:var(--slate-500);">Location:</div>
+            <strong id="tracker-address">Saket, New Delhi</strong>
+          </div>
+          <div>
+            <div style="color:var(--slate-500);">Scheduled Slot:</div>
+            <strong id="tracker-slot">Tomorrow • 10:00 AM - 11:30 AM</strong>
+          </div>
+          <div style="grid-column: 1/-1;">
+            <div style="color:var(--slate-500);">Total Bill:</div>
+            <strong id="tracker-total" style="color:var(--primary-dark);">₹3,198 (Pay After Service)</strong>
+          </div>
+        </div>
+
+        <!-- Quick OTP Verification Test for Testing/Partner -->
+        <div id="tracker-otp-verify-section" style="background:#f1f5f9; padding:12px; border-radius:var(--radius-md); margin-bottom:14px;">
+          <div style="font-size:0.8rem; font-weight:700; margin-bottom:6px;">Simulate Start Service (Enter 4-Digit OTP):</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="tracker-otp-input" placeholder="Enter OTP..." maxlength="4" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:var(--radius-sm); font-size:0.85rem; width:140px;" />
+            <button class="btn-primary" style="padding:6px 14px; font-size:0.8rem;" onclick="Tracker.verifyServiceStart()">Verify & Start</button>
+          </div>
+        </div>
+
+        <!-- Review Box when COMPLETED -->
+        <div id="tracker-completed-review-box" style="display:none; background:#fff; border:1.5px solid var(--primary-border); border-radius:var(--radius-md); padding:16px; margin-bottom:14px;">
+          <h4 style="color:var(--primary-dark); margin-bottom:6px;">🌟 Rate Your Dulhaniya Experience</h4>
+          <p style="font-size:0.82rem; color:var(--slate-600); margin-bottom:10px;">How was the hygiene, styling and beautician courtesy?</p>
+          <div style="display:flex; gap:12px; font-size:1.4rem; margin-bottom:10px;">
+            <label><input type="radio" name="tracker_rating" value="5" checked /> ⭐ 5</label>
+            <label><input type="radio" name="tracker_rating" value="4" /> ⭐ 4</label>
+            <label><input type="radio" name="tracker_rating" value="3" /> ⭐ 3</label>
+          </div>
+          <textarea id="tracker-review-comment" rows="2" placeholder="Write a short review for other brides..." style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:8px;"></textarea>
+          <button class="btn-primary" style="padding:8px 16px; font-size:0.82rem;" onclick="Tracker.submitReview()">Submit Review</button>
+        </div>
+
+        <!-- SOS Emergency Safety Section -->
+        <div class="sos-safety-box">
+          <div>
+            <strong style="color:#b91c1c; font-size:0.88rem;">🚨 24x7 Dulhaniya Safety SOS</strong>
+            <p style="font-size:0.75rem; color:#7f1d1d;">Need instant help? Alerts emergency response and shares GPS.</p>
+          </div>
+          <button class="btn-sos" onclick="Tracker.triggerSOS()">Trigger SOS Alert</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SERVICE PROCEDURE DETAIL MODAL ================= -->
+  <div class="modal-overlay" id="service-detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="detail-modal-title">Service Details</h3>
+        <button class="btn-close" onclick="App.closeModal('service-detail-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="detail-modal-body">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN: ADD NEW SERVICE MODAL ================= -->
+  <div class="modal-overlay" id="add-service-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Service to Catalog</h3>
+        <button class="btn-close" onclick="Admin.closeAddServiceModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="Admin.submitNewService(event)">
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Service Title:</label>
+            <input type="text" name="title" required placeholder="e.g. Diamond Radiance Peel Facial" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Category:</label>
+            <select name="category_slug" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+              <option value="bridal-wedding">Bridal & Wedding Glow</option>
+              <option value="facials-cleanups">Facials & Skin Rituals</option>
+              <option value="waxing">Waxing & Smooth Skin</option>
+              <option value="mani-pedi">Manicure & Pedicure Spas</option>
+              <option value="hair-care">Hair Care, Spa & Styling</option>
+              <option value="bleach-detan">Bleach, Detan & Glow Packs</option>
+              <option value="body-spa">Full Body Spa & Massages</option>
+              <option value="groom-men">Groom & Men's Salon</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Subtitle:</label>
+            <input type="text" name="subtitle" placeholder="Short benefit summary" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Duration (Mins):</label>
+              <input type="number" name="duration_mins" value="60" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Regular Price (₹):</label>
+              <input type="number" name="price" value="2499" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Offer Price (₹):</label>
+              <input type="number" name="discounted_price" value="1799" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">BYO Product Labor Deduction (₹):</label>
+            <input type="number" name="byo_product_discount" value="250" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Image URL:</label>
+            <input type="url" name="image_url" placeholder="https://..." value="https://images.unsplash.com/photo-1512290900672-1f02e6462791?auto=format&fit=crop&w=700&q=80" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Description:</label>
+            <textarea name="description" rows="2" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);"></textarea>
+          </div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <label><input type="checkbox" name="is_bridal_exclusive" /> Bridal Exclusive</label>
+            <label><input type="checkbox" name="is_bestseller" checked /> Bestseller</label>
+          </div>
+          <button type="submit" class="btn-checkout" style="margin-top:0;">Save Service</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APP FOOTER ================= -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h2>Dulhaniya</h2>
+        <p>
+          India’s foremost luxury salon-at-home and bridal beauty destination. We empower verified female beauty professionals with dignified livelihoods while providing clients with 100% hygienic, sealed-pack, transparent salon services right at their doorstep.
+        </p>
+        <div style="margin-top:16px; font-size:0.85rem; color:var(--gold-light);">
+          📞 24x7 Bridal Concierge: 1800-DULHANIYA (1800-385-4264)
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h4>Salon Services</h4>
+        <ul>
+          <li><a href="#" onclick="App.selectCategory('bridal-wedding'); return false;">Bridal HD Makeup</a></li>
+          <li><a href="#" onclick="App.selectCategory('facials-cleanups'); return false;">O3+ Luxury Facials</a></li>
+          <li><a href="#" onclick="App.selectCategory('waxing'); return false;">Rica Chocolate Wax</a></li>
+          <li><a href="#" onclick="App.selectCategory('mani-pedi'); return false;">Crystal Spa Pedicure</a></li>
+          <li><a href="#" onclick="App.selectCategory('hair-care'); return false;">L'Oreal Hair Spa</a></li>
+          <li><a href="#" onclick="App.selectCategory('body-spa'); return false;">Swedish Relaxation Massage</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Our Platform</h4>
+        <ul>
+          <li><a href="#" onclick="App.setViewMode('customer'); return false;">Customer Web App</a></li>
+          <li><a href="#" onclick="App.setViewMode('partner'); return false;">Beautician Partner Portal</a></li>
+          <li><a href="#" onclick="App.setViewMode('admin'); return false;">Admin Control Room</a></li>
+          <li><a href="#" onclick="Tracker.openTracker(); return false;">Track Active Booking</a></li>
+          <li><a href="#">Safety & Hygiene Pledge</a></li>
+          <li><a href="#">Join as a Beautician</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Safety & Trust</h4>
+        <p style="font-size:0.85rem; line-height:1.6; margin-bottom:12px;">
+          Every Dulhaniya artist is verified through government ID and police verification, trained in autoclave sterilization, and wears fresh masks & gloves for every home session.
+        </p>
+        <div style="background:rgba(255,255,255,0.08); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.78rem;">
+          🛡️ Dulhaniya SafeSeal™: 100% Tamper-Evident Monodoses Opened In Front Of You.
+        </div>
+      </div>
+    </div>
+
+    <!-- Intellectual Property & Patent Disclaimer -->
+    <div class="patent-disclaimer">
+      <p>
+        <strong>Intellectual Property & Fair Transparency Notice:</strong> Dulhaniya operates on an independent, transparent flat & tiered service pricing framework. Dulhaniya does not use any proprietary or patented per-minute metering hardware/cartridges. Customers are afforded full product freedom through our dual-choice model: certified sealed single-use kits or traditional 'Bring Your Own Product' (BYOP) labor bookings. All registered trademarks belong to their respective cosmetic manufacturers.
+      </p>
+      <p style="margin-top:6px;">
+        © 2026 Dulhaniya Technologies Private Limited. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/partner.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
