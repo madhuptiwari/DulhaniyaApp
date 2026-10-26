@@ -1695,47 +1695,391 @@ button {
   border: 1.5px solid var(--primary-border);
 }
 
-/* Responsive Queries */
-@media (max-width: 900px) {
-  .hero-card {
-    flex-direction: column;
-    padding: 30px;
-    gap: 24px;
-  }
-  .hero-badge-box {
-    width: 100%;
-  }
-  .footer-container {
-    grid-template-columns: 1fr 1fr;
+/* ========================================================
+   COMPREHENSIVE MOBILE & CROSS-OS RESPONSIVENESS SYSTEM
+   Optimized for: iOS (Safari, PWA Standalone, Dynamic Island),
+   Android (Chrome, Samsung Internet, Firefox), Foldables,
+   Tablets (iPad, Galaxy Tab), Small Phones (320px - 480px),
+   and High-DPI Desktop Displays.
+======================================================== */
+
+/* Touch & Tap Ergonomics */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+button, a, input, select, textarea, .mode-btn, .category-pill, .filter-tag, .date-pill-btn, .slot-pill-btn, .advisor-card, .trousseau-card {
+  touch-action: manipulation;
+}
+
+/* Base Mobile Insets & iOS Dynamic Island / Safe Area Support */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* Prevent iOS Safari Auto-Zoom on Input Focus */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important; /* iOS Safari requires >= 16px to prevent automatic zooming */
   }
 }
 
-@media (max-width: 640px) {
-  body {
-    padding-bottom: 74px; /* Space for bottom nav */
+/* Fluid Hero Typography & Spacing */
+.hero-title {
+  font-size: clamp(1.8rem, 4.5vw, 2.75rem);
+}
+
+.hero-subtitle {
+  font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+}
+
+.section-header h2 {
+  font-size: clamp(1.4rem, 3.8vw, 1.85rem);
+}
+
+/* Tablet & Smaller Screens (< 1024px) */
+@media (max-width: 1024px) {
+  .hero-card {
+    padding: 36px 28px;
+    gap: 28px;
   }
-  .mobile-bottom-nav {
-    display: flex;
+  .services-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
   }
-  .floating-order-tracker {
-    bottom: 76px;
-    right: 16px;
+  .admin-top-bar {
+    padding: 12px 18px;
+  }
+  .admin-container {
+    padding: 0 16px 60px;
+  }
+}
+
+/* Phablets & Mobile Screens (< 768px) */
+@media (max-width: 768px) {
+  /* Navigation Bar Stacking & Fluid Search */
+  .header-nav {
+    padding: 0;
   }
   .nav-container {
+    padding: 10px 14px;
+    gap: 10px;
     flex-wrap: wrap;
+  }
+  .brand-wrapper {
+    gap: 8px;
+  }
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .brand-text h1 {
+    font-size: 1.35rem;
+  }
+  .location-picker {
+    padding: 6px 10px;
+    font-size: 0.78rem;
   }
   .search-box-wrapper {
     order: 3;
-    max-width: 100%;
     width: 100%;
+    max-width: 100%;
+    margin-top: 4px;
   }
-  .hero-title {
-    font-size: 2rem;
+  .search-box {
+    padding: 9px 14px 9px 38px;
+    font-size: 0.85rem;
+  }
+  .nav-actions .mode-pills {
+    display: none; /* Managed cleanly by mobile bottom navigation */
+  }
+  .nav-actions {
+    gap: 8px;
+  }
+  .cart-btn {
+    padding: 7px 14px;
+    font-size: 0.82rem;
+  }
+
+  /* Hero Section Mobile Polish */
+  .hero-section {
+    padding: 0 12px;
+    margin: 12px auto;
+  }
+  .hero-card {
+    flex-direction: column;
+    padding: 24px 18px;
+    border-radius: var(--radius-lg);
+    gap: 20px;
+  }
+  .hero-badge-box {
+    width: 100%;
+    padding: 18px;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin-bottom: 20px;
+  }
+  .stat-item h4 {
+    font-size: 1.35rem;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .hero-cta-group button {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  /* Horizontal Category Scroll */
+  .categories-section {
+    padding: 0 12px;
+    margin-bottom: 24px;
+  }
+  .category-scroll {
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 0 12px;
+    padding-bottom: 8px;
+  }
+  .category-pill {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  /* Filter Bar Mobile Alignment */
+  .filter-bar {
+    padding: 0 12px;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  .filter-tags {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    width: 100%;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-tag {
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+  .product-mode-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .mode-toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Services Grid Fluidity */
+  .services-section {
+    padding: 0 12px;
+    margin-bottom: 28px;
   }
   .services-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .service-card {
+    border-radius: var(--radius-md);
+  }
+  .service-image-wrapper {
+    height: 180px;
+  }
+  .service-body {
+    padding: 16px;
+  }
+
+  /* Mobile App Bottom Navigation with iOS Safe Area */
+  body {
+    padding-bottom: calc(74px + var(--safe-bottom)) !important;
+  }
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(60px + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    z-index: 85;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.06);
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 0;
+    color: var(--slate-500);
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    position: relative;
+    cursor: pointer;
+  }
+  .bottom-nav-item.active {
+    color: var(--primary);
+  }
+  .bottom-nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+  .bottom-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 16px);
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 999px;
+  }
+
+  /* Floating Order Tracker Placement */
+  .floating-order-tracker {
+    bottom: calc(72px + var(--safe-bottom));
+    right: 12px;
+    left: 12px;
+    width: auto;
+    border-radius: var(--radius-md);
+  }
+
+  /* Bottom-Sheet Behavior for All Modals on Mobile */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 22px 22px 0 0;
+    max-height: 90dvh;
+    max-height: 90vh;
+    animation: sheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-header {
+    padding: 16px 20px 14px;
+  }
+  .modal-header::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--slate-300);
+  }
+  .modal-body {
+    padding: 16px 20px calc(20px + var(--safe-bottom));
+  }
+  @keyframes sheetUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Cart Drawer Mobile Full Width */
+  .cart-drawer {
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    height: 100%;
+  }
+
+  /* Split Transformation Slider on Mobile */
+  .split-compare-box {
+    margin: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+  .split-img-wrapper {
+    height: clamp(230px, 60vw, 360px);
+  }
+  .split-slider-input {
+    touch-action: pan-y;
+  }
+
+  /* Comparison & Tables on Mobile */
+  .comparison-section {
+    padding: 0 12px;
+    margin-bottom: 24px;
+  }
+  .comparison-box {
+    padding: 20px 14px;
+  }
+  .comparison-table {
+    min-width: 520px;
+  }
+
+  /* Admin Dashboard Mobile Responsiveness */
+  .admin-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  .admin-nav-links {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .admin-container {
+    padding: 0 12px 60px;
+  }
+  .portal-grid-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
   .footer-container {
+    grid-template-columns: 1fr;
+    padding: 0 14px;
+  }
+}
+
+/* Extra Small Phones (< 380px: iPhone SE, Galaxy Fold outer, etc.) */
+@media (max-width: 380px) {
+  .brand-text h1 {
+    font-size: 1.2rem;
+  }
+  .brand-text span {
+    display: none;
+  }
+  .hero-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .location-picker {
+    display: none;
+  }
+  .portal-grid-stats {
     grid-template-columns: 1fr;
   }
 }
