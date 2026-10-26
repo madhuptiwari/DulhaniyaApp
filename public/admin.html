@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dulhaniya Operations Command Suite - Enterprise Admin Portal</title>
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      background-color: var(--slate-100);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    .admin-top-bar {
+      background: var(--slate-900);
+      color: #fff;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .admin-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin: 0;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #fff 40%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .admin-tag {
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.12);
+      padding: 3px 8px;
+      border-radius: 9999px;
+      color: var(--gold-light);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .admin-nav-links {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-admin-nav {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-admin-nav:hover {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+    .admin-container {
+      max-width: 1400px;
+      margin: 28px auto;
+      padding: 0 20px 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Top Navigation Bar -->
+  <header class="admin-top-bar">
+    <div class="admin-brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-light)" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+      </svg>
+      <div>
+        <h1>Dulhaniya Operations Command</h1>
+        <div style="font-size:0.75rem; color:var(--slate-400);">Enterprise Field Service & Dispatch Management Suite</div>
+      </div>
+      <span class="admin-tag">Admin v2.4</span>
+    </div>
+
+    <div class="admin-nav-links">
+      <a href="index.html" class="btn-admin-nav">← Back to Customer App</a>
+      <button class="btn-admin-nav" onclick="Admin.init()">🔄 Sync Real-Time Data</button>
+      <div style="display:flex; align-items:center; gap:8px; padding-left:12px; border-left:1px solid rgba(255,255,255,0.2);">
+        <div style="width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">
+          OP
+        </div>
+        <div style="font-size:0.8rem; line-height:1.2;">
+          <div style="font-weight:700;">Operations Director</div>
+          <div style="font-size:0.7rem; color:var(--emerald);">● Online (Delhi Hub)</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Admin Portal Content Container -->
+  <main class="admin-container">
+    <div id="admin-portal-content">
+      <!-- Dynamically rendered by admin.js -->
+      <div style="text-align:center; padding:80px 20px; color:var(--slate-500);">
+        <div style="font-size:2.5rem; margin-bottom:12px;">⏳</div>
+        <h3>Loading Dulhaniya Operations Command Room...</h3>
+        <p style="font-size:0.9rem;">Connecting to dual REST APIs and local data stores...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals Container (re-used from admin.js) -->
+  <div class="modal-overlay" id="add-service-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Service to Catalog</h3>
+        <button class="btn-close" onclick="Admin.closeAddServiceModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="Admin.submitNewService(event)">
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Service Title:</label>
+            <input type="text" name="title" required placeholder="e.g. Diamond Radiance Peel Facial" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Category:</label>
+            <select name="category_slug" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+              <option value="bridal-wedding">Bridal & Wedding Glow</option>
+              <option value="facials-cleanups">Facials & Skin Rituals</option>
+              <option value="waxing">Waxing & Smooth Skin</option>
+              <option value="mani-pedi">Manicure & Pedicure Spas</option>
+              <option value="hair-care">Hair Care, Spa & Styling</option>
+              <option value="bleach-detan">Bleach, Detan & Glow Packs</option>
+              <option value="body-spa">Full Body Spa & Massages</option>
+              <option value="groom-men">Groom & Men's Salon</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Subtitle:</label>
+            <input type="text" name="subtitle" placeholder="Short benefit summary" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Duration (Mins):</label>
+              <input type="number" name="duration_mins" value="60" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Regular Price (₹):</label>
+              <input type="number" name="price" value="2499" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:700;">Offer Price (₹):</label>
+              <input type="number" name="discounted_price" value="1799" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">BYO Product Labor Deduction (₹):</label>
+            <input type="number" name="byo_product_discount" value="250" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Image URL:</label>
+            <input type="url" name="image_url" placeholder="https://..." value="https://images.unsplash.com/photo-1512290900672-1f02e6462791?auto=format&fit=crop&w=700&q=80" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.8rem; font-weight:700;">Description:</label>
+            <textarea name="description" rows="2" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);"></textarea>
+          </div>
+          <div style="display:flex; gap:16px; margin-bottom:16px;">
+            <label><input type="checkbox" name="is_bridal_exclusive" /> Bridal Exclusive</label>
+            <label><input type="checkbox" name="is_bestseller" checked /> Bestseller</label>
+          </div>
+          <button type="submit" class="btn-checkout" style="margin-top:0;">Save Service to Catalog</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    // Toast notification shim for standalone admin page
+    window.App = {
+      showToast: function(msg) {
+        let container = document.getElementById("toast-container");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toast-container";
+          container.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:200; pointer-events:none;";
+          document.body.appendChild(container);
+        }
+        const toast = document.createElement("div");
+        toast.style.cssText = "background:rgba(15,23,42,0.95); color:#fff; padding:12px 24px; border-radius:9999px; font-size:0.9rem; font-weight:600; box-shadow:0 10px 25px rgba(0,0,0,0.3);";
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3200);
+      },
+      loadServices: function() {}
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      Admin.init();
+    });
+  </script>
+</body>
+</html>
