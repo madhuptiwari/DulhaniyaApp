@@ -67,9 +67,25 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         if path.startswith("/api/"):
             return self.handle_api_get(path, query)
 
-        # Fallback to SPA index.html if file doesn't exist
-        file_path = os.path.join(PUBLIC_DIR, path.lstrip("/"))
-        if not os.path.exists(file_path) or os.path.isdir(file_path):
+        # Static file handling with safe resolution
+        clean_path = path.lstrip("/")
+        file_path = os.path.join(PUBLIC_DIR, clean_path)
+
+        # If requesting directory or empty, serve index.html
+        if not clean_path or os.path.isdir(file_path):
+            self.path = "/index.html"
+            return super().do_GET()
+
+        # If file has an extension (.css, .js, .png, .svg, etc.) but does not exist, return 404
+        _, ext = os.path.splitext(clean_path)
+        if ext:
+            if not os.path.isfile(file_path):
+                self.send_json({"error": "File not found"}, 404)
+                return
+            return super().do_GET()
+
+        # SPA clean navigation fallback for routes without extension
+        if not os.path.exists(file_path):
             self.path = "/index.html"
 
         return super().do_GET()
@@ -82,6 +98,22 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
             body = self.parse_body()
             return self.handle_api_post(path, body)
 
+        self.send_json({"error": "Endpoint not found"}, 404)
+
+    def do_PUT(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        if path.startswith("/api/"):
+            body = self.parse_body()
+            return self.handle_api_post(path, body)
+        self.send_json({"error": "Endpoint not found"}, 404)
+
+    def do_DELETE(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        if path.startswith("/api/"):
+            body = self.parse_body()
+            return self.handle_api_delete(path, body)
         self.send_json({"error": "Endpoint not found"}, 404)
 
     # ------------------ REST API GET HANDLERS ------------------
@@ -266,6 +298,31 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "top_services": top_services
                     }
                 })
+
+            elif path == "/api/admin/beauticians":
+                cur.execute("SELECT * FROM beauticians ORDER BY id ASC")
+                rows = []
+                for r in cur.fetchall():
+                    b = dict(r)
+                    b["certifications"] = json.loads(b["certifications"]) if b["certifications"] else []
+                    rows.append(b)
+                return self.send_json({"success": True, "beauticians": rows})
+
+            elif path == "/api/admin/coupons":
+                cur.execute("SELECT * FROM coupons ORDER BY min_order_value ASC")
+                rows = [dict(r) for r in cur.fetchall()]
+                return self.send_json({"success": True, "coupons": rows})
+
+            elif path == "/api/admin/reviews":
+                cur.execute("""
+                SELECT r.*, b.name as beautician_name, bo.booking_ref, bo.total_amount
+                FROM reviews r
+                LEFT JOIN beauticians b ON r.beautician_id = b.id
+                LEFT JOIN bookings bo ON r.booking_id = bo.id
+                ORDER BY r.id DESC
+                """)
+                rows = [dict(r) for r in cur.fetchall()]
+                return self.send_json({"success": True, "reviews": rows})
 
             else:
                 return self.send_json({"error": "Endpoint not found"}, 404)
@@ -487,7 +544,7 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return self.send_json({"success": True, "message": "Thank you for reviewing Dulhaniya!"})
 
             elif path == "/api/admin/services":
-                # Add or update service
+                # Add service
                 title = body.get("title")
                 category_slug = body.get("category_slug", "facials-cleanups")
                 subtitle = body.get("subtitle", "")
@@ -514,7 +571,128 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                     is_bestseller, is_bridal
                 ))
                 conn.commit()
-                return self.send_json({"success": True, "message": "Service created successfully!"})
+                return self.send_json({"success": True, "id": cur.lastrowid, "message": "Service created successfully!"})
+
+            elif path.startswith("/api/admin/services/") and path.endswith("/update"):
+                # Update existing service
+                s_id = path.split("/")[4]
+                title = body.get("title")
+                category_slug = body.get("category_slug", "facials-cleanups")
+                subtitle = body.get("subtitle", "")
+                duration_mins = int(body.get("duration_mins", 60))
+                price = int(body.get("price", 1999))
+                discounted_price = int(body.get("discounted_price", 1499))
+                byo_discount = int(body.get("byo_product_discount", 200))
+                image_url = body.get("image_url", "https://images.unsplash.com/photo-1512290900672-1f02e6462791?auto=format&fit=crop&w=700&q=80")
+                description = body.get("description", "")
+                is_bridal = 1 if body.get("is_bridal_exclusive") else 0
+                is_bestseller = 1 if body.get("is_bestseller") else 0
+
+                cur.execute("""
+                UPDATE services SET
+                    category_slug = ?, title = ?, subtitle = ?, duration_mins = ?,
+                    price = ?, discounted_price = ?, byo_product_discount = ?,
+                    image_url = ?, description = ?, is_bestseller = ?, is_bridal_exclusive = ?
+                WHERE id = ?
+                """, (category_slug, title, subtitle, duration_mins, price, discounted_price, byo_discount,
+                      image_url, description, is_bestseller, is_bridal, s_id))
+                conn.commit()
+                return self.send_json({"success": True, "message": "Service updated successfully!"})
+
+            elif path.startswith("/api/admin/services/") and path.endswith("/delete"):
+                s_id = path.split("/")[4]
+                cur.execute("DELETE FROM services WHERE id = ?", (s_id,))
+                conn.commit()
+                return self.send_json({"success": True, "message": "Service removed from catalog."})
+
+            elif path == "/api/admin/beauticians":
+                # Add new beautician partner
+                name = body.get("name")
+                if not name:
+                    return self.send_json({"success": False, "error": "Beautician name is required"}, 400)
+                phone = body.get("phone", "+91 98000 00000")
+                specialty = body.get("specialty", "Bridal & Salon Specialist")
+                experience_years = int(body.get("experience_years", 5))
+                bio = body.get("bio", "Certified professional esthetician.")
+                photo_url = body.get("photo_url", "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80")
+                raw_certs = body.get("certifications", ["Dulhaniya Certified Partner", "SafeSeal Sanitization Pro"])
+                certs = json.dumps(raw_certs) if isinstance(raw_certs, list) else str(raw_certs)
+                is_verified = 1 if body.get("is_verified", True) else 0
+                is_available = 1 if body.get("is_available", True) else 0
+
+                cur.execute("""
+                INSERT INTO beauticians (name, phone, specialty, experience_years, bio, photo_url, certifications, is_verified, is_available)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (name, phone, specialty, experience_years, bio, photo_url, certs, is_verified, is_available))
+                conn.commit()
+                return self.send_json({"success": True, "id": cur.lastrowid, "message": f"Partner '{name}' added successfully!"})
+
+            elif path.startswith("/api/admin/beauticians/") and path.endswith("/toggle"):
+                b_id = path.split("/")[4]
+                field = body.get("field", "is_available")
+                if field not in ["is_available", "is_verified"]:
+                    field = "is_available"
+                cur.execute(f"UPDATE beauticians SET {field} = CASE WHEN {field} = 1 THEN 0 ELSE 1 END WHERE id = ?", (b_id,))
+                conn.commit()
+                cur.execute(f"SELECT {field} FROM beauticians WHERE id = ?", (b_id,))
+                row = cur.fetchone()
+                val = row[field] if row else 0
+                return self.send_json({"success": True, "id": b_id, "field": field, "value": val, "message": f"{field} updated to {val}"})
+
+            elif path.startswith("/api/admin/beauticians/") and path.endswith("/delete"):
+                b_id = path.split("/")[4]
+                cur.execute("DELETE FROM beauticians WHERE id = ?", (b_id,))
+                conn.commit()
+                return self.send_json({"success": True, "message": "Beautician partner removed."})
+
+            elif path == "/api/admin/coupons":
+                code = (body.get("code") or "").strip().upper()
+                if not code:
+                    return self.send_json({"success": False, "error": "Coupon code is required"}, 400)
+                discount_type = body.get("discount_type", "flat")
+                discount_value = int(body.get("discount_value", 500))
+                min_order_value = int(body.get("min_order_value", 1000))
+                max_discount = int(body.get("max_discount", discount_value))
+                description = body.get("description", f"Save with code {code}")
+
+                cur.execute("""
+                INSERT OR REPLACE INTO coupons (code, discount_type, discount_value, min_order_value, max_discount, description)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, (code, discount_type, discount_value, min_order_value, max_discount, description))
+                conn.commit()
+                return self.send_json({"success": True, "code": code, "message": f"Coupon {code} active!"})
+
+            elif path.startswith("/api/admin/coupons/") and path.endswith("/delete"):
+                code = path.split("/")[4].upper()
+                cur.execute("DELETE FROM coupons WHERE code = ?", (code,))
+                conn.commit()
+                return self.send_json({"success": True, "message": f"Coupon {code} removed."})
+
+            elif path.startswith("/api/admin/bookings/") and path.endswith("/assign"):
+                ref = path.split("/")[4]
+                beautician_id = int(body.get("beautician_id", 1))
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("""
+                UPDATE bookings
+                SET beautician_id = ?, status = CASE WHEN status = 'CONFIRMED' THEN 'ASSIGNED' ELSE status END, updated_at = ?
+                WHERE booking_ref = ? OR id = ?
+                """, (beautician_id, now_str, ref, ref))
+                conn.commit()
+                return self.send_json({"success": True, "message": f"Assigned beautician #{beautician_id} to booking {ref}"})
+
+            elif path.startswith("/api/admin/bookings/") and path.endswith("/cancel"):
+                ref = path.split("/")[4]
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE bookings SET status = 'CANCELLED', updated_at = ? WHERE booking_ref = ? OR id = ?",
+                            (now_str, ref, ref))
+                conn.commit()
+                return self.send_json({"success": True, "message": f"Booking {ref} cancelled."})
+
+            elif path.startswith("/api/admin/reviews/") and path.endswith("/delete"):
+                r_id = path.split("/")[4]
+                cur.execute("DELETE FROM reviews WHERE id = ?", (r_id,))
+                conn.commit()
+                return self.send_json({"success": True, "message": "Review moderated and removed."})
 
             else:
                 return self.send_json({"error": "Endpoint not found"}, 404)
@@ -522,33 +700,106 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         finally:
             conn.close()
 
+    # ------------------ REST API DELETE HANDLER ------------------
+    def handle_api_delete(self, path, body):
+        conn = get_connection()
+        cur = conn.cursor()
+        try:
+            parts = path.strip("/").split("/")
+            # Path format: api/admin/{resource}/{id}
+            if len(parts) >= 4 and parts[1] == "admin":
+                resource = parts[2]
+                target_id = parts[3]
 
-def run(port=PORT):
+                if resource == "services":
+                    cur.execute("DELETE FROM services WHERE id = ?", (target_id,))
+                    conn.commit()
+                    return self.send_json({"success": True, "message": "Service deleted"})
+                elif resource == "beauticians":
+                    cur.execute("DELETE FROM beauticians WHERE id = ?", (target_id,))
+                    conn.commit()
+                    return self.send_json({"success": True, "message": "Beautician deleted"})
+                elif resource == "coupons":
+                    cur.execute("DELETE FROM coupons WHERE code = ?", (target_id.upper(),))
+                    conn.commit()
+                    return self.send_json({"success": True, "message": "Coupon deleted"})
+                elif resource == "reviews":
+                    cur.execute("DELETE FROM reviews WHERE id = ?", (target_id,))
+                    conn.commit()
+                    return self.send_json({"success": True, "message": "Review deleted"})
+
+            return self.send_json({"error": "Resource not found for deletion"}, 404)
+        finally:
+            conn.close()
+
+
+def run(port=None):
     init_db()
     os.makedirs(PUBLIC_DIR, exist_ok=True)
     
-    # Try port 8000, fallback to 8080 if in use
+    # Allow port selection via CLI or environment variable
+    if port is None:
+        if len(sys.argv) > 1 and sys.argv[1].isdigit():
+            port = int(sys.argv[1])
+        else:
+            port = int(os.environ.get("PORT", PORT))
+
+    # Port collision recovery list with guaranteed OS assignment (0) fallback
+    candidate_ports = [port]
+    for alt in [8080, 5000, 3000, 8001, 8081, 8888, 9000, 0]:
+        if alt not in candidate_ports:
+            candidate_ports.append(alt)
+
+    httpd = None
     active_port = port
-    for p in [port, 8080, 5000, 3000]:
+
+    class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    for p in candidate_ports:
         try:
             server_address = ('', p)
-            class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
-                daemon_threads = True
-
             httpd = ThreadingHTTPServer(server_address, DulhaniyaRequestHandler)
-            active_port = p
+            active_port = httpd.server_address[1]
             break
         except OSError:
             continue
 
-    print(f"Dulhaniya App server is running at http://127.0.0.1:{active_port}")
+    if httpd is None:
+        print("ERROR: Could not bind to any network port. Exiting.")
+        sys.exit(1)
+
+    # Persist active port for startup scripts and local client tools
+    port_file = os.path.join(os.path.dirname(__file__), "dulhaniya_port.txt")
+    try:
+        with open(port_file, "w", encoding="utf-8") as pf:
+            pf.write(str(active_port))
+    except Exception:
+        pass
+
+    server_url = f"http://127.0.0.1:{active_port}"
+    print(f"Dulhaniya App server is running at {server_url}")
     print(f"Serving static files from: {PUBLIC_DIR}")
     print("Press Ctrl+C to stop.")
+
+    # Automatically launch browser at bound port
+    try:
+        import webbrowser
+        webbrowser.open(server_url)
+    except Exception:
+        pass
+
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\nShutting down Dulhaniya server...")
         httpd.server_close()
+        try:
+            if os.path.exists(port_file):
+                os.remove(port_file)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

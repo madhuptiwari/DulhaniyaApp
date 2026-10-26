@@ -24,6 +24,16 @@ const Tracker = {
         this.loadBooking(e.detail.booking_ref);
       }
     });
+
+    // Cross-tab / multi-window synchronization
+    window.addEventListener("storage", (e) => {
+      if (e.key === "dulhaniya_active_ref" || (e.key && e.key.startsWith("booking_"))) {
+        const activeRef = localStorage.getItem("dulhaniya_active_ref");
+        if (activeRef) {
+          this.loadBooking(activeRef);
+        }
+      }
+    });
   },
 
   async checkActiveBooking() {

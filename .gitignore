@@ -3,3 +3,5 @@ __pycache__/
 *.pyo
 .DS_Store
 Thumbs.db
+dulhaniya_port.txt
+dulhaniya_store.json

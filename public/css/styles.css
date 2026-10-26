@@ -1739,3 +1739,68 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= Checkout Date & Slot Pill Buttons ================= */
+.date-pill-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--slate-300);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--slate-800);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.date-pill-btn:hover {
+  border-color: var(--primary-light);
+  background: var(--slate-50);
+}
+
+.date-pill-btn.selected {
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
+  background: var(--primary-subtle);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.slot-pill-btn {
+  padding: 10px 8px;
+  border: 1.5px solid var(--slate-300);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--slate-800);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.slot-pill-btn:hover {
+  border-color: var(--primary-light);
+  background: var(--slate-50);
+}
+
+.slot-pill-btn.selected {
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* Admin Control Suite Tab Styling */
+.tab-btn {
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.tab-btn:hover {
+  color: var(--primary) !important;
+  background: var(--slate-100) !important;
+  border-radius: var(--radius-sm);
+}
+.tab-btn.active {
+  color: var(--primary) !important;
+}

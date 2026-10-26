@@ -21,7 +21,7 @@ if exist "%USERPROFILE%\.local\bin\uv.exe" (
     )
 )
 
-REM 2. Check direct uv python
+REM 2. Check direct uv python 3.12
 if exist "%APPDATA%\uv\python\cpython-3.12-windows-x86_64-none\python.exe" (
     set RUNTIME_TYPE=python
     set RUNTIME_EXEC="%APPDATA%\uv\python\cpython-3.12-windows-x86_64-none\python.exe"
@@ -35,14 +35,54 @@ if exist "%APPDATA%\uv\python\cpython-3.12.12-windows-x86_64-none\python.exe" (
     goto :FOUND_RUNTIME
 )
 
-REM 4. Check Cursor Node executable
+REM 4. Check official Windows Python paths in LocalAppData
+for %%V in (Python313 Python312 Python311 Python310) do (
+    if exist "%LOCALAPPDATA%\Programs\Python\%%V\python.exe" (
+        set RUNTIME_TYPE=python
+        set RUNTIME_EXEC="%LOCALAPPDATA%\Programs\Python\%%V\python.exe"
+        goto :FOUND_RUNTIME
+    )
+)
+
+REM 5. Check root Python directories
+for %%D in (C:\Python312 C:\Python311 C:\Python310 "C:\Program Files\Python312" "C:\Program Files\Python311") do (
+    if exist "%%~D\python.exe" (
+        set RUNTIME_TYPE=python
+        set RUNTIME_EXEC="%%~D\python.exe"
+        goto :FOUND_RUNTIME
+    )
+)
+
+REM 6. Check official py launcher
+py -3 -c "import sys; sys.exit(0)" >nul 2>&1
+if !ERRORLEVEL! EQU 0 (
+    set RUNTIME_TYPE=python
+    set RUNTIME_EXEC=py -3
+    goto :FOUND_RUNTIME
+)
+
+REM 7. Check Cursor Node executable
+if exist "%LOCALAPPDATA%\Programs\cursor\resources\app\resources\helpers\node.exe" (
+    set RUNTIME_TYPE=node
+    set RUNTIME_EXEC="%LOCALAPPDATA%\Programs\cursor\resources\app\resources\helpers\node.exe"
+    goto :FOUND_RUNTIME
+)
 if exist "%LOCALAPPDATA%\Programs\cursor\_\resources\app\resources\helpers\node.exe" (
     set RUNTIME_TYPE=node
     set RUNTIME_EXEC="%LOCALAPPDATA%\Programs\cursor\_\resources\app\resources\helpers\node.exe"
     goto :FOUND_RUNTIME
 )
 
-REM 5. Test real system python
+REM 8. Check standard Node.js installations
+for %%N in ("%ProgramFiles%\nodejs\node.exe" "%ProgramFiles(x86)%\nodejs\node.exe" "%LOCALAPPDATA%\Programs\node\node.exe" "%APPDATA%\npm\node.exe") do (
+    if exist "%%~N" (
+        set RUNTIME_TYPE=node
+        set RUNTIME_EXEC="%%~N"
+        goto :FOUND_RUNTIME
+    )
+)
+
+REM 9. Test real system python (validates against 0-byte Windows Store alias)
 python -c "import sys; sys.exit(0)" >nul 2>&1
 if !ERRORLEVEL! EQU 0 (
     set RUNTIME_TYPE=python
@@ -50,7 +90,7 @@ if !ERRORLEVEL! EQU 0 (
     goto :FOUND_RUNTIME
 )
 
-REM 6. Test system node
+REM 10. Test system node
 node -e "process.exit(0)" >nul 2>&1
 if !ERRORLEVEL! EQU 0 (
     set RUNTIME_TYPE=node
@@ -68,13 +108,14 @@ if "%RUNTIME_TYPE%"=="none" (
 )
 
 echo [Step 2] Verified active runtime: %RUNTIME_TYPE%
-echo Starting Dulhaniya REST API and Web Application on port 8000...
+echo Starting Dulhaniya REST API and Web Application...
 echo.
 
-REM Delayed browser launcher so server is bound first
-start /b "" cmd /c "timeout /t 2 /nobreak >nul & start http://127.0.0.1:8000"
+REM Clean up any old port file
+if exist "%~dp0dulhaniya_port.txt" del "%~dp0dulhaniya_port.txt" >nul 2>&1
 
-echo [Step 3] Dulhaniya Server is LIVE at http://127.0.0.1:8000
+REM Launch server in foreground (server will automatically bind and launch browser)
+echo [Step 3] Dulhaniya Server is starting...
 echo ---------------------------------------------------------------------
 echo Keep this command window open while using Dulhaniya.
 echo To stop the application, press Ctrl+C or close this window.

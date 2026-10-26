@@ -86,6 +86,7 @@ const Cart = {
       this.kitType = type;
       this.saveToStorage();
       this.renderCartUI();
+      window.App?.renderServicesGrid();
       const msg = type === "byo_product"
         ? "Switched to 'Bring Your Own Product' mode! Service labor discount applied."
         : "Switched to 'Dulhaniya Sealed Deluxe Kits' mode (tamper-proof mono-kits).";
@@ -118,9 +119,10 @@ const Cart = {
 
     const subtotal = Math.max(0, rawSubtotal - byoDeduction);
 
-    // Coupon discount
+    // Coupon discount with minimum order threshold protection
     let couponDiscount = 0;
-    if (this.appliedCoupon && subtotal > 0) {
+    const minOrder = this.appliedCoupon?.min_order_value || 0;
+    if (this.appliedCoupon && subtotal >= minOrder && subtotal > 0) {
       if (this.appliedCoupon.discount_type === "flat") {
         couponDiscount = Math.min(this.appliedCoupon.discount_value, subtotal);
       } else {
@@ -156,12 +158,14 @@ const Cart = {
 
     const res = await DulhaniyaAPI.applyCoupon(code, calc.subtotal);
     if (res.success) {
+      const minRequired = res.min_order_value || (res.code === "BRIDALQUEEN" ? 4999 : res.code === "DULHANIYA500" ? 1499 : 799);
       this.appliedCoupon = {
         code: res.code,
         discount: res.discount,
         description: res.description,
         discount_type: "flat",
-        discount_value: res.discount
+        discount_value: res.discount,
+        min_order_value: minRequired
       };
       this.saveToStorage();
       this.renderCartUI();
@@ -227,13 +231,17 @@ const Cart = {
       }
     }
 
-    // 3. Render Kit Type Toggle Selection
+    // 3. Render Kit Type Toggle Selection (Drawer + Top Filter Bar)
     const btnSealed = document.getElementById("btn-kit-sealed");
     const btnByo = document.getElementById("btn-kit-byo");
     if (btnSealed && btnByo) {
       btnSealed.classList.toggle("selected", this.kitType === "dulhaniya_kit");
       btnByo.classList.toggle("selected", this.kitType === "byo_product");
     }
+    const filterSealed = document.getElementById("filter-mode-sealed");
+    const filterByo = document.getElementById("filter-mode-byo");
+    if (filterSealed) filterSealed.classList.toggle("active", this.kitType === "dulhaniya_kit");
+    if (filterByo) filterByo.classList.toggle("active", this.kitType === "byo_product");
 
     // 4. Update Bill Breakdown
     const subtotalEl = document.getElementById("bill-subtotal");

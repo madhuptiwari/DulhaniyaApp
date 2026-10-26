@@ -538,22 +538,23 @@
           <div style="margin-bottom:16px;">
             <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">1. Select Service Date:</label>
             <div style="display:flex; gap:10px;">
-              <button type="button" class="btn-secondary date-pill-btn" data-date="Today" onclick="App.selectDate('Today')" style="flex:1; padding:10px; color:var(--slate-800); border-color:var(--slate-300);">Today</button>
-              <button type="button" class="btn-secondary date-pill-btn selected" data-date="Tomorrow" onclick="App.selectDate('Tomorrow')" style="flex:1; padding:10px; color:var(--primary); border-color:var(--primary); font-weight:700; background:var(--primary-subtle);">Tomorrow</button>
-              <button type="button" class="btn-secondary date-pill-btn" data-date="Pick Date" onclick="App.selectDate('Pick Date')" style="flex:1; padding:10px; color:var(--slate-800); border-color:var(--slate-300);">Pick Date</button>
+              <button type="button" class="date-pill-btn" data-date="Today" onclick="App.selectDate('Today')">Today</button>
+              <button type="button" class="date-pill-btn selected" data-date="Tomorrow" onclick="App.selectDate('Tomorrow')">Tomorrow</button>
+              <button type="button" class="date-pill-btn" data-date="Pick Date" onclick="App.selectDate('Pick Date')">Pick Date</button>
             </div>
+            <input type="date" id="custom-date-picker" style="display:none; width:100%; margin-top:8px; padding:8px 12px; border:1.5px solid var(--primary); border-radius:var(--radius-sm); font-size:0.85rem;" onchange="App.onCustomDatePicked(this.value)" />
           </div>
 
           <!-- Time Slot Selection -->
           <div style="margin-bottom:20px;">
             <label style="font-size:0.85rem; font-weight:700; color:var(--slate-700); display:block; margin-bottom:8px;">2. Select Preferred Time Slot:</label>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
-              <button type="button" class="slot-pill-btn" data-slot="08:00 AM - 09:30 AM" onclick="App.selectSlot('08:00 AM - 09:30 AM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">08:00 AM (Early)</button>
-              <button type="button" class="slot-pill-btn selected" data-slot="10:00 AM - 11:30 AM" onclick="App.selectSlot('10:00 AM - 11:30 AM')" style="padding:8px; border:1.5px solid var(--primary); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center; background:var(--primary-subtle); color:var(--primary-dark); font-weight:700;">10:00 AM (Popular)</button>
-              <button type="button" class="slot-pill-btn" data-slot="12:30 PM - 02:00 PM" onclick="App.selectSlot('12:30 PM - 02:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">12:30 PM (Noon)</button>
-              <button type="button" class="slot-pill-btn" data-slot="03:00 PM - 04:30 PM" onclick="App.selectSlot('03:00 PM - 04:30 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">03:00 PM (Afternoon)</button>
-              <button type="button" class="slot-pill-btn" data-slot="05:30 PM - 07:00 PM" onclick="App.selectSlot('05:30 PM - 07:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">05:30 PM (Evening)</button>
-              <button type="button" class="slot-pill-btn" data-slot="07:30 PM - 09:00 PM" onclick="App.selectSlot('07:30 PM - 09:00 PM')" style="padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm); font-size:0.75rem; text-align:center;">07:30 PM (Night)</button>
+              <button type="button" class="slot-pill-btn" data-slot="08:00 AM - 09:30 AM" onclick="App.selectSlot('08:00 AM - 09:30 AM')">08:00 AM (Early)</button>
+              <button type="button" class="slot-pill-btn selected" data-slot="10:00 AM - 11:30 AM" onclick="App.selectSlot('10:00 AM - 11:30 AM')">10:00 AM (Popular)</button>
+              <button type="button" class="slot-pill-btn" data-slot="12:30 PM - 02:00 PM" onclick="App.selectSlot('12:30 PM - 02:00 PM')">12:30 PM (Noon)</button>
+              <button type="button" class="slot-pill-btn" data-slot="03:00 PM - 04:30 PM" onclick="App.selectSlot('03:00 PM - 04:30 PM')">03:00 PM (Afternoon)</button>
+              <button type="button" class="slot-pill-btn" data-slot="05:30 PM - 07:00 PM" onclick="App.selectSlot('05:30 PM - 07:00 PM')">05:30 PM (Evening)</button>
+              <button type="button" class="slot-pill-btn" data-slot="07:30 PM - 09:00 PM" onclick="App.selectSlot('07:30 PM - 09:00 PM')">07:30 PM (Night)</button>
             </div>
           </div>
 
@@ -869,24 +870,24 @@
 
   <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
   <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-    <button class="bottom-nav-item active" onclick="App.setViewMode('customer'); App.selectCategory('all'); return false;">
+    <button class="bottom-nav-item active" id="mob-nav-home" onclick="App.setViewMode('customer'); App.selectCategory('all'); return false;">
       <span class="bottom-nav-icon">🏠</span>
       <span>Home</span>
     </button>
-    <button class="bottom-nav-item" onclick="App.setViewMode('customer'); App.selectCategory('bridal-wedding'); return false;">
+    <button class="bottom-nav-item" id="mob-nav-bridal" onclick="App.setViewMode('customer'); App.selectCategory('bridal-wedding'); return false;">
       <span class="bottom-nav-icon">👑</span>
       <span>Bridal</span>
     </button>
-    <button class="bottom-nav-item" onclick="App.openCartDrawer(); return false;">
+    <button class="bottom-nav-item" id="mob-nav-cart" onclick="App.openCartDrawer(); return false;">
       <span class="bottom-nav-icon">🛍️</span>
       <span>Cart</span>
       <span class="bottom-nav-badge" id="mobile-cart-badge">0</span>
     </button>
-    <button class="bottom-nav-item" onclick="Tracker.openTracker(); return false;">
+    <button class="bottom-nav-item" id="mob-nav-track" onclick="Tracker.openTracker(); return false;">
       <span class="bottom-nav-icon">📍</span>
       <span>Track</span>
     </button>
-    <button class="bottom-nav-item" onclick="App.setViewMode('partner'); return false;">
+    <button class="bottom-nav-item" id="mob-nav-partner" onclick="App.setViewMode('partner'); return false;">
       <span class="bottom-nav-icon">👩‍💼</span>
       <span>Partner</span>
     </button>

@@ -23,7 +23,7 @@ const Partner = {
     // Load active bookings
     let bookings = [];
     try {
-      const res = await fetch(`${DulhaniyaAPI.baseUrl}/api/bookings`);
+      const res = await DulhaniyaAPI.safeFetch('/api/bookings');
       if (res.ok) {
         const data = await res.json();
         bookings = data.bookings;

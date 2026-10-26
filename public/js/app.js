@@ -72,6 +72,16 @@ const App = {
       if (mode === "admin") Admin.init();
     }
 
+    // Sync mobile bottom navigation
+    document.querySelectorAll(".bottom-nav-item").forEach(item => item.classList.remove("active"));
+    if (mode === "customer") {
+      const mobHome = document.getElementById("mob-nav-home");
+      if (mobHome) mobHome.classList.add("active");
+    } else if (mode === "partner") {
+      const mobPartner = document.getElementById("mob-nav-partner");
+      if (mobPartner) mobPartner.classList.add("active");
+    }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   },
 
@@ -350,10 +360,31 @@ const App = {
   },
 
   selectDate(dateLabel) {
-    this.selectedDate = dateLabel;
+    const customPicker = document.getElementById("custom-date-picker");
+    if (dateLabel === "Pick Date") {
+      if (customPicker) {
+        customPicker.style.display = "block";
+        customPicker.focus();
+        if (!customPicker.value) {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 2);
+          customPicker.value = tomorrow.toISOString().split("T")[0];
+        }
+        this.selectedDate = customPicker.value;
+      }
+    } else {
+      if (customPicker) customPicker.style.display = "none";
+      this.selectedDate = dateLabel;
+    }
     document.querySelectorAll(".date-pill-btn").forEach(btn => {
       btn.classList.toggle("selected", btn.dataset.date === dateLabel);
     });
+  },
+
+  onCustomDatePicked(val) {
+    if (val) {
+      this.selectedDate = val;
+    }
   },
 
   selectSlot(slotText) {
