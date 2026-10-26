@@ -186,7 +186,7 @@ const App = {
       return `
         <div class="service-card" id="service-card-${service.id}">
           <div class="service-image-wrapper">
-            <img class="service-image" src="${service.image_url}" alt="${service.title}" loading="lazy" />
+            <img class="service-image" src="${service.image_url}" alt="${service.title}" loading="lazy" decoding="async" width="360" height="200" />
             <div class="service-badges">
               ${service.is_bridal_exclusive ? `<span class="badge badge-bridal">👑 Bridal Exclusive</span>` : ''}
               ${service.is_bestseller ? `<span class="badge badge-bestseller">⭐ Bestseller</span>` : ''}
@@ -271,7 +271,7 @@ const App = {
     if (bodyEl) {
       bodyEl.innerHTML = `
         <div style="margin-bottom: 20px;">
-          <img src="${service.image_url}" alt="${service.title}" style="width:100%; height:240px; object-fit:cover; border-radius:var(--radius-lg); margin-bottom:14px;" />
+          <img src="${service.image_url}" alt="${service.title}" loading="lazy" decoding="async" width="600" height="240" style="width:100%; height:240px; object-fit:cover; border-radius:var(--radius-lg); margin-bottom:14px;" />
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <div>
               <span class="star-box" style="display:inline-flex;">★ ${service.rating || 4.9}</span>
@@ -473,6 +473,8 @@ const App = {
     if (!container) {
       container = document.createElement("div");
       container.id = "toast-container";
+      container.setAttribute("role", "status");
+      container.setAttribute("aria-live", "polite");
       container.style.cssText = `
         position: fixed;
         bottom: 24px;
@@ -741,8 +743,22 @@ const App = {
     this.closeAdvisorModal();
     this.openCartDrawer();
     this.showToast("✨ Curated routine added to your cart with VIP privilege savings!");
+  },
+
+  closeAllModals() {
+    ['checkout-modal', 'tracker-modal', 'consultation-advisor-modal', 'service-detail-modal', 'add-service-modal'].forEach(id => {
+      this.closeModal(id);
+    });
+    this.closeCartDrawer();
   }
 };
+
+// Global Keyboard Accessibility (WCAG 2.1 AA)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    App.closeAllModals();
+  }
+});
 
 // Initialize on DOM load
 document.addEventListener("DOMContentLoaded", () => {

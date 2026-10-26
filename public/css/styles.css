@@ -2352,3 +2352,27 @@ button, a, input, select, textarea, .mode-btn, .category-pill, .filter-tag, .dat
   padding: 24px;
   box-shadow: 0 10px 25px rgba(157, 23, 77, 0.08);
 }
+
+
+/* ================= Accessibility & Core Web Vitals (WCAG 2.1 AA) ================= */
+:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px !important;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.service-image-wrapper {
+  aspect-ratio: 16 / 9;
+}
+
+.comparison-section,
+.footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}

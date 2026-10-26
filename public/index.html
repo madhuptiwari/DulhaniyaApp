@@ -431,14 +431,14 @@
       <div class="split-compare-box">
         <div class="split-img-wrapper" id="transformation-split-box">
           <!-- After (Full Makeup Look) -->
-          <img class="split-img" src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=80" alt="After Bridal Transformation" />
+          <img class="split-img" src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=80" alt="After Bridal Transformation" loading="lazy" decoding="async" width="850" height="440" />
           <div style="position:absolute; bottom:16px; right:20px; background:rgba(157,23,77,0.85); color:#fff; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.8rem; z-index:4;">
             ✨ AFTER: Royal HD Airbrush
           </div>
 
           <!-- Before (Skin Prep / Raw Tone) -->
           <div class="split-before" id="split-before-layer" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-            <img class="split-img" src="https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1200&q=80" alt="Before Bridal Transformation" />
+            <img class="split-img" src="https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1200&q=80" alt="Before Bridal Transformation" loading="lazy" decoding="async" width="850" height="440" />
             <div style="position:absolute; bottom:16px; left:20px; background:rgba(30,41,59,0.85); color:#fff; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.8rem; z-index:4;">
               🌿 BEFORE: Natural Dermal Prep
             </div>
@@ -677,7 +677,7 @@
   <aside class="cart-drawer" id="cart-drawer" aria-label="Bridal Shopping Cart">
     <div class="cart-header">
       <h3 style="font-size:1.25rem;">Your Bridal Cart</h3>
-      <button class="btn-close" onclick="App.closeCartDrawer()">✕</button>
+      <button class="btn-close" aria-label="Close modal" onclick="App.closeCartDrawer()">✕</button>
     </div>
 
     <!-- Product Kit Mode Switcher inside Cart -->
@@ -771,14 +771,14 @@
   </aside>
 
   <!-- ================= BRIDAL BEAUTY & CEREMONY ADVISOR MODAL ================= -->
-  <div class="modal-overlay" id="consultation-advisor-modal">
+  <div class="modal-overlay" id="consultation-advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-modal-title">
     <div class="modal-content" style="max-width: 760px;">
       <div class="modal-header">
         <div>
           <span class="badge badge-bridal">✨ SMART CONSULTATION</span>
-          <h3 style="margin-top: 4px;">AI Bridal Beauty & Ceremony Advisor</h3>
+          <h3 id="advisor-modal-title" style="margin-top: 4px;">AI Bridal Beauty & Ceremony Advisor</h3>
         </div>
-        <button class="btn-close" onclick="App.closeAdvisorModal()">✕</button>
+        <button class="btn-close" aria-label="Close modal" onclick="App.closeAdvisorModal()">✕</button>
       </div>
 
       <div class="modal-body">
@@ -927,11 +927,11 @@
   </div>
 
   <!-- ================= CHECKOUT MODAL ================= -->
-  <div class="modal-overlay" id="checkout-modal">
+  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Schedule Your Appointment</h3>
-        <button class="btn-close" onclick="App.closeModal('checkout-modal')">✕</button>
+        <h3 id="checkout-modal-title">Schedule Your Appointment</h3>
+        <button class="btn-close" aria-label="Close modal" onclick="App.closeModal('checkout-modal')">✕</button>
       </div>
       <div class="modal-body">
         <form onsubmit="App.submitBooking(event)">
@@ -1003,14 +1003,14 @@
   </div>
 
   <!-- ================= LIVE ORDER TRACKER & SAFETY MODAL ================= -->
-  <div class="modal-overlay" id="tracker-modal">
+  <div class="modal-overlay" id="tracker-modal" role="dialog" aria-modal="true" aria-labelledby="tracker-modal-title">
     <div class="modal-content" style="max-width:720px;">
       <div class="modal-header">
         <div>
-          <h3>Live Booking Journey</h3>
+          <h3 id="tracker-modal-title">Live Booking Journey</h3>
           <span style="font-size:0.85rem; color:var(--primary); font-weight:700;" id="tracker-modal-ref">DLH-9842</span>
         </div>
-        <button class="btn-close" onclick="Tracker.closeTracker()">✕</button>
+        <button class="btn-close" aria-label="Close modal" onclick="Tracker.closeTracker()">✕</button>
       </div>
       <div class="modal-body">
         
@@ -1049,7 +1049,7 @@
 
         <!-- Beautician Profile Card -->
         <div class="beautician-profile-card">
-          <img id="tracker-beautician-photo" class="beautician-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Beautician" />
+          <img id="tracker-beautician-photo" class="beautician-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Beautician" loading="lazy" decoding="async" width="56" height="56" />
           <div class="beautician-details">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <h4 class="beautician-name" id="tracker-beautician-name">Pooja Sharma</h4>
@@ -1142,11 +1142,11 @@
   </div>
 
   <!-- ================= SERVICE PROCEDURE DETAIL MODAL ================= -->
-  <div class="modal-overlay" id="service-detail-modal">
+  <div class="modal-overlay" id="service-detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="detail-modal-title">Service Details</h3>
-        <button class="btn-close" onclick="App.closeModal('service-detail-modal')">✕</button>
+        <button class="btn-close" aria-label="Close modal" onclick="App.closeModal('service-detail-modal')">✕</button>
       </div>
       <div class="modal-body" id="detail-modal-body">
         <!-- Rendered by app.js -->
@@ -1155,11 +1155,11 @@
   </div>
 
   <!-- ================= ADMIN: ADD NEW SERVICE MODAL ================= -->
-  <div class="modal-overlay" id="add-service-modal">
+  <div class="modal-overlay" id="add-service-modal" role="dialog" aria-modal="true" aria-labelledby="add-service-modal-title">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Add New Service to Catalog</h3>
-        <button class="btn-close" onclick="Admin.closeAddServiceModal()">✕</button>
+        <h3 id="add-service-modal-title">Add New Service to Catalog</h3>
+        <button class="btn-close" aria-label="Close modal" onclick="Admin.closeAddServiceModal()">✕</button>
       </div>
       <div class="modal-body">
         <form onsubmit="Admin.submitNewService(event)">
