@@ -1,0 +1,753 @@
+/**
+ * Dulhaniya - High-Performance Cross-Platform Web Server & REST API
+ * Pure Node.js Standard Library - Zero external dependencies.
+ * Companion to server.py for instant execution under any runtime.
+ */
+
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const url = require("url");
+
+const PORT = process.env.PORT || 8000;
+const PUBLIC_DIR = path.join(__dirname, "public");
+const STORE_FILE = path.join(__dirname, "dulhaniya_store.json");
+
+// MIME types
+const MIME_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2"
+};
+
+// Initial Seed Store
+const INITIAL_STORE = {
+  categories: [
+    { id: 1, name: "Bridal & Wedding Glow", slug: "bridal-wedding", icon: "crown", description: "Exclusive bridal packages, HD airbrush makeup, saree draping & pre-wedding rituals", badge: "Grand Bridal", sort_order: 1, service_count: 5 },
+    { id: 2, name: "Facials & Skin Rituals", slug: "facials-cleanups", icon: "sparkles", description: "O3+, Diamond, Hydra, Tan-Clear, & Ayurvedic organic facials", badge: "Trending", sort_order: 2, service_count: 4 },
+    { id: 3, name: "Waxing & Smooth Skin", slug: "waxing", icon: "feather", description: "Rica Chocolate, Honey, Brazilian & Painless Roll-on Waxing", badge: "Most Booked", sort_order: 3, service_count: 3 },
+    { id: 4, name: "Manicure & Pedicure Spas", slug: "mani-pedi", icon: "gem", description: "Rose petal aroma soak, crystal scrub, gel nails & bridal foot spa", badge: "Relaxing", sort_order: 4, service_count: 3 },
+    { id: 5, name: "Hair Care, Spa & Styling", slug: "hair-care", icon: "scissors", description: "L'Oreal professional hair spa, keratin infusion, haircut & bridal buns", badge: "Popular", sort_order: 5, service_count: 2 },
+    { id: 6, name: "Bleach, Detan & Glow Packs", slug: "bleach-detan", icon: "sun", description: "Sara Oxy Detan, Raaga tan removal, Insta-glow herbal bleach", badge: "Instant Glow", sort_order: 6, service_count: 2 },
+    { id: 7, name: "Full Body Spa & Massages", slug: "body-spa", icon: "heart-pulse", description: "Swedish relaxation, Aromatherapy stress-relief & Ayurvedic potli", badge: "Wellness", sort_order: 7, service_count: 2 },
+    { id: 8, name: "Groom & Men's Salon", slug: "groom-men", icon: "smile", description: "Charcoal facial, beard styling, hair care & de-stress head massage", badge: "For Him", sort_order: 8, service_count: 2 }
+  ],
+  services: [
+    {
+      id: 1,
+      category_slug: "bridal-wedding",
+      title: "Royal Dulhaniya D-Day Bridal Makeup (HD / Airbrush)",
+      subtitle: "Complete luxury bridal look with premium international cosmetics",
+      duration_mins: 180,
+      price: 14999,
+      discounted_price: 10999,
+      byo_product_discount: 1500,
+      rating: 4.98,
+      review_count: 342,
+      image_url: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=700&q=80",
+      description: "Flawless bridal makeover tailored for high-definition photography and emotional moments. Includes skin prep, color correction, HD airbrush foundation, dramatic eye artistry, mink lashes, long-lasting lip artistry, dupatta/lehenga styling and floral jewelry pinning.",
+      included_steps: ["Double Cleansing & Hydration Prep", "Skin Tone Correction & Primer", "HD/Airbrush Base Application", "Contour, Blush & Highlighter", "Artistic Eye Makeup & Mink Lashes", "Lip Contouring & Matte Lock", "Hair Bun / Floral Styling", "Lehenga / Saree Draping & Dupatta Pinning"],
+      products_used: ["MAC Studio Fix", "Huda Beauty Rose Quartz Palette", "Estée Lauder Double Wear", "Charlotte Tilbury Flawless Filter", "Anastasia Beverly Hills Brow Kit"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 2,
+      category_slug: "bridal-wedding",
+      title: "Haldi & Mehendi Sunshine Radiance Look",
+      subtitle: "Fresh, dewy and joyful glow for daytime pre-wedding ceremonies",
+      duration_mins: 120,
+      price: 6999,
+      discounted_price: 4999,
+      byo_product_discount: 800,
+      rating: 4.95,
+      review_count: 218,
+      image_url: "https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=700&q=80",
+      description: "Waterproof, dewy and radiant look with soft playful curls or floral braid. Specially formulated sweat-proof products to withstand joyful turmeric rituals and mehendi festivities.",
+      included_steps: ["Radiance Hydration Mask", "Sweat-proof Dewy Foundation Base", "Sun-kissed Peach/Coral Blush", "Waterproof Eye Makeup", "Messy Braid or Floral Half-Updo", "Dupatta Setting"],
+      products_used: ["Bobbi Brown Dewy Glow", "Clinique Moisture Surge", "Too Faced Better Than Sex Waterproof", "Rare Beauty Liquid Blush"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 3,
+      category_slug: "bridal-wedding",
+      title: "Sangeet & Cocktail Glam Night Look",
+      subtitle: "Smokey eyes, glitter glam and high-voltage evening elegance",
+      duration_mins: 150,
+      price: 8999,
+      discounted_price: 6499,
+      byo_product_discount: 900,
+      rating: 4.94,
+      review_count: 189,
+      image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
+      description: "Bold, shimmering and party-ready bridal look designed to dazzle under stage lights and dance through the night. Includes volumized Hollywood waves or structured updo.",
+      included_steps: ["Primer & Strobe Cream Glow", "Long-wear Matte Foundation", "Shimmer Smokey Eyes with Pressed Pigments", "Winged Eyeliner & Volumizing Lashes", "Sculpted Contour", "Glam Hollywood Waves or Updo", "Saree/Gown Draping"],
+      products_used: ["NARS Radiant Longwear", "Urban Decay Naked Palette", "Fenty Beauty Highlighter", "Kryolan Fixer Spray"],
+      is_bestseller: 0,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 13,
+      category_slug: "bridal-wedding",
+      title: "Roka & Engagement Princess Glow Makeover",
+      subtitle: "Airy pastel glam, luminous dewy glass skin & soft romantic waves",
+      duration_mins: 120,
+      price: 7999,
+      discounted_price: 5499,
+      byo_product_discount: 900,
+      rating: 4.97,
+      review_count: 178,
+      image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80",
+      description: "Designed for day or evening engagement celebrations. Features high-reflect strobing, soft rosy eyes, and heat-styled romantic cascading curls.",
+      included_steps: ["Hydra Prep & Pearl Serum Base", "HD Strobe Cream Foundation", "Soft Rose Gold Eye Shimmer", "Lash Lift & Defined Brows", "Romantic Soft Waves Blowout", "Dupatta / Gown Draping"],
+      products_used: ["Charlotte Tilbury Hollywood Flawless Filter", "Huda Beauty Rose Quartz", "MAC Prep + Prime Fix+"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 14,
+      category_slug: "bridal-wedding",
+      title: "Post-Wedding Royal Reception Makeover",
+      subtitle: "Regal Hollywood glam waves, sculpted cheekbones & bold crimson lips",
+      duration_mins: 150,
+      price: 9999,
+      discounted_price: 7299,
+      byo_product_discount: 1000,
+      rating: 4.96,
+      review_count: 164,
+      image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
+      description: "The grand finale look. Ultra-durable 16-hour transfer-proof bridal glamour paired with regal red or plum lips, sculpted contour, and cascading Hollywood waves.",
+      included_steps: ["Matte Pore-Blurring Skin Prep", "Ultra-HD 16-Hour Foundation", "Cut-Crease Dramatic Smokey Eyes", "Full Mink Lashes", "Precision Lip Artistry & Matte Seal", "Saree/Lehenga Reception Draping"],
+      products_used: ["Estée Lauder Double Wear", "Tom Ford Eye Color Quad", "Pat McGrath Labs MatteTrance"],
+      is_bestseller: 0,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 15,
+      category_slug: "facials-cleanups",
+      title: "24K Gold & Pure Kumkumadi Bridal Facial",
+      subtitle: "Pure 24K edible gold leaf infusion + saffron oil facial acupressure",
+      duration_mins: 75,
+      price: 4499,
+      discounted_price: 2999,
+      byo_product_discount: 450,
+      rating: 4.99,
+      review_count: 320,
+      image_url: "https://images.unsplash.com/photo-1522337094346-24b585352c8c?auto=format&fit=crop&w=700&q=80",
+      description: "The royal Maharani treatment. Uses real 24-karat gold leaf sheets, Kashmiri saffron, and cold-pressed sandalwood to impart an otherworldly regal sheen.",
+      included_steps: ["Saffron Milk Cleansing", "Gold Dust Walnut Scrub", "Kumkumadi Acupressure Lymphatic Massage", "24K Gold Leaf Sheet Application & Ion Penetration", "Royal Saffron Peel-Off Mask"],
+      products_used: ["Forest Essentials Soundarya 24K Gold Serum", "Pure 24K Edible Gold Foil", "Kama Ayurveda Kumkumadi Miraculous Beauty Fluid"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 4,
+      category_slug: "bridal-wedding",
+      title: "7-Day Pre-Bridal Countdown Radiance Ritual",
+      subtitle: "Holistic full body makeover: Facial + Full Body Wax + Detan + Mani-Pedi + Hair Spa",
+      duration_mins: 300,
+      price: 12999,
+      discounted_price: 8499,
+      byo_product_discount: 1200,
+      rating: 4.99,
+      review_count: 412,
+      image_url: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=700&q=80",
+      description: "The quintessential bridal countdown package. Takes care of all your skin, hair, and body wellness right at your home with sterilized tools and soothing aromatics.",
+      included_steps: ["Sara Oxy Full Body Detan", "Rica Chocolate Full Body Waxing", "O3+ Bridal Whitening & Glow Facial", "Rose Petal Crystal Manicure & Pedicure", "L'Oreal Mythic Oil Deep Hair Spa", "Full Body Polishing Scrub"],
+      products_used: ["O3+ Bridal Kit (Sealed)", "Rica Italian Wax", "L'Oreal Professional Spa Creambath", "Sara Ayurvedic Detan Pack"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 5,
+      category_slug: "bridal-wedding",
+      title: "Traditional Saree & Dupatta Draping Masterclass",
+      subtitle: "Ironed pleats, pin-free comfort and regal silhouette",
+      duration_mins: 45,
+      price: 1499,
+      discounted_price: 999,
+      byo_product_discount: 200,
+      rating: 4.91,
+      review_count: 156,
+      image_url: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=700&q=80",
+      description: "Professional draping in South Indian Kanjeevaram, Bengali, Gujarati, Nauvari, Lehenga Saree or Double Dupatta bridal styling with zero sagging.",
+      included_steps: ["Measurement & Pleat Planning", "Safety Pin & Grip Reinforcement", "Pallu Draping & Shoulder Pinning", "Dupatta Crown Placement"],
+      products_used: ["Bridal Cushion Pins", "Silicon Grip Tape", "Invisible Draping Clips"],
+      is_bestseller: 0,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 13,
+      category_slug: "bridal-wedding",
+      title: "Roka & Engagement Princess Glow Makeover",
+      subtitle: "Airy pastel glam, luminous dewy glass skin & soft romantic waves",
+      duration_mins: 120,
+      price: 7999,
+      discounted_price: 5499,
+      byo_product_discount: 900,
+      rating: 4.97,
+      review_count: 178,
+      image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80",
+      description: "Designed for day or evening engagement celebrations. Features high-reflect strobing, soft rosy eyes, and heat-styled romantic cascading curls.",
+      included_steps: ["Hydra Prep & Pearl Serum Base", "HD Strobe Cream Foundation", "Soft Rose Gold Eye Shimmer", "Lash Lift & Defined Brows", "Romantic Soft Waves Blowout", "Dupatta / Gown Draping"],
+      products_used: ["Charlotte Tilbury Hollywood Flawless Filter", "Huda Beauty Rose Quartz", "MAC Prep + Prime Fix+"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 14,
+      category_slug: "bridal-wedding",
+      title: "Post-Wedding Royal Reception Makeover",
+      subtitle: "Regal Hollywood glam waves, sculpted cheekbones & bold crimson lips",
+      duration_mins: 150,
+      price: 9999,
+      discounted_price: 7299,
+      byo_product_discount: 1000,
+      rating: 4.96,
+      review_count: 164,
+      image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
+      description: "The grand finale look. Ultra-durable 16-hour transfer-proof bridal glamour paired with regal red or plum lips, sculpted contour, and cascading Hollywood waves.",
+      included_steps: ["Matte Pore-Blurring Skin Prep", "Ultra-HD 16-Hour Foundation", "Cut-Crease Dramatic Smokey Eyes", "Full Mink Lashes", "Precision Lip Artistry & Matte Seal", "Saree/Lehenga Reception Draping"],
+      products_used: ["Estée Lauder Double Wear", "Tom Ford Eye Color Quad", "Pat McGrath Labs MatteTrance"],
+      is_bestseller: 0,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 15,
+      category_slug: "facials-cleanups",
+      title: "24K Gold & Pure Kumkumadi Bridal Facial",
+      subtitle: "Pure 24K edible gold leaf infusion + saffron oil facial acupressure",
+      duration_mins: 75,
+      price: 4499,
+      discounted_price: 2999,
+      byo_product_discount: 450,
+      rating: 4.99,
+      review_count: 320,
+      image_url: "https://images.unsplash.com/photo-1522337094346-24b585352c8c?auto=format&fit=crop&w=700&q=80",
+      description: "The royal Maharani treatment. Uses real 24-karat gold leaf sheets, Kashmiri saffron, and cold-pressed sandalwood to impart an otherworldly regal sheen.",
+      included_steps: ["Saffron Milk Cleansing", "Gold Dust Walnut Scrub", "Kumkumadi Acupressure Lymphatic Massage", "24K Gold Leaf Sheet Application & Ion Penetration", "Royal Saffron Peel-Off Mask"],
+      products_used: ["Forest Essentials Soundarya 24K Gold Serum", "Pure 24K Edible Gold Foil", "Kama Ayurveda Kumkumadi Miraculous Beauty Fluid"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 1
+    },
+    {
+      id: 6,
+      category_slug: "facials-cleanups",
+      title: "O3+ Bridal Luxury Glow Facial",
+      subtitle: "India's #1 dermatological glow facial for glass-like luminosity",
+      duration_mins: 75,
+      price: 3499,
+      discounted_price: 2299,
+      byo_product_discount: 350,
+      rating: 4.96,
+      review_count: 680,
+      image_url: "https://images.unsplash.com/photo-1512290900672-1f02e6462791?auto=format&fit=crop&w=700&q=80",
+      description: "Infused with botanical actives, lactic acid and pure oxygenating complex. Removes deep stubborn pigmentation, reduces pores, and restores a bridal translucent glow.",
+      included_steps: ["O3+ Deep Cleanser", "Derma Polish Micro Exfoliation", "Meladerm Vitamin C Serum Infusion", "Hydrating Lymphatic Massage (20 mins)", "Peel-Off Rubber Alginate Brightening Mask", "UV Protective Finish Serum"],
+      products_used: ["O3+ Sealed Monodose Kit", "Rose Water Hydrosol", "Sterilized Blackhead Extractor"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 7,
+      category_slug: "facials-cleanups",
+      title: "Hydra-Infusion Glow Facial with Ultrasound Wand",
+      subtitle: "Deep pore vacuum cleanse, hyaluronic surge and cold hammer lock",
+      duration_mins: 60,
+      price: 3999,
+      discounted_price: 2699,
+      byo_product_discount: 400,
+      rating: 4.93,
+      review_count: 310,
+      image_url: "https://images.unsplash.com/photo-1576426863848-c21f53c60b19?auto=format&fit=crop&w=700&q=80",
+      description: "Next-gen hydro-dermabrasion facial performed in the comfort of your room. Eliminates blackheads, infuses peptides and gives instantaneous plumpness.",
+      included_steps: ["AHA/BHA Solution Exfoliation", "Hydro-Vacuum Pore Extraction", "Ultrasonic Peptide Infusion", "Cryo-Hammer Skin Tightening", "LED Blue/Red Light Therapy Shield"],
+      products_used: ["Hyaluronic Acid 2% + B5", "Centella Asiatica Calming Ampoule", "Collagen Sheet Mask"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 8,
+      category_slug: "facials-cleanups",
+      title: "Cheryl's TanClear Brightening Facial",
+      subtitle: "Gentle sun-tan reversal with natural fruit enzymes and milk proteins",
+      duration_mins: 50,
+      price: 2199,
+      discounted_price: 1499,
+      byo_product_discount: 250,
+      rating: 4.88,
+      review_count: 450,
+      image_url: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=700&q=80",
+      description: "Formulated by Cheryl's Cosmeceuticals to undo sun damage, even out skin tone and infuse intense radiance without irritation.",
+      included_steps: ["TanClear Cleansing Gel", "Bio-Enzyme Scrub Peel", "Radiance Whitening Massage Cream", "Lightening Pack with Licorice Extract", "Derma Sunblock SPF 50"],
+      products_used: ["Cheryl's Cosmeceuticals Single-Use Sealed Kit"],
+      is_bestseller: 0,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 9,
+      category_slug: "waxing",
+      title: "Rica Chocolate Full Body Waxing (Italian Luxury)",
+      subtitle: "Colophony-free, virtually painless hair removal with cocoa butter",
+      duration_mins: 90,
+      price: 3199,
+      discounted_price: 2199,
+      byo_product_discount: 300,
+      rating: 4.97,
+      review_count: 1250,
+      image_url: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=700&q=80",
+      description: "Original Italian Rica wax that adheres only to the hair and not to the skin. Zero redness, prevents ingrown hair and leaves skin velvety smooth for 4+ weeks.",
+      included_steps: ["Skin Sanitization & Cotton Gel Prep", "Full Arms + Underarms Rica Waxing", "Full Legs Rica Waxing", "Soothing Tea Tree Post-Wax Lotion", "Ingrown Prevention Spray"],
+      products_used: ["Rica Italy White Chocolate Wax", "Disposable Non-Woven Wax Strips", "Sterilized Wooden Spatulas"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 10,
+      category_slug: "mani-pedi",
+      title: "Dulhaniya Bridal Crystal Spa Pedicure",
+      subtitle: "Effervescent bubbling salt soak, diamond heel filing & foot massage",
+      duration_mins: 60,
+      price: 1899,
+      discounted_price: 1299,
+      byo_product_discount: 200,
+      rating: 4.95,
+      review_count: 740,
+      image_url: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=700&q=80",
+      description: "Luxurious foot restoration experience. Deeply softens cracked heels, massages tired arches, and leaves toenails polished to perfection with salon shine.",
+      included_steps: ["Warm Himalayan Crystal Salt & Rose Soak", "Nail Shaping, Cuticle Care & Buffing", "Diamond Callus & Dead Skin Filing", "Dead Sea Salt Sugar Scrub", "Aromatherapy Foot & Calf Reflexology Massage (20 mins)", "Moisture Lock Paraffin Booties & Base Polish"],
+      products_used: ["Bombini Crystal Bath Fizz", "Sterilized Stainless Cuticle Tools", "OPI Natural Base & Top Coat"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 11,
+      category_slug: "hair-care",
+      title: "L'Oreal Mythic Oil Deep Nourishing Hair Spa",
+      subtitle: "Argan oil infusion, steam cocoon, and soothing scalp tension release",
+      duration_mins: 60,
+      price: 2299,
+      discounted_price: 1599,
+      byo_product_discount: 250,
+      rating: 4.94,
+      review_count: 880,
+      image_url: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=700&q=80",
+      description: "Reverses frizz, chemical damage and split ends. Includes hot ozone steam penetration and 20 minutes of rhythmic Indian champi scalp massage.",
+      included_steps: ["Scalp Analysis & Detangling", "L'Oreal Creambath + Argan Concentrate Application", "20-min Deep Scalp & Neck Massage", "Hot Towel Steam Cocoon", "Rinse & Serum Infusion"],
+      products_used: ["L'Oreal Professionnel Hair Spa Creambath", "Mythic Oil Argan Elixir", "Thermal Steam Cap"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    },
+    {
+      id: 12,
+      category_slug: "body-spa",
+      title: "Dulhaniya Swedish Stress-Relief Full Body Massage",
+      subtitle: "Full 60 mins of gentle long strokes to dissolve pre-wedding exhaustion",
+      duration_mins: 60,
+      price: 2699,
+      discounted_price: 1899,
+      byo_product_discount: 250,
+      rating: 4.97,
+      review_count: 720,
+      image_url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=700&q=80",
+      description: "Performed with warm cold-pressed sweet almond oil and lavender aroma. Eases back pain, improves blood circulation and relaxes mind and body.",
+      included_steps: ["Foot Cleansing Ritual", "Upper & Lower Back Massage", "Shoulder, Neck & Arm Tension Relief", "Legs & Feet Reflexology", "Head & Scalp Calming Release"],
+      products_used: ["Cold-pressed Almond Oil", "French Lavender Essential Oil", "Disposable Linen & Disinfected Towels"],
+      is_bestseller: 1,
+      is_bridal_exclusive: 0
+    }
+  ],
+  beauticians: [
+    {
+      id: 1,
+      name: "Pooja Sharma",
+      photo_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+      experience_years: 9,
+      rating: 4.98,
+      jobs_completed: 1420,
+      phone: "+91 98112 34567",
+      specialty: "Elite Bridal Makeup Artist & Skin Specialist",
+      bio: "Certified from London School of Makeup & VLCC. Over 9 years of creating magical bridal looks and glowing skin across Delhi NCR.",
+      certifications: ["CIDESCO International Diplome", "VLCC Master Esthetician", "Police Background Verified 2026", "Double Vaccinated & Sanitization Certified"],
+      is_verified: 1,
+      is_available: 1
+    },
+    {
+      id: 2,
+      name: "Sunita Verma",
+      photo_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+      experience_years: 7,
+      rating: 4.95,
+      jobs_completed: 980,
+      phone: "+91 98223 45678",
+      specialty: "Senior Waxing & Spa Therapist",
+      bio: "Rica Italian Wax Master certified. Renowned for zero-pain waxing techniques, relaxing Swedish therapy, and warm gentle bedside manner.",
+      certifications: ["Rica Italy Certified Master", "Habibs Hair & Skin Academy", "Verified Female Professional", "Hygiene Level 5 Star"],
+      is_verified: 1,
+      is_available: 1
+    }
+  ],
+  coupons: [
+    { code: "DULHANIYA500", discount_type: "flat", discount_value: 500, min_order_value: 1499, max_discount: 500, description: "Flat ₹500 off on bridal & salon bookings above ₹1499" },
+    { code: "FIRSTGLOW", discount_type: "percent", discount_value: 20, min_order_value: 799, max_discount: 400, description: "20% off on your very first salon-at-home order!" },
+    { code: "BRIDALQUEEN", discount_type: "flat", discount_value: 1500, min_order_value: 4999, max_discount: 1500, description: "Save ₹1500 on all D-Day Bridal Makeup & Countdown rituals" },
+    { code: "SHADI2026", discount_type: "percent", discount_value: 15, min_order_value: 1999, max_discount: 750, description: "Wedding season special: 15% off up to ₹750" }
+  ],
+  bookings: [
+    {
+      id: 1,
+      booking_ref: "DLH-9842",
+      customer_name: "Aanya Sharma",
+      customer_phone: "+91 98765 43210",
+      customer_email: "aanya@example.com",
+      address: "Villa 42, Gulmohar Enclave, Saket",
+      city: "New Delhi",
+      pincode: "110017",
+      service_date: "Tomorrow",
+      service_slot: "10:30 AM - 11:30 AM",
+      beautician_id: 1,
+      beautician_name: "Pooja Sharma",
+      beautician_phone: "+91 98112 34567",
+      beautician_rating: 4.98,
+      experience_years: 9,
+      beautician_photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+      total_amount: 3198,
+      discount_amount: 500,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "DULHANIYA500",
+      status: "ON_THE_WAY",
+      otp_code: "7421",
+      payment_mode: "Pay After Service",
+      created_at: new Date().toISOString(),
+      items: [
+        { title: "O3+ Bridal Luxury Glow Facial", price: 2299, duration_mins: 75 },
+        { title: "Dulhaniya Bridal Crystal Spa Pedicure", price: 1299, duration_mins: 60 }
+      ]
+    }
+  ],
+  reviews: [
+    { id: 1, customer_name: "Kritika Mehra", rating: 5, comment: "Pooja did my bridal makeup for my wedding in Connaught Place. Everyone in the mandap was gasping! Flawless, didn't crack at all even after 8 hours of rituals.", created_at: "2026-10-25" },
+    { id: 2, customer_name: "Rhea Sengupta", rating: 5, comment: "I had severe tanning after my bachelorette trip. Meena arrived exactly on time with a sealed kit, showed me the expiry date, and the facial glow was insane.", created_at: "2026-10-24" }
+  ]
+};
+
+// Load or Init Store
+function getStore() {
+  if (!fs.existsSync(STORE_FILE)) {
+    fs.writeFileSync(STORE_FILE, JSON.stringify(INITIAL_STORE, null, 2), "utf8");
+    return INITIAL_STORE;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(STORE_FILE, "utf8"));
+  } catch (e) {
+    return INITIAL_STORE;
+  }
+}
+
+function saveStore(data) {
+  try {
+    fs.writeFileSync(STORE_FILE, JSON.stringify(data, null, 2), "utf8");
+  } catch (e) {
+    console.error("Failed to save store:", e.message);
+  }
+}
+
+function sendJson(res, statusCode, data) {
+  const jsonStr = JSON.stringify(data, null, 2);
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Cache-Control": "no-cache"
+  });
+  res.end(jsonStr);
+}
+
+function parseBody(req) {
+  return new Promise((resolve) => {
+    let body = "";
+    req.on("data", chunk => body += chunk);
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(body || "{}"));
+      } catch (e) {
+        resolve({});
+      }
+    });
+  });
+}
+
+const server = http.createServer(async (req, res) => {
+  // CORS Preflight
+  if (req.method === "OPTIONS") {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+      "Access-Control-Allow-Headers": "Content-Type"
+    });
+    return res.end();
+  }
+
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
+  const query = parsedUrl.query;
+  const store = getStore();
+
+  // ------------------ REST APIs ------------------
+  if (pathname === "/api/categories" && req.method === "GET") {
+    return sendJson(res, 200, { success: true, categories: store.categories });
+  }
+
+  if (pathname === "/api/services" && req.method === "GET") {
+    const cat = query.category;
+    const search = (query.search || "").toLowerCase();
+    const bridalOnly = query.bridal_only === "1";
+
+    let filtered = store.services;
+    if (cat && cat !== "all") {
+      filtered = filtered.filter(s => s.category_slug === cat);
+    }
+    if (bridalOnly) {
+      filtered = filtered.filter(s => s.is_bridal_exclusive);
+    }
+    if (search) {
+      filtered = filtered.filter(s => s.title.toLowerCase().includes(search) || (s.subtitle && s.subtitle.toLowerCase().includes(search)));
+    }
+    return sendJson(res, 200, { success: true, services: filtered });
+  }
+
+  if (pathname.startsWith("/api/services/") && req.method === "GET") {
+    const id = Number(pathname.split("/").pop());
+    const service = store.services.find(s => s.id === id);
+    if (!service) return sendJson(res, 404, { success: false, error: "Service not found" });
+    return sendJson(res, 200, { success: true, service });
+  }
+
+  if (pathname === "/api/beauticians" && req.method === "GET") {
+    return sendJson(res, 200, { success: true, beauticians: store.beauticians });
+  }
+
+  if (pathname === "/api/coupons" && req.method === "GET") {
+    return sendJson(res, 200, { success: true, coupons: store.coupons });
+  }
+
+  if (pathname === "/api/coupons/apply" && req.method === "POST") {
+    const body = await parseBody(req);
+    const code = (body.code || "").trim().toUpperCase();
+    const subtotal = Number(body.subtotal || 0);
+
+    const coupon = store.coupons.find(c => c.code === code);
+    if (!coupon) return sendJson(res, 400, { success: false, error: "Invalid coupon code." });
+    if (subtotal < coupon.min_order_value) {
+      return sendJson(res, 400, { success: false, error: `Minimum booking of ₹${coupon.min_order_value} required for ${code}.` });
+    }
+
+    let discount = 0;
+    if (coupon.discount_type === "flat") {
+      discount = Math.min(coupon.discount_value, subtotal);
+    } else {
+      discount = Math.min(Math.round((subtotal * coupon.discount_value) / 100), coupon.max_discount);
+    }
+
+    return sendJson(res, 200, {
+      success: true,
+      code,
+      discount,
+      description: coupon.description,
+      final_total: Math.max(0, subtotal - discount)
+    });
+  }
+
+  if (pathname === "/api/bookings" && req.method === "GET") {
+    return sendJson(res, 200, { success: true, bookings: store.bookings });
+  }
+
+  if (pathname.startsWith("/api/bookings/") && req.method === "GET") {
+    const ref = pathname.split("/").pop();
+    const booking = store.bookings.find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) return sendJson(res, 404, { success: false, error: "Booking not found" });
+    return sendJson(res, 200, { success: true, booking });
+  }
+
+  if (pathname === "/api/bookings" && req.method === "POST") {
+    const body = await parseBody(req);
+    const fakeRef = "DLH-" + Math.floor(1000 + Math.random() * 9000);
+    const fakeOtp = String(Math.floor(1000 + Math.random() * 9000));
+
+    const newBooking = {
+      id: Date.now(),
+      booking_ref: fakeRef,
+      customer_name: body.customer_name,
+      customer_phone: body.customer_phone,
+      customer_email: body.customer_email || "",
+      address: body.address,
+      city: body.city || "New Delhi",
+      pincode: body.pincode || "",
+      service_date: body.service_date,
+      service_slot: body.service_slot,
+      beautician_id: 1,
+      beautician_name: "Pooja Sharma",
+      beautician_phone: "+91 98112 34567",
+      beautician_rating: 4.98,
+      experience_years: 9,
+      beautician_photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+      total_amount: Number(body.total_amount || 0),
+      discount_amount: Number(body.discount_amount || 0),
+      kit_type: body.kit_type || "dulhaniya_kit",
+      coupon_code: body.coupon_code || "",
+      status: "CONFIRMED",
+      otp_code: fakeOtp,
+      payment_mode: body.payment_mode || "Pay After Service",
+      created_at: new Date().toISOString(),
+      items: body.items || []
+    };
+
+    store.bookings.unshift(newBooking);
+    saveStore(store);
+
+    return sendJson(res, 200, {
+      success: true,
+      booking_ref: fakeRef,
+      otp_code: fakeOtp,
+      status: "CONFIRMED",
+      total_amount: newBooking.total_amount,
+      message: "Booking confirmed! Certified Dulhaniya beautician reserved."
+    });
+  }
+
+  if (pathname.endsWith("/status") && req.method === "POST") {
+    const ref = pathname.split("/").slice(-2)[0];
+    const body = await parseBody(req);
+    const booking = store.bookings.find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) return sendJson(res, 404, { success: false, error: "Booking not found" });
+
+    booking.status = body.status;
+    booking.updated_at = new Date().toISOString();
+    saveStore(store);
+
+    return sendJson(res, 200, { success: true, booking_ref: ref, new_status: body.status });
+  }
+
+  if (pathname.endsWith("/verify-otp") && req.method === "POST") {
+    const ref = pathname.split("/").slice(-2)[0];
+    const body = await parseBody(req);
+    const booking = store.bookings.find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) return sendJson(res, 404, { success: false, error: "Booking not found" });
+
+    if (String(body.otp).trim() !== String(booking.otp_code).trim()) {
+      return sendJson(res, 400, { success: false, error: "Incorrect OTP." });
+    }
+
+    booking.status = "IN_SERVICE";
+    booking.updated_at = new Date().toISOString();
+    saveStore(store);
+
+    return sendJson(res, 200, { success: true, status: "IN_SERVICE", message: "OTP verified! Safe service started." });
+  }
+
+  if (pathname.endsWith("/review") && req.method === "POST") {
+    const ref = pathname.split("/").slice(-2)[0];
+    const body = await parseBody(req);
+    store.reviews.unshift({
+      id: Date.now(),
+      booking_ref: ref,
+      customer_name: body.customer_name || "Valued Client",
+      rating: Number(body.rating || 5),
+      comment: body.comment || "",
+      created_at: new Date().toISOString().split("T")[0]
+    });
+    saveStore(store);
+    return sendJson(res, 200, { success: true, message: "Review published!" });
+  }
+
+  if (pathname === "/api/admin/stats" && req.method === "GET") {
+    const totalRev = store.bookings.reduce((sum, b) => b.status !== "CANCELLED" ? sum + (b.total_amount || 0) : sum, 0);
+    const activeCount = store.bookings.filter(b => ["CONFIRMED", "ASSIGNED", "ON_THE_WAY", "IN_SERVICE"].includes(b.status)).length;
+    return sendJson(res, 200, {
+      success: true,
+      stats: {
+        total_bookings: store.bookings.length,
+        total_revenue: totalRev,
+        active_orders: activeCount,
+        completed_orders: store.bookings.filter(b => b.status === "COMPLETED").length,
+        beauticians_count: store.beauticians.length,
+        avg_rating: 4.98
+      }
+    });
+  }
+
+  if (pathname === "/api/admin/services" && req.method === "POST") {
+    const body = await parseBody(req);
+    const newService = {
+      id: Date.now(),
+      category_slug: body.category_slug,
+      title: body.title,
+      subtitle: body.subtitle,
+      duration_mins: Number(body.duration_mins || 60),
+      price: Number(body.price || 1999),
+      discounted_price: Number(body.discounted_price || 1499),
+      byo_product_discount: Number(body.byo_product_discount || 200),
+      image_url: body.image_url,
+      description: body.description,
+      is_bestseller: body.is_bestseller ? 1 : 0,
+      is_bridal_exclusive: body.is_bridal_exclusive ? 1 : 0,
+      rating: 5.0,
+      review_count: 1
+    };
+    store.services.unshift(newService);
+    saveStore(store);
+    return sendJson(res, 200, { success: true, message: "Service created!" });
+  }
+
+  // ------------------ STATIC FILE SERVER ------------------
+  let filePath = path.join(PUBLIC_DIR, pathname === "/" ? "index.html" : pathname);
+
+  // If path has no extension or doesn't exist, SPA fallback to index.html
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    filePath = path.join(PUBLIC_DIR, "index.html");
+  }
+
+  const ext = path.extname(filePath).toLowerCase();
+  const contentType = MIME_TYPES[ext] || "application/octet-stream";
+
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      return res.end("Error loading " + pathname);
+    }
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "no-cache"
+    });
+    res.end(content);
+  });
+});
+
+function startListening(p) {
+  server.listen(p, "0.0.0.0", () => {
+    console.log(`Dulhaniya Node Server running at http://127.0.0.1:${p}`);
+    console.log(`Serving static files from: ${PUBLIC_DIR}`);
+  }).on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      const nextPort = p === 8000 ? 8080 : p + 1;
+      console.log(`Port ${p} in use, attempting port ${nextPort}...`);
+      startListening(nextPort);
+    } else {
+      console.error("Server error:", err.message);
+    }
+  });
+}
+
+startListening(PORT);

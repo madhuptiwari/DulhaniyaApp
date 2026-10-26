@@ -1622,6 +1622,79 @@ button {
   text-align: center;
 }
 
+/* ================= Mobile Bottom Navigation Bar ================= */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--slate-200);
+  z-index: 80;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--slate-600);
+  font-size: 0.72rem;
+  font-weight: 600;
+  flex: 1;
+  padding: 6px 0;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.bottom-nav-item.active, .bottom-nav-item:hover {
+  color: var(--primary);
+}
+
+.bottom-nav-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.bottom-nav-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 18px);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+}
+
+/* ================= Shimmer & Luxury Animations ================= */
+.gold-shimmer-text {
+  background: linear-gradient(90deg, #b45309 0%, #f59e0b 50%, #b45309 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+.bridal-exclusive-glow {
+  box-shadow: 0 0 20px rgba(157, 23, 77, 0.15);
+  border: 1.5px solid var(--primary-border);
+}
+
 /* Responsive Queries */
 @media (max-width: 900px) {
   .hero-card {
@@ -1638,6 +1711,16 @@ button {
 }
 
 @media (max-width: 640px) {
+  body {
+    padding-bottom: 74px; /* Space for bottom nav */
+  }
+  .mobile-bottom-nav {
+    display: flex;
+  }
+  .floating-order-tracker {
+    bottom: 76px;
+    right: 16px;
+  }
   .nav-container {
     flex-wrap: wrap;
   }

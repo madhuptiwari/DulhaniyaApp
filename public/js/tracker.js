@@ -11,6 +11,19 @@ const Tracker = {
 
   init() {
     this.checkActiveBooking();
+
+    // Cross-view synchronization
+    window.addEventListener("dulhaniya_status_changed", (e) => {
+      if (e.detail?.ref === this.activeBooking?.booking_ref) {
+        this.loadBooking(e.detail.ref);
+      }
+    });
+
+    window.addEventListener("dulhaniya_booking_created", (e) => {
+      if (e.detail?.booking_ref) {
+        this.loadBooking(e.detail.booking_ref);
+      }
+    });
   },
 
   async checkActiveBooking() {

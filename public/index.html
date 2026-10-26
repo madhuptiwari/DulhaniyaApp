@@ -867,6 +867,31 @@
     </div>
   </footer>
 
+  <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="bottom-nav-item active" onclick="App.setViewMode('customer'); App.selectCategory('all'); return false;">
+      <span class="bottom-nav-icon">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="bottom-nav-item" onclick="App.setViewMode('customer'); App.selectCategory('bridal-wedding'); return false;">
+      <span class="bottom-nav-icon">👑</span>
+      <span>Bridal</span>
+    </button>
+    <button class="bottom-nav-item" onclick="App.openCartDrawer(); return false;">
+      <span class="bottom-nav-icon">🛍️</span>
+      <span>Cart</span>
+      <span class="bottom-nav-badge" id="mobile-cart-badge">0</span>
+    </button>
+    <button class="bottom-nav-item" onclick="Tracker.openTracker(); return false;">
+      <span class="bottom-nav-icon">📍</span>
+      <span>Track</span>
+    </button>
+    <button class="bottom-nav-item" onclick="App.setViewMode('partner'); return false;">
+      <span class="bottom-nav-icon">👩‍💼</span>
+      <span>Partner</span>
+    </button>
+  </nav>
+
   <!-- Application Scripts -->
   <script src="js/data.js"></script>
   <script src="js/cart.js"></script>

@@ -185,8 +185,10 @@ const Cart = {
 
     // 1. Update Navigation Cart Badge and Total
     const badgeEl = document.getElementById("nav-cart-badge");
+    const mobileBadgeEl = document.getElementById("mobile-cart-badge");
     const totalEl = document.getElementById("nav-cart-total");
     if (badgeEl) badgeEl.textContent = calc.itemCount;
+    if (mobileBadgeEl) mobileBadgeEl.textContent = calc.itemCount;
     if (totalEl) totalEl.textContent = calc.itemCount > 0 ? `₹${calc.finalPayable.toLocaleString('en-IN')}` : "Cart";
 
     // 2. Render Drawer List

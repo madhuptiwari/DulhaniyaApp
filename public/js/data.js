@@ -70,6 +70,60 @@ const DULHANIYA_FALLBACK_SERVICES = [
     is_bridal_exclusive: 1
   },
   {
+    id: 13,
+    category_slug: "bridal-wedding",
+    title: "Roka & Engagement Princess Glow Makeover",
+    subtitle: "Airy pastel glam, luminous dewy glass skin & soft romantic waves",
+    duration_mins: 120,
+    price: 7999,
+    discounted_price: 5499,
+    byo_product_discount: 900,
+    rating: 4.97,
+    review_count: 178,
+    image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80",
+    description: "Designed for day or evening engagement celebrations. Features high-reflect strobing, soft rosy eyes, and heat-styled romantic cascading curls.",
+    included_steps: ["Hydra Prep & Pearl Serum Base", "HD Strobe Cream Foundation", "Soft Rose Gold Eye Shimmer", "Lash Lift & Defined Brows", "Romantic Soft Waves Blowout", "Dupatta / Gown Draping"],
+    products_used: ["Charlotte Tilbury Hollywood Flawless Filter", "Huda Beauty Rose Quartz", "MAC Prep + Prime Fix+"],
+    is_bestseller: 1,
+    is_bridal_exclusive: 1
+  },
+  {
+    id: 14,
+    category_slug: "bridal-wedding",
+    title: "Post-Wedding Royal Reception Makeover",
+    subtitle: "Regal Hollywood glam waves, sculpted cheekbones & bold crimson lips",
+    duration_mins: 150,
+    price: 9999,
+    discounted_price: 7299,
+    byo_product_discount: 1000,
+    rating: 4.96,
+    review_count: 164,
+    image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
+    description: "The grand finale look. Ultra-durable 16-hour transfer-proof bridal glamour paired with regal red or plum lips, sculpted contour, and cascading Hollywood waves.",
+    included_steps: ["Matte Pore-Blurring Skin Prep", "Ultra-HD 16-Hour Foundation", "Cut-Crease Dramatic Smokey Eyes", "Full Mink Lashes", "Precision Lip Artistry & Matte Seal", "Saree/Lehenga Reception Draping"],
+    products_used: ["Estée Lauder Double Wear", "Tom Ford Eye Color Quad", "Pat McGrath Labs MatteTrance"],
+    is_bestseller: 0,
+    is_bridal_exclusive: 1
+  },
+  {
+    id: 15,
+    category_slug: "facials-cleanups",
+    title: "24K Gold & Pure Kumkumadi Bridal Facial",
+    subtitle: "Pure 24K edible gold leaf infusion + saffron oil facial acupressure",
+    duration_mins: 75,
+    price: 4499,
+    discounted_price: 2999,
+    byo_product_discount: 450,
+    rating: 4.99,
+    review_count: 320,
+    image_url: "https://images.unsplash.com/photo-1522337094346-24b585352c8c?auto=format&fit=crop&w=700&q=80",
+    description: "The royal Maharani treatment. Uses real 24-karat gold leaf sheets, Kashmiri saffron, and cold-pressed sandalwood to impart an otherworldly regal sheen.",
+    included_steps: ["Saffron Milk Cleansing", "Gold Dust Walnut Scrub", "Kumkumadi Acupressure Lymphatic Massage", "24K Gold Leaf Sheet Application & Ion Penetration", "Royal Saffron Peel-Off Mask"],
+    products_used: ["Forest Essentials Soundarya 24K Gold Serum", "Pure 24K Edible Gold Foil", "Kama Ayurveda Kumkumadi Miraculous Beauty Fluid"],
+    is_bestseller: 1,
+    is_bridal_exclusive: 1
+  },
+  {
     id: 4,
     category_slug: "bridal-wedding",
     title: "7-Day Pre-Bridal Countdown Radiance Ritual",
@@ -103,6 +157,60 @@ const DULHANIYA_FALLBACK_SERVICES = [
     included_steps: ["Measurement & Pleat Planning", "Safety Pin & Grip Reinforcement", "Pallu Draping & Shoulder Pinning", "Dupatta Crown Placement"],
     products_used: ["Bridal Cushion Pins", "Silicon Grip Tape", "Invisible Draping Clips"],
     is_bestseller: 0,
+    is_bridal_exclusive: 1
+  },
+  {
+    id: 13,
+    category_slug: "bridal-wedding",
+    title: "Roka & Engagement Princess Glow Makeover",
+    subtitle: "Airy pastel glam, luminous dewy glass skin & soft romantic waves",
+    duration_mins: 120,
+    price: 7999,
+    discounted_price: 5499,
+    byo_product_discount: 900,
+    rating: 4.97,
+    review_count: 178,
+    image_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80",
+    description: "Designed for day or evening engagement celebrations. Features high-reflect strobing, soft rosy eyes, and heat-styled romantic cascading curls.",
+    included_steps: ["Hydra Prep & Pearl Serum Base", "HD Strobe Cream Foundation", "Soft Rose Gold Eye Shimmer", "Lash Lift & Defined Brows", "Romantic Soft Waves Blowout", "Dupatta / Gown Draping"],
+    products_used: ["Charlotte Tilbury Hollywood Flawless Filter", "Huda Beauty Rose Quartz", "MAC Prep + Prime Fix+"],
+    is_bestseller: 1,
+    is_bridal_exclusive: 1
+  },
+  {
+    id: 14,
+    category_slug: "bridal-wedding",
+    title: "Post-Wedding Royal Reception Makeover",
+    subtitle: "Regal Hollywood glam waves, sculpted cheekbones & bold crimson lips",
+    duration_mins: 150,
+    price: 9999,
+    discounted_price: 7299,
+    byo_product_discount: 1000,
+    rating: 4.96,
+    review_count: 164,
+    image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
+    description: "The grand finale look. Ultra-durable 16-hour transfer-proof bridal glamour paired with regal red or plum lips, sculpted contour, and cascading Hollywood waves.",
+    included_steps: ["Matte Pore-Blurring Skin Prep", "Ultra-HD 16-Hour Foundation", "Cut-Crease Dramatic Smokey Eyes", "Full Mink Lashes", "Precision Lip Artistry & Matte Seal", "Saree/Lehenga Reception Draping"],
+    products_used: ["Estée Lauder Double Wear", "Tom Ford Eye Color Quad", "Pat McGrath Labs MatteTrance"],
+    is_bestseller: 0,
+    is_bridal_exclusive: 1
+  },
+  {
+    id: 15,
+    category_slug: "facials-cleanups",
+    title: "24K Gold & Pure Kumkumadi Bridal Facial",
+    subtitle: "Pure 24K edible gold leaf infusion + saffron oil facial acupressure",
+    duration_mins: 75,
+    price: 4499,
+    discounted_price: 2999,
+    byo_product_discount: 450,
+    rating: 4.99,
+    review_count: 320,
+    image_url: "https://images.unsplash.com/photo-1522337094346-24b585352c8c?auto=format&fit=crop&w=700&q=80",
+    description: "The royal Maharani treatment. Uses real 24-karat gold leaf sheets, Kashmiri saffron, and cold-pressed sandalwood to impart an otherworldly regal sheen.",
+    included_steps: ["Saffron Milk Cleansing", "Gold Dust Walnut Scrub", "Kumkumadi Acupressure Lymphatic Massage", "24K Gold Leaf Sheet Application & Ion Penetration", "Royal Saffron Peel-Off Mask"],
+    products_used: ["Forest Essentials Soundarya 24K Gold Serum", "Pure 24K Edible Gold Foil", "Kama Ayurveda Kumkumadi Miraculous Beauty Fluid"],
+    is_bestseller: 1,
     is_bridal_exclusive: 1
   },
   {
@@ -264,19 +372,35 @@ const DULHANIYA_FALLBACK_BEAUTICIANS = [
   }
 ];
 
-// Unified API Client
+// Unified API Client with Rapid Failover
 const DulhaniyaAPI = {
   baseUrl: window.location.origin.includes("http") ? "" : "http://127.0.0.1:8000",
 
+  async safeFetch(endpoint, options = {}, timeoutMs = 1500) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(`${this.baseUrl}${endpoint}`, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+      return res;
+    } catch (e) {
+      clearTimeout(timer);
+      throw e;
+    }
+  },
+
   async getCategories() {
     try {
-      const res = await fetch(`${this.baseUrl}/api/categories`);
+      const res = await this.safeFetch("/api/categories");
       if (res.ok) {
         const data = await res.json();
         return data.categories;
       }
     } catch (e) {
-      console.warn("Using fallback categories:", e.message);
+      // Instant graceful fallback
     }
     return DULHANIYA_FALLBACK_CATEGORIES;
   },
@@ -288,13 +412,13 @@ const DulhaniyaAPI = {
       if (search) params.append("search", search);
       if (bridalOnly) params.append("bridal_only", "1");
 
-      const res = await fetch(`${this.baseUrl}/api/services?${params.toString()}`);
+      const res = await this.safeFetch(`/api/services?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         return data.services;
       }
     } catch (e) {
-      console.warn("Using fallback services:", e.message);
+      // Instant graceful fallback
     }
 
     // Client-side filtering
@@ -303,7 +427,7 @@ const DulhaniyaAPI = {
       if (bridalOnly && !s.is_bridal_exclusive) return false;
       if (search) {
         const q = search.toLowerCase();
-        return s.title.toLowerCase().includes(q) || s.subtitle.toLowerCase().includes(q);
+        return s.title.toLowerCase().includes(q) || (s.subtitle && s.subtitle.toLowerCase().includes(q));
       }
       return true;
     });
@@ -311,33 +435,33 @@ const DulhaniyaAPI = {
 
   async getServiceById(id) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/services/${id}`);
+      const res = await this.safeFetch(`/api/services/${id}`);
       if (res.ok) {
         const data = await res.json();
         return data.service;
       }
     } catch (e) {
-      console.warn("Using fallback service detail");
+      // Instant graceful fallback
     }
     return DULHANIYA_FALLBACK_SERVICES.find(s => s.id === Number(id)) || DULHANIYA_FALLBACK_SERVICES[0];
   },
 
   async getBeauticians() {
     try {
-      const res = await fetch(`${this.baseUrl}/api/beauticians`);
+      const res = await this.safeFetch("/api/beauticians");
       if (res.ok) {
         const data = await res.json();
         return data.beauticians;
       }
     } catch (e) {
-      console.warn("Using fallback beauticians");
+      // Instant graceful fallback
     }
     return DULHANIYA_FALLBACK_BEAUTICIANS;
   },
 
   async applyCoupon(code, subtotal) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/coupons/apply`, {
+      const res = await this.safeFetch("/api/coupons/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, subtotal })
@@ -346,7 +470,7 @@ const DulhaniyaAPI = {
       return data;
     } catch (e) {
       // Fallback promo rules
-      const c = code.toUpperCase();
+      const c = (code || "").toUpperCase();
       if (c === "DULHANIYA500" && subtotal >= 1499) {
         return { success: true, code: c, discount: 500, description: "Flat ₹500 off on bridal & salon bookings" };
       }
@@ -363,19 +487,19 @@ const DulhaniyaAPI = {
 
   async createBooking(bookingData) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/bookings`, {
+      const res = await this.safeFetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData)
       });
       const data = await res.json();
       if (data.success) {
-        // Save to active booking storage for tracker
         localStorage.setItem("dulhaniya_active_ref", data.booking_ref);
+        window.dispatchEvent(new CustomEvent('dulhaniya_booking_created', { detail: data }));
         return data;
       }
     } catch (e) {
-      console.warn("Server unavailable, creating local booking:", e);
+      // Instant local mode
     }
 
     // Local fallback booking
@@ -408,6 +532,7 @@ const DulhaniyaAPI = {
 
     localStorage.setItem("dulhaniya_active_ref", fakeRef);
     localStorage.setItem(`booking_${fakeRef}`, JSON.stringify(localBooking));
+    window.dispatchEvent(new CustomEvent('dulhaniya_booking_created', { detail: localBooking }));
 
     return {
       success: true,
@@ -421,18 +546,17 @@ const DulhaniyaAPI = {
 
   async getBooking(ref) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/bookings/${ref}`);
+      const res = await this.safeFetch(`/api/bookings/${ref}`);
       if (res.ok) {
         const data = await res.json();
         return data.booking;
       }
     } catch (e) {
-      console.warn("Using local booking cache:", e);
+      // Instant local mode
     }
     const local = localStorage.getItem(`booking_${ref}`);
     if (local) return JSON.parse(local);
 
-    // Default active demo booking if none exists
     return {
       booking_ref: ref || "DLH-9842",
       customer_name: "Aanya Sharma",
@@ -459,32 +583,38 @@ const DulhaniyaAPI = {
 
   async updateBookingStatus(ref, status) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/bookings/${ref}/status`, {
+      const res = await this.safeFetch(`/api/bookings/${ref}/status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status })
       });
-      return await res.json();
+      const data = await res.json();
+      window.dispatchEvent(new CustomEvent('dulhaniya_status_changed', { detail: { ref, status } }));
+      return data;
     } catch (e) {
-      // Local fallback
       const local = localStorage.getItem(`booking_${ref}`);
       if (local) {
         const obj = JSON.parse(local);
         obj.status = status;
         localStorage.setItem(`booking_${ref}`, JSON.stringify(obj));
       }
+      window.dispatchEvent(new CustomEvent('dulhaniya_status_changed', { detail: { ref, status } }));
       return { success: true, booking_ref: ref, new_status: status };
     }
   },
 
   async verifyOtp(ref, otp) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/bookings/${ref}/verify-otp`, {
+      const res = await this.safeFetch(`/api/bookings/${ref}/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ otp })
       });
-      return await res.json();
+      const data = await res.json();
+      if (data.success) {
+        window.dispatchEvent(new CustomEvent('dulhaniya_status_changed', { detail: { ref, status: "IN_SERVICE" } }));
+      }
+      return data;
     } catch (e) {
       const booking = await this.getBooking(ref);
       if (booking.otp_code === String(otp).trim()) {
@@ -497,7 +627,7 @@ const DulhaniyaAPI = {
 
   async submitReview(ref, rating, comment, customerName) {
     try {
-      const res = await fetch(`${this.baseUrl}/api/bookings/${ref}/review`, {
+      const res = await this.safeFetch(`/api/bookings/${ref}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating, comment, customer_name: customerName })
@@ -510,13 +640,13 @@ const DulhaniyaAPI = {
 
   async getAdminStats() {
     try {
-      const res = await fetch(`${this.baseUrl}/api/admin/stats`);
+      const res = await this.safeFetch("/api/admin/stats");
       if (res.ok) {
         const data = await res.json();
         return data.stats;
       }
     } catch (e) {
-      console.warn("Using mock admin stats");
+      // Mock stats
     }
     return {
       total_bookings: 148,
@@ -524,13 +654,7 @@ const DulhaniyaAPI = {
       active_orders: 14,
       completed_orders: 134,
       beauticians_count: 8,
-      avg_rating: 4.96,
-      top_services: [
-        { title: "Royal Dulhaniya D-Day Bridal Makeup", count: 48 },
-        { title: "O3+ Bridal Luxury Glow Facial", count: 42 },
-        { title: "Rica Chocolate Full Body Waxing", count: 35 },
-        { title: "Dulhaniya Bridal Crystal Spa Pedicure", count: 29 }
-      ]
+      avg_rating: 4.96
     };
   }
 };

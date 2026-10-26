@@ -526,14 +526,22 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
 def run(port=PORT):
     init_db()
     os.makedirs(PUBLIC_DIR, exist_ok=True)
-    server_address = ('', port)
     
-    # Enable socket address reuse
-    class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
-        daemon_threads = True
+    # Try port 8000, fallback to 8080 if in use
+    active_port = port
+    for p in [port, 8080, 5000, 3000]:
+        try:
+            server_address = ('', p)
+            class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+                daemon_threads = True
 
-    httpd = ThreadingHTTPServer(server_address, DulhaniyaRequestHandler)
-    print(f"Dulhaniya App server is running at http://127.0.0.1:{port}")
+            httpd = ThreadingHTTPServer(server_address, DulhaniyaRequestHandler)
+            active_port = p
+            break
+        except OSError:
+            continue
+
+    print(f"Dulhaniya App server is running at http://127.0.0.1:{active_port}")
     print(f"Serving static files from: {PUBLIC_DIR}")
     print("Press Ctrl+C to stop.")
     try:
