@@ -25,5 +25,5 @@
 - [x] **Task 5.3**: Test end-to-end user journey: Search -> Category -> Add to Cart -> BYOP toggle -> Slot Booking -> Live OTP Tracker -> Partner Verification -> Review.
 
 ## Phase 6: Version Control & GitHub Push
-- [ ] **Task 6.1**: Commit all architectural, design, and service enhancements with clean Git history.
-- [ ] **Task 6.2**: Check and configure GitHub remote repository, push changes, and provide clear remote instructions if token/auth is needed.
+- [x] **Task 6.1**: Commit all architectural, design, and service enhancements with clean Git history.
+- [x] **Task 6.2**: Configure GitHub remote repository `origin` (`https://github.com/madhuptiwari/DulhaniyaApp.git`) on branch `main` and prepare one-click push instruction.
