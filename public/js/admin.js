@@ -295,9 +295,32 @@ const Admin = {
   // ================= TAB 3: BEAUTICIAN PARTNER FLEET =================
   renderFleetTab() {
     const fleet = this.cachedBeauticians;
+    const pendingApps = JSON.parse(localStorage.getItem('dulhaniya_partner_applications') || '[]');
 
     return `
       <div style="background:var(--white); border-radius:var(--radius-xl); border:1px solid var(--slate-200); padding:24px; box-shadow:var(--shadow-sm);">
+        ${pendingApps.length > 0 ? `
+          <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:var(--radius-md); padding:16px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:#92400e; font-size:0.95rem;">📋 New Specialist Applications Awaiting Review (${pendingApps.length})</strong>
+              <button onclick="localStorage.removeItem('dulhaniya_partner_applications'); Admin.init();" style="background:none; border:none; color:#b45309; font-size:0.75rem; cursor:pointer;">Dismiss All</button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+              ${pendingApps.map(app => `
+                <div style="background:#fff; border:1px solid #fde68a; border-radius:var(--radius-sm); padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <h5 style="margin:0; font-size:0.9rem;">${app.name} (${app.city})</h5>
+                    <p style="margin:2px 0 0; font-size:0.78rem; color:#64748b;">${app.specialty} • ${app.experience} Yrs • ${app.phone}</p>
+                    <p style="margin:2px 0 0; font-size:0.72rem; color:#b45309;">Cert: ${app.certifications || 'Verified Academy'}</p>
+                  </div>
+                  <button onclick="Admin.approvePartnerApplication('${app.id}')" style="background:#059669; color:#fff; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:700; cursor:pointer;">
+                    ✓ Approve
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
           <div>
             <h3 style="margin:0;">Beautician Partner Fleet Management</h3>

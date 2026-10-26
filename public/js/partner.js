@@ -164,5 +164,161 @@ const Partner = {
     } else {
       window.App?.showToast(res.error || "Incorrect OTP");
     }
+  },
+
+  renderOnboardingSection() {
+    return `
+      <div style="background: linear-gradient(135deg, #fdf2f8 0%, #fff 100%); border: 2px solid var(--primary-border); border-radius: var(--radius-xl); padding: 30px; margin-top: 30px; box-shadow: var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
+          <div>
+            <span class="badge badge-bridal">👩‍💼 JOIN OUR FLEET</span>
+            <h3 style="font-size:1.6rem; color:var(--primary-dark); margin-top:6px;">Become an Elite Dulhaniya Beauty Partner</h3>
+            <p style="color:var(--slate-600); font-size:0.9rem;">Enjoy 75%+ take-home share, 0% commission on tips, and complete work flexibility.</p>
+          </div>
+          <button class="btn-primary" onclick="Partner.openOnboardingModal()">Apply to Join Fleet ✍️</button>
+        </div>
+
+        <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:24px;">
+          <h4 style="margin-bottom:16px; font-size:1.1rem; color:var(--slate-800);">💰 Calculate Your Monthly Income</h4>
+          
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; align-items:center;">
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <label style="font-size:0.85rem; font-weight:700;">Appointments per day:</label>
+                <strong style="color:var(--primary);" id="calc-jobs-label">3 appointments</strong>
+              </div>
+              <input type="range" min="1" max="6" value="3" id="calc-jobs-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
+
+              <div style="display:flex; justify-content:space-between; margin:16px 0 6px;">
+                <label style="font-size:0.85rem; font-weight:700;">Working days per month:</label>
+                <strong style="color:var(--primary);" id="calc-days-label">24 days</strong>
+              </div>
+              <input type="range" min="15" max="28" value="24" id="calc-days-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
+            </div>
+
+            <div style="background:var(--primary-subtle); border:1.5px solid var(--primary-border); border-radius:var(--radius-md); padding:20px; text-align:center;">
+              <span style="font-size:0.8rem; font-weight:700; color:var(--primary); text-transform:uppercase;">Estimated Monthly Payout</span>
+              <div style="font-size:2.4rem; font-weight:900; color:var(--primary-dark); margin:6px 0;" id="calc-monthly-payout">₹64,800</div>
+              <p style="font-size:0.75rem; color:var(--slate-600); margin:0;">
+                Includes ~₹12,000 in customer tips (100% kept by you) + 75% service labor share. Zero equipment deductions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  updateEarningsCalc() {
+    const jobsInput = document.getElementById('calc-jobs-input');
+    const daysInput = document.getElementById('calc-days-input');
+    if (!jobsInput || !daysInput) return;
+
+    const jobs = Number(jobsInput.value);
+    const days = Number(daysInput.value);
+
+    document.getElementById('calc-jobs-label').textContent = `${jobs} appointment${jobs > 1 ? 's' : ''}`;
+    document.getElementById('calc-days-label').textContent = `${days} days`;
+
+    // Average order: ₹1,200. Partner gets 75% = ₹900/job + ₹150 tip = ₹1,050/job
+    const monthlyPayout = jobs * days * 1050;
+    const payoutEl = document.getElementById('calc-monthly-payout');
+    if (payoutEl) {
+      payoutEl.textContent = `₹${monthlyPayout.toLocaleString('en-IN')}`;
+    }
+  },
+
+  openOnboardingModal() {
+    let modal = document.getElementById('partner-onboarding-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'partner-onboarding-modal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3>Join the Dulhaniya Specialist Fleet</h3>
+            <button class="btn-close" onclick="document.getElementById('partner-onboarding-modal').classList.remove('active')">✕</button>
+          </div>
+          <div class="modal-body">
+            <form onsubmit="Partner.submitOnboarding(event)">
+              <div style="margin-bottom:12px;">
+                <label style="font-size:0.8rem; font-weight:700;">Full Legal Name:</label>
+                <input type="text" name="name" required placeholder="e.g. Shalini Rajput" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">Mobile Phone:</label>
+                  <input type="tel" name="phone" required placeholder="+91 98xxx xxxxx" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">City / Region:</label>
+                  <select name="city" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+                    <option value="New Delhi">New Delhi</option>
+                    <option value="Gurugram">Gurugram</option>
+                    <option value="Noida">Noida</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Bengaluru">Bengaluru</option>
+                    <option value="Jaipur">Jaipur</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">Primary Specialty:</label>
+                  <select name="specialty" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+                    <option value="Bridal Makeup & Hair Styling">Bridal Makeup & Hair Styling</option>
+                    <option value="Advanced Facials & Skin Therapy">Advanced Facials & Skin Therapy</option>
+                    <option value="Rica Waxing & Body Spas">Rica Waxing & Body Spas</option>
+                    <option value="Gel Nails & Pedicure Spas">Gel Nails & Pedicure Spas</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">Years of Experience:</label>
+                  <input type="number" name="experience" min="1" max="30" value="5" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+                </div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="font-size:0.8rem; font-weight:700;">Certifications (VLCC, CIDESCO, Orane, etc.):</label>
+                <input type="text" name="certifications" placeholder="e.g. CIDESCO Certified, VLCC Diploma" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+              </div>
+              <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:var(--radius-sm); padding:12px; margin-bottom:16px;">
+                <label style="font-size:0.8rem; font-weight:700; color:#334155;">Digital Hygiene & Ethics Pledge:</label>
+                <p style="font-size:0.75rem; color:#64748b; margin:4px 0 8px;">I pledge to use single-dose disposable capes, sanitize stainless tools before each client, and maintain 100% professional conduct.</p>
+                <label style="font-size:0.8rem; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" required style="accent-color:var(--primary);" />
+                  <strong>I agree to the Dulhaniya Zero-Adulteration Standard</strong>
+                </label>
+              </div>
+              <button type="submit" class="btn-primary" style="width:100%; padding:12px;">Submit Verification Application 🚀</button>
+            </form>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    modal.classList.add('active');
+  },
+
+  submitOnboarding(event) {
+    event.preventDefault();
+    const form = event.target;
+    const application = {
+      id: Date.now(),
+      name: form.name.value,
+      phone: form.phone.value,
+      city: form.city.value,
+      specialty: form.specialty.value,
+      experience: form.experience.value,
+      certifications: form.certifications.value,
+      submittedAt: new Date().toISOString()
+    };
+
+    const existing = JSON.parse(localStorage.getItem('dulhaniya_partner_applications') || '[]');
+    existing.unshift(application);
+    localStorage.setItem('dulhaniya_partner_applications', JSON.stringify(existing));
+
+    document.getElementById('partner-onboarding-modal').classList.remove('active');
+    window.App?.showToast('🎉 Application received! Our Fleet Manager will contact you within 24 hours for police background clearance.');
   }
 };
