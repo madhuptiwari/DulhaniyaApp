@@ -22,7 +22,7 @@ const Admin = {
     try {
       const [stats, bookingsRes, services, beauticians, coupons, reviews] = await Promise.all([
         DulhaniyaAPI.getAdminStats(),
-        fetch(`${DulhaniyaAPI.baseUrl}/api/bookings`).then(r => r.ok ? r.json() : { bookings: [] }).catch(() => ({ bookings: [] })),
+        fetch(`${DulhaniyaAPI.baseUrl}/api/bookings`).then(r => (r.ok && r.headers.get("content-type")?.includes("json")) ? r.json() : { bookings: [] }).catch(() => ({ bookings: [] })),
         DulhaniyaAPI.getServices("all"),
         DulhaniyaAPI.getAdminBeauticians(),
         DulhaniyaAPI.getAdminCoupons(),

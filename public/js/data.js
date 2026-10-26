@@ -739,6 +739,10 @@ const DulhaniyaAPI = {
         signal: controller.signal
       });
       clearTimeout(timer);
+      const contentType = res.headers.get("content-type") || "";
+      if (endpoint.startsWith("/api") && !contentType.includes("application/json")) {
+        throw new Error(`Endpoint ${endpoint} returned non-JSON (${contentType})`);
+      }
       return res;
     } catch (e) {
       clearTimeout(timer);
