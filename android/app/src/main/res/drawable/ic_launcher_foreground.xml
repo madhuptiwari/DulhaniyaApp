@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer Golden Mandala Ring -->
+    <path
+        android:strokeColor="@color/accent_gold"
+        android:strokeWidth="2"
+        android:pathData="M 54,20 A 34,34 0 1 1 53.99,20" />
+    <!-- Royal Tiara / Bridal Crown -->
+    <path
+        android:fillColor="@color/accent_gold"
+        android:pathData="M34,66 L38,42 L48,54 L54,34 L60,54 L70,42 L74,66 Z" />
+    <!-- Jewels on Tiara -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,38 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,38 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <!-- Foundation Ribbon -->
+    <path
+        android:fillColor="@color/accent_gold"
+        android:pathData="M32,68 L76,68 L74,72 L34,72 Z" />
+</vector>

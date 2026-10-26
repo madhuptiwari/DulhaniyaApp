@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Dulhaniya</string>
+    <string name="app_tagline">Luxury Salon &amp; Bridal at Home</string>
+    <string name="default_web_url">https://dulhaniya.netlify.app</string>
+    <string name="network_error_title">Connection Unavailable</string>
+    <string name="network_error_msg">Please check your internet connection to access Dulhaniya rituals, bridal consultations, and real-time appointment tracking.</string>
+    <string name="action_retry">Try Again</string>
+</resources>

@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dulhaniya.app",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:0F:52:AB:E0:85:42:8B:2E:5E:8B:16:53:6B:82:4E:E5:E5:A1:6A:B2:7D:6F:02:1F:B1:A7:E9:8A"
+      ]
+    }
+  }
+]

@@ -1,0 +1,57 @@
+name: Build Android Application (AAB & APK)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Android App Bundle & APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: |
+          cd android
+          chmod +x gradlew
+
+      - name: Generate Release Keystore for CI Build
+        run: |
+          cd android
+          keytool -genkeypair -v -keystore release.jks \
+            -alias dulhaniya_release \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Dulhaniya App, OU=Engineering, O=Dulhaniya, L=New Delhi, ST=Delhi, C=IN" \
+            -storepass dulhaniya2026 -keypass dulhaniya2026
+
+      - name: Build Android App Bundle (AAB) & APK
+        run: |
+          cd android
+          ./gradlew bundleRelease assembleRelease assembleDebug --stacktrace \
+            -Pandroid.injected.signing.store.file=release.jks \
+            -Pandroid.injected.signing.store.password=dulhaniya2026 \
+            -Pandroid.injected.signing.key.alias=dulhaniya_release \
+            -Pandroid.injected.signing.key.password=dulhaniya2026
+
+      - name: Upload Android App Bundle (.aab)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dulhaniya-release-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: Upload Android APK (.apk)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dulhaniya-release-apk
+          path: android/app/build/outputs/apk/**/*.apk
