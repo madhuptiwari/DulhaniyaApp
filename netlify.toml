@@ -1,17 +1,27 @@
 [build]
   publish = "public"
+  functions = "netlify/functions"
 
+# Route REST API to Netlify Serverless Function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Explicit redirect for admin dashboard
 [[redirects]]
   from = "/admin"
   to = "/admin.html"
   status = 200
 
+# Clean redirect for legacy /public/* paths
 [[redirects]]
   from = "/public/*"
   to = "/:splat"
   status = 301
   force = true
 
+# SPA single page rewrite for all other routes
 [[redirects]]
   from = "/*"
   to = "/index.html"

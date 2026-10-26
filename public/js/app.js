@@ -511,6 +511,76 @@ const App = {
       toast.style.transition = "opacity 0.3s ease";
       setTimeout(() => toast.remove(), 300);
     }, 3200);
+  },
+
+  updateSplitSlider(val) {
+    const beforeLayer = document.getElementById("split-before-layer");
+    const dividerLine = document.getElementById("split-divider-line");
+    if (beforeLayer) {
+      beforeLayer.style.clipPath = `polygon(0 0, ${val}% 0, ${val}% 100%, 0 100%)`;
+    }
+    if (dividerLine) {
+      dividerLine.style.left = `${val}%`;
+    }
+  },
+
+  toggleTrousseau(cardEl) {
+    cardEl.classList.toggle("selected");
+    const checkbox = cardEl.querySelector('input[type="checkbox"]');
+    if (checkbox) {
+      checkbox.checked = cardEl.classList.contains("selected");
+    }
+    this.calculateTrousseau();
+  },
+
+  calculateTrousseau() {
+    const selectedCards = document.querySelectorAll('.trousseau-card.selected');
+    let originalTotal = 0;
+    selectedCards.forEach(card => {
+      originalTotal += Number(card.getAttribute('data-price') || 0);
+    });
+
+    const discountRate = selectedCards.length >= 2 ? 0.20 : 0.05;
+    const finalPrice = Math.round(originalTotal * (1 - discountRate));
+    const savings = originalTotal - finalPrice;
+
+    const totalEl = document.getElementById('trousseau-total-price');
+    const origEl = document.getElementById('trousseau-original-price');
+    const badgeEl = document.getElementById('trousseau-savings-badge');
+
+    if (totalEl) totalEl.textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
+    if (origEl) origEl.textContent = `₹${originalTotal.toLocaleString('en-IN')}`;
+    if (badgeEl) {
+      badgeEl.textContent = selectedCards.length >= 2
+        ? `20% Bundle Savings (Save ₹${savings.toLocaleString('en-IN')})`
+        : `Save ₹${savings.toLocaleString('en-IN')}`;
+    }
+  },
+
+  async addTrousseauToCart() {
+    const selectedCards = document.querySelectorAll('.trousseau-card.selected');
+    if (selectedCards.length === 0) {
+      this.showToast("Please select at least one ceremony ritual.");
+      return;
+    }
+
+    const services = await DulhaniyaAPI.getServices("bridal-wedding");
+    selectedCards.forEach(card => {
+      const ceremony = card.getAttribute('data-ceremony');
+      let serviceToAdd;
+      if (ceremony === 'haldi') serviceToAdd = services.find(s => s.id === 2);
+      else if (ceremony === 'mehendi') serviceToAdd = services.find(s => s.id === 3);
+      else if (ceremony === 'wedding') serviceToAdd = services.find(s => s.id === 1);
+      else if (ceremony === 'prebridal') serviceToAdd = services.find(s => s.id === 4);
+
+      if (serviceToAdd) {
+        Cart.addItem(serviceToAdd, Cart.kitType);
+      }
+    });
+
+    Cart.applyCoupon("BRIDALQUEEN");
+    this.openCartDrawer();
+    this.showToast(`✨ Added ${selectedCards.length} rituals to cart with VIP privilege savings!`);
   }
 };
 

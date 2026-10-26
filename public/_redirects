@@ -1,3 +1,4 @@
-/admin       /admin.html     200
-/public/*    /:splat         301!
-/*           /index.html     200
+/api/*       /.netlify/functions/api/:splat    200
+/admin       /admin.html                       200
+/public/*    /:splat                           301!
+/*           /index.html                       200

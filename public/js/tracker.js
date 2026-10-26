@@ -210,5 +210,115 @@ const Tracker = {
         </div>
       `;
     }
+  },
+
+  shareWhatsApp() {
+    if (!this.activeBooking) return;
+    const b = this.activeBooking;
+    const itemsList = (b.items || []).map(i => `• ${i.title} (₹${i.price})`).join('\n');
+    const msg = `👑 *Dulhaniya Luxury Bridal & Salon Booking*\n\n` +
+      `*Booking Ref:* ${b.booking_ref}\n` +
+      `*Specialist:* ${b.beautician_name || 'Verified Artist'} (${b.beautician_rating || '4.98'}★)\n` +
+      `*Date & Slot:* ${b.service_date} (${b.service_slot})\n` +
+      `*Status:* ${b.status}\n` +
+      `*Doorstep Safe OTP:* ${b.otp_code}\n\n` +
+      `*Selected Services:*\n${itemsList}\n\n` +
+      `*Payable Amount:* ₹${b.total_amount}\n\n` +
+      `Track live appointment: https://dulhaniya.netlify.app/`;
+    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  },
+
+  printInvoice() {
+    if (!this.activeBooking) return;
+    const b = this.activeBooking;
+    const itemsRows = (b.items || []).map(i => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">${i.title}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${i.qty || 1}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600;">₹${i.price}</td>
+      </tr>
+    `).join('');
+
+    const invoiceHtml = `
+      <html>
+      <head>
+        <title>Dulhaniya Luxury Bridal Invoice - ${b.booking_ref}</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #1e293b; max-width: 800px; margin: 0 auto; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #9d174d; padding-bottom: 20px; }
+          .logo { font-size: 28px; font-weight: 800; color: #9d174d; }
+          .badge { background: #fdf2f8; color: #9d174d; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #fbcfe8; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+          .card { background: #f8fafc; padding: 18px; border-radius: 8px; border: 1px solid #e2e8f0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th { background: #9d174d; color: white; padding: 10px; text-align: left; }
+          .total-box { margin-top: 30px; text-align: right; }
+          .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="logo">👑 Dulhaniya™</div>
+            <div style="font-size: 13px; color: #64748b;">Luxury Salon & Bridal Studio at Home</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="badge">100% VERIFIED APPOINTMENT</div>
+            <div style="font-size: 14px; font-weight: bold; margin-top: 8px;">Order Ref: ${b.booking_ref}</div>
+            <div style="font-size: 12px; color: #64748b;">Date: ${b.service_date} | Slot: ${b.service_slot}</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <strong>Customer Details</strong>
+            <p style="margin: 6px 0; font-size: 14px;"><strong>${b.customer_name}</strong></p>
+            <p style="margin: 4px 0; font-size: 13px; color: #475569;">📞 ${b.customer_phone}</p>
+            <p style="margin: 4px 0; font-size: 13px; color: #475569;">📍 ${b.address}, ${b.city || 'New Delhi'}</p>
+          </div>
+          <div class="card">
+            <strong>Assigned Beauty Specialist</strong>
+            <p style="margin: 6px 0; font-size: 14px;"><strong>${b.beautician_name || 'Senior Artist'}</strong> (${b.beautician_rating || 4.98} ★)</p>
+            <p style="margin: 4px 0; font-size: 13px; color: #475569;">Experience: ${b.experience_years || 8}+ Years Verified</p>
+            <p style="margin: 4px 0; font-size: 13px; color: #059669; font-weight: bold;">Doorstep Safe OTP: ${b.otp_code}</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Service Item</th>
+              <th style="text-align: center;">Qty</th>
+              <th style="text-align: right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsRows}
+          </tbody>
+        </table>
+
+        <div class="total-box">
+          <p style="font-size: 14px; margin: 4px 0;">Product Mode: <strong>${b.kit_type === 'byo_product' ? 'Bring Your Own Product (BYOP)' : 'Dulhaniya SafeSeal™ Deluxe Kit'}</strong></p>
+          ${b.discount_amount ? `<p style="font-size: 14px; color: #059669; margin: 4px 0;">Savings / Discounts: -₹${b.discount_amount}</p>` : ''}
+          <h2 style="color: #9d174d; margin: 10px 0 0;">Total Payable: ₹${b.total_amount}</h2>
+          <p style="font-size: 13px; color: #64748b;">Payment Method: ${b.payment_mode || 'Pay After Service'}</p>
+        </div>
+
+        <div class="footer">
+          <p>Thank you for choosing Dulhaniya! 100% sealed tamper-evident kits, 0% commission on tips, and full transparent labor pricing.</p>
+          <p>Support & Emergency SOS: support@dulhaniya.app | +91 98112 34567 | dulhaniya.netlify.app</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.write(invoiceHtml);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => { printWin.print(); }, 500);
+    }
   }
 };

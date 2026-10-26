@@ -120,6 +120,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+    <!-- Progressive Web App (PWA) Manifest & Meta -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#9d174d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Dulhaniya" />
+
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -200,6 +207,21 @@
 
   <!-- ================= CUSTOMER VIEW ================= -->
   <main id="customer-view-container">
+
+    <!-- PWA Install Prompt Banner -->
+    <div id="pwa-install-banner" class="pwa-install-banner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:1.8rem;">👑</span>
+        <div>
+          <strong style="font-size:0.95rem;">Install Dulhaniya App</strong>
+          <p style="font-size:0.8rem; margin:0; opacity:0.9;">Fast 1-tap booking, live GPS tracking and offline catalog access.</p>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button id="pwa-install-btn" class="pwa-btn-install" onclick="App.installPWA()">Install</button>
+        <button onclick="document.getElementById('pwa-install-banner').style.display='none'" style="background:transparent; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -383,6 +405,110 @@
           <h4 style="margin:8px 0 4px; font-size:1.15rem;">7-Day Bridal Radiance</h4>
           <p style="font-size:0.85rem; color:var(--slate-600); margin-bottom:12px;">Full body detan, Rica chocolate wax, O3+ facial, crystal mani-pedi & hair spa.</p>
           <span style="font-weight:700; color:var(--primary);">From ₹8,499</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Before / After Bridal Transformation Showcase -->
+    <section class="comparison-section">
+      <div class="section-header" style="text-align:center;">
+        <div>
+          <h2>Interactive Bridal Transformation Showcase</h2>
+          <p>Drag the split slider to witness the high-definition Airbrush & HD Bridal Glow.</p>
+        </div>
+      </div>
+
+      <div class="split-compare-box">
+        <div class="split-img-wrapper" id="transformation-split-box">
+          <!-- After (Full Makeup Look) -->
+          <img class="split-img" src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=80" alt="After Bridal Transformation" />
+          <div style="position:absolute; bottom:16px; right:20px; background:rgba(157,23,77,0.85); color:#fff; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.8rem; z-index:4;">
+            ✨ AFTER: Royal HD Airbrush
+          </div>
+
+          <!-- Before (Skin Prep / Raw Tone) -->
+          <div class="split-before" id="split-before-layer" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="split-img" src="https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1200&q=80" alt="Before Bridal Transformation" />
+            <div style="position:absolute; bottom:16px; left:20px; background:rgba(30,41,59,0.85); color:#fff; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.8rem; z-index:4;">
+              🌿 BEFORE: Natural Dermal Prep
+            </div>
+          </div>
+
+          <!-- Divider Line & Drag Handle -->
+          <div class="split-divider-line" id="split-divider-line" style="left: 50%;">
+            <div class="split-handle">◀ ▶</div>
+          </div>
+
+          <!-- Invisible Range Slider -->
+          <input type="range" min="0" max="100" value="50" class="split-slider-input" id="transformation-range-input" oninput="App.updateSplitSlider(this.value)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Curate Your Complete Bridal Trousseau Customizer -->
+    <section class="comparison-section">
+      <div class="comparison-box" style="border: 2px solid var(--gold-border); background: linear-gradient(180deg, #ffffff 0%, #fff9fb 100%);">
+        <div style="text-align:center; margin-bottom:24px;">
+          <span class="badge-gold">👑 VIP BRIDAL PRIVILEGE</span>
+          <h2 style="font-size: 1.85rem; margin-top:8px;">Curate Your Complete Wedding Trousseau</h2>
+          <p style="color:var(--slate-600); font-size:0.95rem;">Select your ceremonies to unlock automatic multi-event bundle savings up to 25% off.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;" id="trousseau-cards-container">
+          <div class="trousseau-card selected" data-ceremony="haldi" data-price="4999" onclick="App.toggleTrousseau(this)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:1.5rem;">🌼</span>
+              <input type="checkbox" checked style="accent-color:var(--primary);" />
+            </div>
+            <h4 style="margin:10px 0 4px; font-size:1.05rem;">Haldi Sunshine Look</h4>
+            <p style="font-size:0.78rem; color:var(--slate-600); margin-bottom:8px;">Turmeric-proof dewy skin & floral braid.</p>
+            <strong style="color:var(--primary);">₹4,999</strong>
+          </div>
+
+          <div class="trousseau-card selected" data-ceremony="mehendi" data-price="6499" onclick="App.toggleTrousseau(this)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:1.5rem;">🌿</span>
+              <input type="checkbox" checked style="accent-color:var(--primary);" />
+            </div>
+            <h4 style="margin:10px 0 4px; font-size:1.05rem;">Mehendi & Sangeet</h4>
+            <p style="font-size:0.78rem; color:var(--slate-600); margin-bottom:8px;">Glitter smokey eyes & Hollywood waves.</p>
+            <strong style="color:var(--primary);">₹6,499</strong>
+          </div>
+
+          <div class="trousseau-card selected" data-ceremony="wedding" data-price="10999" onclick="App.toggleTrousseau(this)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:1.5rem;">👑</span>
+              <input type="checkbox" checked style="accent-color:var(--primary);" />
+            </div>
+            <h4 style="margin:10px 0 4px; font-size:1.05rem;">Shaadi Royal D-Day</h4>
+            <p style="font-size:0.78rem; color:var(--slate-600); margin-bottom:8px;">Flawless HD Airbrush & double-dupatta.</p>
+            <strong style="color:var(--primary);">₹10,999</strong>
+          </div>
+
+          <div class="trousseau-card" data-ceremony="prebridal" data-price="8499" onclick="App.toggleTrousseau(this)">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:1.5rem;">✨</span>
+              <input type="checkbox" style="accent-color:var(--primary);" />
+            </div>
+            <h4 style="margin:10px 0 4px; font-size:1.05rem;">7-Day Radiance Cocoon</h4>
+            <p style="font-size:0.78rem; color:var(--slate-600); margin-bottom:8px;">Full body detan, Rica wax & O3+ facial.</p>
+            <strong style="color:var(--primary);">₹8,499</strong>
+          </div>
+        </div>
+
+        <!-- Dynamic Trousseau Calculator Summary Bar -->
+        <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-md); padding:18px 24px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px;">
+          <div>
+            <div style="font-size:0.8rem; color:var(--slate-500); text-transform:uppercase; font-weight:700;">Selected Package Value:</div>
+            <div style="display:flex; align-items:baseline; gap:12px;">
+              <span style="font-size:1.6rem; font-weight:800; color:var(--primary-dark);" id="trousseau-total-price">₹17,997</span>
+              <span style="font-size:1rem; color:var(--slate-400); text-decoration:line-through;" id="trousseau-original-price">₹22,497</span>
+              <span style="background:var(--emerald-subtle); color:var(--emerald); font-weight:700; font-size:0.8rem; padding:2px 8px; border-radius:12px;" id="trousseau-savings-badge">20% Bundle Savings</span>
+            </div>
+          </div>
+          <button class="btn-primary" style="padding:12px 28px; font-size:0.95rem;" onclick="App.addTrousseauToCart()">
+            Book Entire Trousseau Bundle 🛍️
+          </button>
         </div>
       </div>
     </section>
@@ -804,6 +930,16 @@
           </div>
         </div>
 
+        <!-- Action Row: WhatsApp Share & Luxury Invoice Voucher -->
+        <div style="display:flex; gap:10px; margin-bottom:14px;">
+          <button class="btn-secondary" style="flex:1; padding:10px; font-size:0.82rem; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="Tracker.shareWhatsApp()">
+            <span>💬</span> Share on WhatsApp
+          </button>
+          <button class="btn-secondary" style="flex:1; padding:10px; font-size:0.82rem; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="Tracker.printInvoice()">
+            <span>🖨️</span> Print Luxury Invoice
+          </button>
+        </div>
+
         <!-- Quick OTP Verification Test for Testing/Partner -->
         <div id="tracker-otp-verify-section" style="background:#f1f5f9; padding:12px; border-radius:var(--radius-md); margin-bottom:14px;">
           <div style="font-size:0.8rem; font-weight:700; margin-bottom:6px;">Simulate Start Service (Enter 4-Digit OTP):</div>
@@ -1011,5 +1147,38 @@
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
 
+  <!-- Service Worker Registration for PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          console.log('Dulhaniya PWA Service Worker active:', reg.scope);
+        }).catch((err) => {
+          console.warn('PWA registration error:', err);
+        });
+      });
+    }
+
+    // PWA Install Prompt Listener
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-install-banner');
+      if (banner) banner.classList.add('visible');
+    });
+
+    window.App = window.App || {};
+    window.App.installPWA = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('PWA installation outcome:', outcome);
+        deferredPrompt = null;
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.style.display = 'none';
+      }
+    };
+  </script>
 </body>
 </html>
