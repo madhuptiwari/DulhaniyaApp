@@ -191,6 +191,11 @@
           <button class="mode-btn" id="btn-mode-admin" onclick="App.setViewMode('admin')">Admin</button>
         </div>
 
+        <!-- Advisor Quick Button -->
+        <button class="btn-secondary" style="padding:6px 12px; font-size:0.8rem; display:flex; align-items:center; gap:6px; background:var(--gold-subtle); color:var(--primary-dark); border-color:var(--gold); font-weight:700;" onclick="App.openAdvisorModal()">
+          <span>✨</span> AI Advisor
+        </button>
+
         <!-- Cart Button -->
         <button class="cart-btn" onclick="App.openCartDrawer()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -259,6 +264,9 @@
           <div class="hero-cta-group">
             <button class="btn-primary" onclick="App.selectCategory('bridal-wedding')">
               Book Bridal Makeover
+            </button>
+            <button class="btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; border:none;" onclick="App.openAdvisorModal()">
+              ✨ AI Bridal Advisor
             </button>
             <button class="btn-secondary" onclick="App.selectCategory('facials-cleanups')">
               Explore Salon Services
@@ -759,6 +767,162 @@
       </button>
     </div>
   </aside>
+
+  <!-- ================= BRIDAL BEAUTY & CEREMONY ADVISOR MODAL ================= -->
+  <div class="modal-overlay" id="consultation-advisor-modal">
+    <div class="modal-content" style="max-width: 760px;">
+      <div class="modal-header">
+        <div>
+          <span class="badge badge-bridal">✨ SMART CONSULTATION</span>
+          <h3 style="margin-top: 4px;">AI Bridal Beauty & Ceremony Advisor</h3>
+        </div>
+        <button class="btn-close" onclick="App.closeAdvisorModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Step Progress Indicator -->
+        <div class="advisor-step-container">
+          <div class="advisor-step-pill active" id="adv-step-pill-1">
+            <div class="advisor-step-num">1</div>
+            <span>Complexion</span>
+          </div>
+          <div class="advisor-step-pill" id="adv-step-pill-2">
+            <div class="advisor-step-num">2</div>
+            <span>Ceremony</span>
+          </div>
+          <div class="advisor-step-pill" id="adv-step-pill-3">
+            <div class="advisor-step-num">3</div>
+            <span>Finish</span>
+          </div>
+          <div class="advisor-step-pill" id="adv-step-pill-4">
+            <div class="advisor-step-num">★</div>
+            <span>Your Routine</span>
+          </div>
+        </div>
+
+        <!-- Step 1: Complexion & Tone -->
+        <div id="adv-step-view-1">
+          <h4 style="margin-bottom: 6px; font-size: 1.1rem;">Step 1: What best describes your natural skin tone?</h4>
+          <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 18px;">Our master makeup artists match international foundation shades (MAC, Charlotte Tilbury, Estée Lauder) tailored to Indian skin undertones.</p>
+
+          <div class="advisor-cards-grid">
+            <div class="advisor-card selected" data-step="1" data-value="wheatish" onclick="App.selectAdvisorCard(this)">
+              <div class="advisor-swatch" style="background: #e8be96;"></div>
+              <h5 style="margin: 0 0 4px; font-size: 1rem;">Wheatish / Warm Golden</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Golden yellow undertones. Matches MAC NC30-38 / Estée Lauder 3W1.</p>
+            </div>
+
+            <div class="advisor-card" data-step="1" data-value="fair" onclick="App.selectAdvisorCard(this)">
+              <div class="advisor-swatch" style="background: #f8d9cd;"></div>
+              <h5 style="margin: 0 0 4px; font-size: 1rem;">Fair / Rosy Porcelain</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Pink or peach undertones. Matches MAC NC15-25 / Charlotte Tilbury 2-3.</p>
+            </div>
+
+            <div class="advisor-card" data-step="1" data-value="dusky" onclick="App.selectAdvisorCard(this)">
+              <div class="advisor-swatch" style="background: #c68f65;"></div>
+              <h5 style="margin: 0 0 4px; font-size: 1rem;">Dusky / Rich Olive</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Warm olive undertones. Matches MAC NC40-44 / Huda Butterscotch.</p>
+            </div>
+
+            <div class="advisor-card" data-step="1" data-value="deep" onclick="App.selectAdvisorCard(this)">
+              <div class="advisor-swatch" style="background: #8d5524;"></div>
+              <h5 style="margin: 0 0 4px; font-size: 1rem;">Deep / Royal Bronze</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Warm caramel & bronze undertones. Matches MAC NC45+ / Fenty 360-390.</p>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <button class="btn-primary" onclick="App.goToAdvisorStep(2)">Next: Choose Ceremony →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Ceremony Context -->
+        <div id="adv-step-view-2" style="display: none;">
+          <h4 style="margin-bottom: 6px; font-size: 1.1rem;">Step 2: Which primary wedding ceremony are you preparing for?</h4>
+          <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 18px;">Lighting, photography type, and event length dictate the makeup formulation and skin prep.</p>
+
+          <div class="advisor-cards-grid">
+            <div class="advisor-card selected" data-step="2" data-value="wedding" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">👑</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Shaadi Royal D-Day (Mandap & Phere)</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">12-hour high-definition Airbrush base, sweat & tear-proof, heavy dupatta anchoring.</p>
+            </div>
+
+            <div class="advisor-card" data-step="2" data-value="haldi" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">🌼</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Daytime Haldi & Mehendi</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Dewy sun-kissed glow, waterproof mascara, turmeric-resistant barrier prep.</p>
+            </div>
+
+            <div class="advisor-card" data-step="2" data-value="sangeet" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">🌿</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Cocktail, Sangeet & Dance Night</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Glitter smokey eyes, stage lighting contour, and long-wear dance-proof lock.</p>
+            </div>
+
+            <div class="advisor-card" data-step="2" data-value="prebridal" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">✨</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Full 7-Day Pre-Bridal Countdown</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Complete holistic purification: O3+ facial, Rica wax, body polish & hair spa.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <button class="btn-secondary" onclick="App.goToAdvisorStep(1)">← Back</button>
+            <button class="btn-primary" onclick="App.goToAdvisorStep(3)">Next: Skin Finish →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Skin Type & Finish Preference -->
+        <div id="adv-step-view-3" style="display: none;">
+          <h4 style="margin-bottom: 6px; font-size: 1.1rem;">Step 3: What is your skin type and desired finish?</h4>
+          <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 18px;">Select how you want your skin to feel and reflect under camera flashes.</p>
+
+          <div class="advisor-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="advisor-card selected" data-step="3" data-value="dewy" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">💧</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Dewy Glass-Skin Glow</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Ultra-hydrated, plump, and luminous finish for dry or normal skin.</p>
+            </div>
+
+            <div class="advisor-card" data-step="3" data-value="matte" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">🛡️</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">Velvet Matte Lock</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">Zero-shine, poreless, transfer-proof shield for oily or combination skin.</p>
+            </div>
+
+            <div class="advisor-card" data-step="3" data-value="satin" onclick="App.selectAdvisorCard(this)">
+              <span style="font-size: 1.8rem;">💎</span>
+              <h5 style="margin: 8px 0 4px; font-size: 1rem;">HD Airbrush Silk Satin</h5>
+              <p style="font-size: 0.78rem; color: var(--slate-600); margin: 0;">The Gold Standard: natural dimension, diffused soft focus in 4K video.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <button class="btn-secondary" onclick="App.goToAdvisorStep(2)">← Back</button>
+            <button class="btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" onclick="App.generateAdvisorResult()">
+              Generate My Curated Routine ✨
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Curated Recommendation Result -->
+        <div id="adv-step-view-4" style="display: none;">
+          <div class="advisor-result-box" id="advisor-result-container">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 18px; flex-wrap:wrap; gap:10px;">
+            <button class="btn-secondary" onclick="App.goToAdvisorStep(1)">Start Over ↺</button>
+            <button class="btn-primary" style="padding: 12px 28px; font-size: 0.95rem;" onclick="App.addAdvisorRoutineToCart()">
+              Add Recommended Routine to Cart 🛍️
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <!-- ================= CHECKOUT MODAL ================= -->
   <div class="modal-overlay" id="checkout-modal">

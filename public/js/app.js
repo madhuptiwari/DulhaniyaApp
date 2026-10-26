@@ -581,6 +581,166 @@ const App = {
     Cart.applyCoupon("BRIDALQUEEN");
     this.openCartDrawer();
     this.showToast(`✨ Added ${selectedCards.length} rituals to cart with VIP privilege savings!`);
+  },
+
+  // ================= BRIDAL ADVISOR ENGINE =================
+  advisorState: {
+    complexion: 'wheatish',
+    ceremony: 'wedding',
+    finish: 'dewy',
+    recommendedServices: []
+  },
+
+  openAdvisorModal() {
+    const modal = document.getElementById('consultation-advisor-modal');
+    if (modal) {
+      modal.classList.add('active');
+      this.goToAdvisorStep(1);
+    }
+  },
+
+  closeAdvisorModal() {
+    const modal = document.getElementById('consultation-advisor-modal');
+    if (modal) modal.classList.remove('active');
+  },
+
+  goToAdvisorStep(stepNum) {
+    for (let i = 1; i <= 4; i++) {
+      const view = document.getElementById(`adv-step-view-${i}`);
+      const pill = document.getElementById(`adv-step-pill-${i}`);
+      if (view) view.style.display = (i === stepNum) ? 'block' : 'none';
+      if (pill) {
+        pill.classList.remove('active', 'completed');
+        if (i === stepNum) pill.classList.add('active');
+        else if (i < stepNum) pill.classList.add('completed');
+      }
+    }
+  },
+
+  selectAdvisorCard(cardEl) {
+    const step = cardEl.getAttribute('data-step');
+    const value = cardEl.getAttribute('data-value');
+    const container = cardEl.parentElement;
+
+    container.querySelectorAll('.advisor-card').forEach(c => c.classList.remove('selected'));
+    cardEl.classList.add('selected');
+
+    if (step === '1') this.advisorState.complexion = value;
+    else if (step === '2') this.advisorState.ceremony = value;
+    else if (step === '3') this.advisorState.finish = value;
+  },
+
+  async generateAdvisorResult() {
+    this.goToAdvisorStep(4);
+    const container = document.getElementById('advisor-result-container');
+    if (!container) return;
+
+    const complexionData = {
+      wheatish: {
+        title: "Wheatish / Warm Golden Indian Undertone",
+        desc: "Ideal matches for radiant gold lehengas and classic red bridal silk sarees.",
+        matches: ["MAC Studio Fix (NC30-NC38)", "Charlotte Tilbury Flawless Filter (Shade 4.5)", "Estée Lauder Double Wear (3W1 Tawny)", "Huda Beauty Rose Quartz Palette"]
+      },
+      fair: {
+        title: "Fair / Rosy Porcelain Complexion",
+        desc: "Formulated for pastel, ivory, blush pink, and lavender wedding couture.",
+        matches: ["MAC Studio Fix (NC15-NC25)", "Charlotte Tilbury Light Wonder (Shade 2)", "NARS Radiant Creamy Concealer (Custard)", "Dior Backstage Rosy Glow"]
+      },
+      dusky: {
+        title: "Dusky / Rich Olive Undertone",
+        desc: "Enhances natural honey warmth, perfect for emerald green, mustard, and deep maroons.",
+        matches: ["MAC Studio Fix (NC40-NC44)", "Fenty Beauty Pro Filt'r (Shade 330)", "Huda Beauty Faux Filter (Butterscotch)", "Anastasia Beverly Hills Soft Glam"]
+      },
+      deep: {
+        title: "Deep / Royal Bronze Complexion",
+        desc: "Rich dimensional contouring tailored for royal jewel tones and sunset metallics.",
+        matches: ["MAC Studio Fix (NC45-NC50)", "Fenty Beauty Pro Filt'r (Shade 385)", "Estée Lauder Double Wear (5W1 Bronze)", "Pat McGrath Mothership Palette"]
+      }
+    }[this.advisorState.complexion] || {};
+
+    const allServices = await DulhaniyaAPI.getServices("all");
+
+    // Match primary & prep services
+    let primaryId = 1, prepId = 6;
+    if (this.advisorState.ceremony === 'haldi') { primaryId = 2; prepId = 18; }
+    else if (this.advisorState.ceremony === 'sangeet') { primaryId = 3; prepId = 16; }
+    else if (this.advisorState.ceremony === 'prebridal') { primaryId = 4; prepId = 13; }
+
+    const primaryService = allServices.find(s => s.id === primaryId) || allServices[0];
+    const prepService = allServices.find(s => s.id === prepId) || allServices[5];
+    this.advisorState.recommendedServices = [primaryService, prepService];
+
+    const originalSum = primaryService.discounted_price + prepService.discounted_price;
+    const bundleDiscount = Math.round(originalSum * 0.15);
+    const finalAmount = originalSum - bundleDiscount;
+
+    container.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #fbcfe8; padding-bottom:14px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span class="badge badge-gold" style="font-size:0.75rem;">AI CURATED PROFILE</span>
+          <h4 style="margin:6px 0 2px; color:var(--primary-dark); font-size:1.25rem;">${complexionData.title}</h4>
+          <p style="font-size:0.82rem; color:var(--slate-600); margin:0;">${complexionData.desc}</p>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:0.75rem; text-transform:uppercase; color:var(--slate-500); font-weight:700;">Finish Technique:</span>
+          <div style="font-weight:800; color:var(--primary); font-size:0.95rem;">${this.advisorState.finish.toUpperCase()} GLOW</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <strong style="font-size:0.82rem; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Tailored Cosmetics Palette Match:</strong>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+          ${(complexionData.matches || []).map(m => `
+            <span style="background:var(--white); border:1px solid #cbd5e1; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; color:#334155;">💄 ${m}</span>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <strong style="font-size:0.82rem; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Curated 2-Step Ceremony Routine:</strong>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+          <div style="background:var(--white); border:1px solid var(--primary-border); border-radius:var(--radius-md); padding:14px;">
+            <span style="font-size:0.7rem; font-weight:800; color:var(--primary);">STEP 1: PRE-CEREMONY PREP</span>
+            <h5 style="margin:4px 0 2px; font-size:0.92rem;">${prepService.title}</h5>
+            <p style="font-size:0.75rem; color:var(--slate-600); margin:0;">${prepService.duration_mins} mins • ${prepService.subtitle || ''}</p>
+            <div style="font-weight:800; color:var(--slate-900); margin-top:6px;">₹${prepService.discounted_price.toLocaleString('en-IN')}</div>
+          </div>
+
+          <div style="background:var(--white); border:1.5px solid var(--primary); border-radius:var(--radius-md); padding:14px; box-shadow:0 2px 8px rgba(157,23,77,0.1);">
+            <span style="font-size:0.7rem; font-weight:800; color:var(--emerald);">STEP 2: SIGNATURE MAKEOVER</span>
+            <h5 style="margin:4px 0 2px; font-size:0.92rem;">${primaryService.title}</h5>
+            <p style="font-size:0.75rem; color:var(--slate-600); margin:0;">${primaryService.duration_mins} mins • Sealed International Kit</p>
+            <div style="font-weight:800; color:var(--primary-dark); margin-top:6px;">₹${primaryService.discounted_price.toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--white); border:1px dashed var(--slate-300); border-radius:var(--radius-sm); padding:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:0.78rem; color:var(--slate-500);">Combined Value: <del>₹${originalSum.toLocaleString('en-IN')}</del></div>
+          <div style="font-size:1.4rem; font-weight:900; color:var(--primary-dark);">Bundle Price: ₹${finalAmount.toLocaleString('en-IN')}</div>
+        </div>
+        <span style="background:var(--emerald-subtle); color:var(--emerald); font-weight:700; font-size:0.8rem; padding:4px 10px; border-radius:12px;">
+          Save ₹${bundleDiscount.toLocaleString('en-IN')} (15% Privilege Off)
+        </span>
+      </div>
+    `;
+  },
+
+  addAdvisorRoutineToCart() {
+    if (!this.advisorState.recommendedServices || this.advisorState.recommendedServices.length === 0) {
+      return;
+    }
+
+    this.advisorState.recommendedServices.forEach(srv => {
+      Cart.addItem(srv, Cart.kitType);
+    });
+
+    Cart.applyCoupon("BRIDALQUEEN");
+    this.closeAdvisorModal();
+    this.openCartDrawer();
+    this.showToast("✨ Curated routine added to your cart with VIP privilege savings!");
   }
 };
 
