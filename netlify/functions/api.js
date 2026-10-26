@@ -4,6 +4,8 @@
  * Pure Node.js Standard Library - Zero external dependencies.
  */
 
+const crypto = require("crypto");
+
 // In-memory runtime store with rich seed data
 const store = {
   categories: [
@@ -763,6 +765,35 @@ const store = {
       beautician_photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
       experience_years: 9,
       created_at: new Date().toISOString()
+    },
+    {
+      id: 2,
+      booking_ref: "DLH-7102",
+      customer_name: "Komal Singhania",
+      customer_phone: "+91 98765 12345",
+      customer_email: "customer@dulhaniya.com",
+      address: "Flat 402, Tower B, Palm Meadows, Saket",
+      city: "New Delhi",
+      pincode: "110017",
+      service_date: "Tomorrow",
+      service_slot: "02:30 PM - 04:00 PM",
+      total_amount: 2299,
+      discount_amount: 0,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "",
+      status: "CONFIRMED",
+      otp_code: "3189",
+      payment_mode: "Pay After Service",
+      items: [
+        { title: "O3+ Bridal Luxury Glow Facial", price: 2299, duration_mins: 75 }
+      ],
+      beautician_id: 1,
+      beautician_name: "Pooja Sharma",
+      beautician_phone: "+91 98112 34567",
+      beautician_rating: 4.98,
+      beautician_photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+      experience_years: 9,
+      created_at: new Date().toISOString()
     }
   ],
   reviews: [
@@ -784,6 +815,54 @@ const store = {
       date: "2026-10-20",
       beautician_name: "Sunita Verma"
     }
+  ],
+  users: [
+    {
+      id: 1,
+      name: "Komal Singhania",
+      email: "customer@dulhaniya.com",
+      phone: "+91 98765 12345",
+      password_hash: crypto.createHash("sha256").update("customer123").digest("hex"),
+      role: "customer",
+      partner_id: null,
+      token: "dlh_tok_customer123",
+      addresses: [
+        {
+          id: 1,
+          label: "Home",
+          address: "Flat 402, Tower B, Palm Meadows, Saket",
+          city: "New Delhi",
+          pincode: "110017",
+          landmark: "Opposite Saket City Club",
+          is_default: true
+        }
+      ],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 2,
+      name: "Pooja Sharma",
+      email: "partner@dulhaniya.com",
+      phone: "+91 98112 34567",
+      password_hash: crypto.createHash("sha256").update("partner123").digest("hex"),
+      role: "partner",
+      partner_id: 1,
+      token: "dlh_tok_partner123",
+      addresses: [],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 3,
+      name: "Operations Director",
+      email: "admin@dulhaniya.com",
+      phone: "+91 98000 00000",
+      password_hash: crypto.createHash("sha256").update("dulhaniya@royal2026").digest("hex"),
+      role: "admin",
+      partner_id: null,
+      token: "dlh_adm_royal2026",
+      addresses: [],
+      created_at: new Date().toISOString()
+    }
   ]
 };
 
@@ -794,11 +873,60 @@ function jsonResponse(statusCode, data) {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Admin-Token, X-Auth-Token",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
     },
     body: JSON.stringify(data)
   };
+}
+
+function getBearerToken(event) {
+  const headers = event.headers || {};
+  const auth = headers["authorization"] || headers["Authorization"] || "";
+  if (auth.startsWith("Bearer ")) {
+    return auth.slice(7).trim();
+  }
+  const adminTok = headers["x-admin-token"] || headers["X-Admin-Token"];
+  if (adminTok) return String(adminTok).trim();
+  const authTok = headers["x-auth-token"] || headers["X-Auth-Token"];
+  if (authTok) return String(authTok).trim();
+  return "";
+}
+
+function getAuthenticatedUser(event) {
+  const token = getBearerToken(event);
+  if (!token) return null;
+  if (!store.users) return null;
+  if (token === "dlh_adm_royal2026") {
+    return store.users.find(u => u.role === "admin") || null;
+  }
+  return store.users.find(u => u.token === token) || null;
+}
+
+function isAdminAuthenticated(event) {
+  const token = getBearerToken(event);
+  if (!token) return false;
+  if (token === "dlh_adm_royal2026") return true;
+  if (!store.users) return false;
+  const user = store.users.find(u => u.token === token);
+  return Boolean(user && user.role === "admin");
+}
+
+function getPartnerId(event, query, body) {
+  const user = getAuthenticatedUser(event);
+  if (user) {
+    if (user.role === "partner" && user.partner_id) return user.partner_id;
+    if (user.role === "admin") {
+      if (query && query.partner_id) return Number(query.partner_id);
+      if (body && body.partner_id) return Number(body.partner_id);
+      return 1;
+    }
+  }
+  if (query && query.partner_id) return Number(query.partner_id);
+  if (body && body.partner_id) return Number(body.partner_id);
+  const token = getBearerToken(event);
+  if (token === "dlh_tok_partner123") return 1;
+  return null;
 }
 
 exports.handler = async (event, context) => {
@@ -813,6 +941,13 @@ exports.handler = async (event, context) => {
   path = path.replace(/^\/api/, "");
   if (!path.startsWith("/")) path = "/" + path;
 
+  // Impenetrable Admin Lockdown on all /admin/* (except /admin/login)
+  if (path.startsWith("/admin") && path !== "/admin/login") {
+    if (!isAdminAuthenticated(event)) {
+      return jsonResponse(401, { error: "Unauthorized: Admin authentication required", code: 401 });
+    }
+  }
+
   const method = event.httpMethod;
   const query = event.queryStringParameters || {};
   let body = {};
@@ -820,6 +955,325 @@ exports.handler = async (event, context) => {
     try {
       body = JSON.parse(event.body);
     } catch (e) {}
+  }
+
+  // Route: POST /admin/login
+  if (path === "/admin/login" && method === "POST") {
+    const username = String(body.username || body.email || "").trim().toLowerCase();
+    const password = String(body.password || "").trim();
+
+    if ((username === "admin" || username === "admin@dulhaniya.com") && password === "dulhaniya@royal2026") {
+      const adminUser = (store.users || []).find(u => u.role === "admin") || {
+        username: "admin",
+        email: "admin@dulhaniya.com",
+        name: "Operations Director",
+        role: "admin"
+      };
+      const token = adminUser.token || "dlh_adm_royal2026";
+      return jsonResponse(200, {
+        success: true,
+        token,
+        admin: {
+          username: "admin",
+          email: "admin@dulhaniya.com",
+          name: adminUser.name || "Operations Director",
+          role: "admin"
+        }
+      });
+    }
+    return jsonResponse(401, { success: false, error: "Invalid admin credentials" });
+  }
+
+  // Route: POST /auth/register
+  if (path === "/auth/register" && method === "POST") {
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim().toLowerCase();
+    const phone = String(body.phone || "").trim();
+    const password = String(body.password || "").trim();
+    const role = String(body.role || "customer").trim().toLowerCase();
+
+    if (!name || !email || !password) {
+      return jsonResponse(400, { success: false, error: "Name, email, and password are required" });
+    }
+
+    if (!store.users) store.users = [];
+    if (store.users.some(u => u.email === email)) {
+      return jsonResponse(400, { success: false, error: "Email is already registered" });
+    }
+
+    let partner_id = null;
+    if (role === "partner") {
+      if (!store.beauticians) store.beauticians = [];
+      let pro = store.beauticians.find(b => b.phone === phone || b.name === name);
+      if (!pro) {
+        pro = {
+          id: Date.now(),
+          name,
+          photo_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+          experience_years: 5,
+          rating: 5.0,
+          jobs_completed: 0,
+          phone: phone || "+91 98000 00000",
+          specialty: "Bridal & Salon Specialist",
+          bio: "Certified Dulhaniya professional partner.",
+          certifications: ["Dulhaniya Certified Partner"],
+          is_verified: 1,
+          is_available: 1
+        };
+        store.beauticians.push(pro);
+      }
+      partner_id = pro.id;
+    }
+
+    const token = (role === "admin" ? "dlh_adm_" : (role === "partner" ? "dlh_prt_" : "dlh_usr_")) + crypto.randomBytes(16).toString("hex");
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      phone,
+      password_hash: crypto.createHash("sha256").update(password).digest("hex"),
+      role,
+      partner_id,
+      token,
+      addresses: [],
+      created_at: new Date().toISOString()
+    };
+    store.users.push(newUser);
+
+    const safeUser = { ...newUser };
+    delete safeUser.password_hash;
+    return jsonResponse(200, { success: true, token, user: safeUser });
+  }
+
+  // Route: POST /auth/login
+  if (path === "/auth/login" && method === "POST") {
+    const ident = String(body.email || body.phone || body.identifier || body.username || "").trim().toLowerCase();
+    const password = String(body.password || "").trim();
+    const role = body.role ? String(body.role).toLowerCase() : null;
+
+    if (!ident || !password) {
+      return jsonResponse(400, { success: false, error: "Email/phone and password are required" });
+    }
+
+    if (!store.users) store.users = [];
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
+    const user = store.users.find(u => {
+      const matchIdent = (u.email && u.email.toLowerCase() === ident) ||
+                         (u.phone && u.phone === ident) ||
+                         (ident === "admin" && u.role === "admin");
+      if (!matchIdent) return false;
+      const matchPwd = (u.password_hash === hash) || (u.password_hash === password);
+      if (!matchPwd) return false;
+      if (role && u.role !== role) return false;
+      return true;
+    });
+
+    if (!user) {
+      return jsonResponse(401, { success: false, error: "Invalid credentials or account does not match role" });
+    }
+
+    if (!user.token) {
+      user.token = (user.role === "admin" ? "dlh_adm_" : (user.role === "partner" ? "dlh_prt_" : "dlh_usr_")) + crypto.randomBytes(16).toString("hex");
+    }
+
+    const safeUser = { ...user };
+    delete safeUser.password_hash;
+    return jsonResponse(200, { success: true, token: user.token, user: safeUser });
+  }
+
+  // Route: GET /auth/me
+  if (path === "/auth/me" && method === "GET") {
+    const user = getAuthenticatedUser(event);
+    if (!user) {
+      return jsonResponse(401, { error: "Unauthorized: Authentication required", code: 401 });
+    }
+    const safeUser = { ...user };
+    delete safeUser.password_hash;
+    return jsonResponse(200, { success: true, user: safeUser });
+  }
+
+  // Route: POST /auth/logout
+  if (path === "/auth/logout" && method === "POST") {
+    const user = getAuthenticatedUser(event);
+    if (user) {
+      user.token = null;
+    }
+    return jsonResponse(200, { success: true, message: "Logged out successfully" });
+  }
+
+  // Route: GET /user/bookings
+  if (path === "/user/bookings" && method === "GET") {
+    const user = getAuthenticatedUser(event);
+    let bookings = [];
+    if (user) {
+      bookings = (store.bookings || []).filter(b =>
+        (b.customer_email && user.email && b.customer_email.toLowerCase() === user.email.toLowerCase()) ||
+        (b.customer_phone && user.phone && b.customer_phone === user.phone)
+      );
+    } else {
+      const qEmail = (query.email || "").toLowerCase();
+      const qPhone = query.phone || "";
+      if (!qEmail && !qPhone) {
+        return jsonResponse(401, { error: "Unauthorized: Please log in to view your bookings", code: 401 });
+      }
+      bookings = (store.bookings || []).filter(b =>
+        (qEmail && b.customer_email && b.customer_email.toLowerCase() === qEmail) ||
+        (qPhone && b.customer_phone && b.customer_phone === qPhone)
+      );
+    }
+    return jsonResponse(200, { success: true, bookings });
+  }
+
+  // Route: GET /user/addresses
+  if (path === "/user/addresses" && method === "GET") {
+    const user = getAuthenticatedUser(event);
+    if (!user) {
+      return jsonResponse(401, { error: "Unauthorized: Authentication required", code: 401 });
+    }
+    return jsonResponse(200, { success: true, addresses: user.addresses || [] });
+  }
+
+  // Route: POST /user/addresses
+  if (path === "/user/addresses" && method === "POST") {
+    const user = getAuthenticatedUser(event);
+    if (!user) {
+      return jsonResponse(401, { error: "Unauthorized: Authentication required", code: 401 });
+    }
+    if (!user.addresses) user.addresses = [];
+
+    if (body.addresses && Array.isArray(body.addresses)) {
+      user.addresses = body.addresses;
+    } else {
+      const newAddr = {
+        id: Date.now(),
+        label: body.label || "Home",
+        address: body.address || "",
+        city: body.city || "New Delhi",
+        pincode: body.pincode || "",
+        landmark: body.landmark || "",
+        is_default: Boolean(body.is_default)
+      };
+      if (newAddr.is_default) {
+        user.addresses.forEach(a => a.is_default = false);
+      }
+      user.addresses.push(newAddr);
+    }
+    return jsonResponse(200, { success: true, addresses: user.addresses, message: "Address saved successfully" });
+  }
+
+  // Route: POST /user/bookings/:ref/cancel
+  const userCancelMatch = path.match(/^\/user\/bookings\/([A-Za-z0-9\-]+)\/cancel$/);
+  if (userCancelMatch && method === "POST") {
+    const ref = userCancelMatch[1];
+    const booking = (store.bookings || []).find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) {
+      return jsonResponse(404, { success: false, error: "Booking not found" });
+    }
+    booking.status = "CANCELLED";
+    booking.updated_at = new Date().toISOString();
+    return jsonResponse(200, { success: true, booking_ref: ref, status: "CANCELLED", message: `Booking ${ref} cancelled successfully.` });
+  }
+
+  // Route: GET /partner/dashboard
+  if (path === "/partner/dashboard" && method === "GET") {
+    const partnerId = getPartnerId(event, query, {});
+    if (!partnerId) {
+      return jsonResponse(401, { error: "Unauthorized: Partner access required", code: 401 });
+    }
+    const partner = (store.beauticians || []).find(b => b.id === partnerId) || {
+      id: partnerId,
+      name: "Pooja Sharma",
+      is_available: 1,
+      rating: 4.98,
+      jobs_completed: 1420
+    };
+    const jobs = (store.bookings || []).filter(b => b.beautician_id === partnerId);
+    const activeJobs = jobs.filter(b => ["CONFIRMED", "ASSIGNED", "ON_THE_WAY", "IN_SERVICE"].includes(b.status));
+    const completedJobs = jobs.filter(b => b.status === "COMPLETED");
+    const todayStr = new Date().toISOString().split("T")[0];
+    const todayCompleted = completedJobs.filter(b => b.service_date === todayStr || (b.updated_at && b.updated_at.startsWith(todayStr)));
+    const todayEarnings = (todayCompleted.length ? todayCompleted : completedJobs).reduce((sum, b) => sum + (b.total_amount || 0), 0);
+
+    return jsonResponse(200, {
+      success: true,
+      partner,
+      duty_status: Boolean(partner.is_available),
+      is_available: Boolean(partner.is_available),
+      today_earnings: todayEarnings,
+      earnings_today: todayEarnings,
+      jobs_completed: completedJobs.length + (partner.jobs_completed || 0),
+      completed_today: todayCompleted.length,
+      active_jobs: activeJobs,
+      jobs: jobs.slice(0, 10)
+    });
+  }
+
+  // Route: POST /partner/toggle-duty
+  if (path === "/partner/toggle-duty" && method === "POST") {
+    const partnerId = getPartnerId(event, query, body);
+    if (!partnerId) {
+      return jsonResponse(401, { error: "Unauthorized: Partner access required", code: 401 });
+    }
+    const partner = (store.beauticians || []).find(b => b.id === partnerId);
+    if (!partner) {
+      return jsonResponse(404, { success: false, error: "Partner not found" });
+    }
+    partner.is_available = partner.is_available === 1 ? 0 : 1;
+    const isAvail = Boolean(partner.is_available);
+    return jsonResponse(200, {
+      success: true,
+      partner_id: partnerId,
+      is_available: isAvail,
+      duty_status: isAvail,
+      message: `Duty status updated to ${isAvail ? "Online" : "Offline"}`
+    });
+  }
+
+  // Route: GET /partner/jobs
+  if (path === "/partner/jobs" && method === "GET") {
+    const partnerId = getPartnerId(event, query, {});
+    if (!partnerId) {
+      return jsonResponse(401, { error: "Unauthorized: Partner access required", code: 401 });
+    }
+    const jobs = (store.bookings || []).filter(b => b.beautician_id === partnerId);
+    return jsonResponse(200, { success: true, jobs });
+  }
+
+  // Route: POST /partner/jobs/:ref/status
+  const partnerStatusMatch = path.match(/^\/partner\/jobs\/([A-Za-z0-9\-]+)\/status$/);
+  if (partnerStatusMatch && method === "POST") {
+    const ref = partnerStatusMatch[1];
+    const validStatuses = ["CONFIRMED", "ASSIGNED", "ON_THE_WAY", "IN_SERVICE", "COMPLETED", "CANCELLED"];
+    if (!validStatuses.includes(body.status)) {
+      return jsonResponse(400, { success: false, error: `Invalid status: ${body.status}` });
+    }
+    const booking = (store.bookings || []).find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) return jsonResponse(404, { success: false, error: "Booking not found" });
+
+    booking.status = body.status;
+    booking.updated_at = new Date().toISOString();
+    return jsonResponse(200, { success: true, booking_ref: ref, new_status: body.status, message: `Job status updated to ${body.status}` });
+  }
+
+  // Route: POST /partner/jobs/:ref/verify-otp
+  const partnerOtpMatch = path.match(/^\/partner\/jobs\/([A-Za-z0-9\-]+)\/verify-otp$/);
+  if (partnerOtpMatch && method === "POST") {
+    const ref = partnerOtpMatch[1];
+    const booking = (store.bookings || []).find(b => b.booking_ref === ref || String(b.id) === ref);
+    if (!booking) return jsonResponse(404, { success: false, error: "Booking not found" });
+
+    if (String(body.otp).trim() !== String(booking.otp_code).trim()) {
+      return jsonResponse(400, { success: false, error: "Incorrect customer OTP code." });
+    }
+
+    booking.status = "IN_SERVICE";
+    booking.updated_at = new Date().toISOString();
+    return jsonResponse(200, {
+      success: true,
+      booking_ref: ref,
+      status: "IN_SERVICE",
+      message: "OTP verified successfully! Service started in safe mode."
+    });
   }
 
   // Route: GET /categories

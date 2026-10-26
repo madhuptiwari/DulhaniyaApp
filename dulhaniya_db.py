@@ -6,6 +6,8 @@ import sqlite3
 import json
 import os
 import random
+import hashlib
+import secrets
 from datetime import datetime, timedelta
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "dulhaniya.db")
@@ -149,15 +151,28 @@ def init_db():
     )
     """)
 
+    # 8. Users (Customers, Partners, Admin)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        phone TEXT,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'customer',
+        partner_id INTEGER,
+        token TEXT,
+        addresses TEXT, -- JSON array
+        created_at TEXT NOT NULL
+    )
+    """)
+
     conn.commit()
     seed_if_empty(conn)
     conn.close()
 
-def seed_if_empty(conn):
+def seed_catalog_data(conn):
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM categories")
-    if cur.fetchone()[0] > 0:
-        return
 
     # Seed Categories
     categories = [
@@ -567,6 +582,375 @@ def seed_if_empty(conn):
     """, (booking_id, 13, "Dulhaniya Bridal Crystal Spa Pedicure", 1299, 60, "dulhaniya_kit"))
 
     conn.commit()
+
+def seed_users_data(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM users")
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    if cur.fetchone()[0] == 0:
+        demo_users = [
+            (
+                "Komal Singhania",
+                "customer@dulhaniya.com",
+                "+91 98765 12345",
+                hash_password("customer123"),
+                "customer",
+                None,
+                "dlh_tok_customer123",
+                json.dumps([
+                    {
+                        "id": 1,
+                        "label": "Home",
+                        "address": "Flat 402, Tower B, Palm Meadows, Saket",
+                        "city": "New Delhi",
+                        "pincode": "110017",
+                        "landmark": "Opposite Saket City Club",
+                        "is_default": True
+                    }
+                ]),
+                now_str
+            ),
+            (
+                "Pooja Sharma",
+                "partner@dulhaniya.com",
+                "+91 98112 34567",
+                hash_password("partner123"),
+                "partner",
+                1,
+                "dlh_tok_partner123",
+                json.dumps([]),
+                now_str
+            ),
+            (
+                "Operations Director",
+                "admin@dulhaniya.com",
+                "+91 98000 00000",
+                hash_password("dulhaniya@royal2026"),
+                "admin",
+                None,
+                "dlh_adm_royal2026",
+                json.dumps([]),
+                now_str
+            )
+        ]
+        cur.executemany("""
+        INSERT INTO users (name, email, phone, password_hash, role, partner_id, token, addresses, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, demo_users)
+        conn.commit()
+
+    # Update any existing Komal booking or insert
+    cur.execute("UPDATE bookings SET customer_email = 'customer@dulhaniya.com' WHERE customer_phone = '+91 98765 12345' AND (customer_email IS NULL OR customer_email = '' OR customer_email = 'komal.s@example.com')")
+    conn.commit()
+    cur.execute("SELECT COUNT(*) FROM bookings WHERE customer_email = 'customer@dulhaniya.com' OR customer_phone = '+91 98765 12345'")
+    if cur.fetchone()[0] == 0:
+        demo_ref_komal = "DLH-7102"
+        demo_otp_komal = "3189"
+        cur.execute("""
+        INSERT INTO bookings (
+            booking_ref, customer_name, customer_phone, customer_email,
+            address, city, pincode, service_date, service_slot,
+            beautician_id, total_amount, discount_amount, kit_type,
+            coupon_code, status, otp_code, payment_mode, payment_status,
+            created_at, updated_at, beautician_lat, beautician_lng, special_notes
+        ) VALUES (
+            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, 'CONFIRMED', ?, 'Pay After Service', 'PENDING',
+            ?, ?, 28.6289, 77.2065, 'Please sanitize tools before service.'
+        )
+        """, (
+            demo_ref_komal, "Komal Singhania", "+91 98765 12345", "customer@dulhaniya.com",
+            "Flat 402, Tower B, Palm Meadows, Saket", "New Delhi", "110017",
+            (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d"), "02:30 PM - 04:00 PM",
+            1, 2299, 0, "dulhaniya_kit",
+            "", demo_otp_komal, now_str, now_str
+        ))
+        b2_id = cur.lastrowid
+        cur.execute("""
+        INSERT INTO booking_items (booking_id, service_id, title, price, duration_mins, kit_choice)
+        VALUES (?, 6, 'O3+ Bridal Luxury Glow Facial', 2299, 75, 'dulhaniya_kit')
+        """, (b2_id,))
+        conn.commit()
+
+def seed_if_empty(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM categories")
+    if cur.fetchone()[0] == 0:
+        seed_catalog_data(conn)
+    seed_users_data(conn)
+
+# ----------------- User Authentication & Management Helpers -----------------
+
+def hash_password(password: str) -> str:
+    if not password:
+        return ""
+    return hashlib.sha256(password.strip().encode("utf-8")).hexdigest()
+
+def verify_password(password: str, hashed: str) -> bool:
+    if not password or not hashed:
+        return False
+    return hashed == password or hashed == hash_password(password)
+
+def generate_token(prefix: str = "dlh_tok_") -> str:
+    return f"{prefix}{secrets.token_hex(16)}"
+
+def get_user_by_id(user_id):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        row = cur.fetchone()
+        if not row:
+            return None
+        u = dict(row)
+        u["addresses"] = json.loads(u["addresses"]) if u["addresses"] else []
+        return u
+    finally:
+        conn.close()
+
+def get_user_by_email(email):
+    if not email:
+        return None
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", (email.strip(),))
+        row = cur.fetchone()
+        if not row:
+            return None
+        u = dict(row)
+        u["addresses"] = json.loads(u["addresses"]) if u["addresses"] else []
+        return u
+    finally:
+        conn.close()
+
+def get_user_by_token(token):
+    if not token:
+        return None
+    token = token.strip()
+    if token.startswith("Bearer "):
+        token = token[7:].strip()
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE token = ?", (token,))
+        row = cur.fetchone()
+        if not row:
+            # Check hardcoded default admin token
+            if token == "dlh_adm_royal2026":
+                cur.execute("SELECT * FROM users WHERE role = 'admin' LIMIT 1")
+                row = cur.fetchone()
+                if row:
+                    u = dict(row)
+                    u["addresses"] = json.loads(u["addresses"]) if u["addresses"] else []
+                    return u
+            return None
+        u = dict(row)
+        u["addresses"] = json.loads(u["addresses"]) if u["addresses"] else []
+        return u
+    finally:
+        conn.close()
+
+def get_user_by_identifier(identifier):
+    if not identifier:
+        return None
+    ident = str(identifier).strip()
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        if ident.lower() in ("admin", "admin@dulhaniya.com"):
+            cur.execute("SELECT * FROM users WHERE role = 'admin' LIMIT 1")
+        else:
+            cur.execute("SELECT * FROM users WHERE LOWER(email) = LOWER(?) OR phone = ?", (ident, ident))
+        row = cur.fetchone()
+        if not row:
+            return None
+        u = dict(row)
+        u["addresses"] = json.loads(u["addresses"]) if u["addresses"] else []
+        return u
+    finally:
+        conn.close()
+
+def create_user(name, email, phone, password, role="customer", partner_id=None, addresses=None, token=None):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        pwd_hash = hash_password(password)
+        addr_json = json.dumps(addresses if addresses is not None else [])
+        if token is None:
+            prefix = "dlh_adm_" if role == "admin" else ("dlh_prt_" if role == "partner" else "dlh_usr_")
+            token = generate_token(prefix)
+
+        cur.execute("""
+        INSERT INTO users (name, email, phone, password_hash, role, partner_id, token, addresses, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (name, email.strip().lower(), phone, pwd_hash, role, partner_id, token, addr_json, now_str))
+        user_id = cur.lastrowid
+        conn.commit()
+
+        return {
+            "id": user_id,
+            "name": name,
+            "email": email.strip().lower(),
+            "phone": phone,
+            "role": role,
+            "partner_id": partner_id,
+            "token": token,
+            "addresses": addresses if addresses is not None else []
+        }
+    finally:
+        conn.close()
+
+def authenticate_user(identifier, password, role=None):
+    user = get_user_by_identifier(identifier)
+    if not user:
+        return None
+    if not verify_password(password, user["password_hash"]):
+        return None
+    if role and user["role"] != role:
+        return None
+
+    token = user["token"]
+    if not token:
+        prefix = "dlh_adm_" if user["role"] == "admin" else ("dlh_prt_" if user["role"] == "partner" else "dlh_usr_")
+        token = generate_token(prefix)
+        update_user_token(user["id"], token)
+        user["token"] = token
+
+    safe_user = {k: v for k, v in user.items() if k != "password_hash"}
+    return {"user": safe_user, "token": token}
+
+def update_user_token(user_id, token):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE users SET token = ? WHERE id = ?", (token, user_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+def update_user_addresses(user_id, addresses):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        addr_json = json.dumps(addresses)
+        cur.execute("UPDATE users SET addresses = ? WHERE id = ?", (addr_json, user_id))
+        conn.commit()
+        return addresses
+    finally:
+        conn.close()
+
+def get_user_bookings(user_identifier=None, email=None, phone=None):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        clauses = []
+        params = []
+        if user_identifier:
+            ident = str(user_identifier).strip()
+            clauses.append("(LOWER(b.customer_email) = LOWER(?) OR b.customer_phone = ? OR b.customer_name = ?)")
+            params.extend([ident, ident, ident])
+        if email:
+            clauses.append("LOWER(b.customer_email) = LOWER(?)")
+            params.append(str(email).strip())
+        if phone:
+            clauses.append("b.customer_phone = ?")
+            params.append(str(phone).strip())
+
+        if not clauses:
+            return []
+
+        sql = f"""
+        SELECT b.*, be.name as beautician_name, be.phone as beautician_phone, be.photo_url as beautician_photo
+        FROM bookings b
+        LEFT JOIN beauticians be ON b.beautician_id = be.id
+        WHERE {' OR '.join(clauses)}
+        ORDER BY b.id DESC
+        """
+        cur.execute(sql, params)
+        bookings = []
+        for r in cur.fetchall():
+            b = dict(r)
+            cur.execute("SELECT * FROM booking_items WHERE booking_id = ?", (b["id"],))
+            b["items"] = [dict(it) for it in cur.fetchall()]
+            bookings.append(b)
+        return bookings
+    finally:
+        conn.close()
+
+def get_partner_dashboard_data(partner_id):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM beauticians WHERE id = ?", (partner_id,))
+        b_row = cur.fetchone()
+        if not b_row:
+            return None
+        partner = dict(b_row)
+        partner["certifications"] = json.loads(partner["certifications"]) if partner["certifications"] else []
+
+        cur.execute("SELECT * FROM bookings WHERE beautician_id = ? ORDER BY id DESC", (partner_id,))
+        all_jobs = []
+        for r in cur.fetchall():
+            job = dict(r)
+            cur.execute("SELECT * FROM booking_items WHERE booking_id = ?", (job["id"],))
+            job["items"] = [dict(it) for it in cur.fetchall()]
+            all_jobs.append(job)
+
+        active_jobs = [j for j in all_jobs if j["status"] in ("CONFIRMED", "ASSIGNED", "ON_THE_WAY", "IN_SERVICE")]
+        completed_jobs = [j for j in all_jobs if j["status"] == "COMPLETED"]
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_completed = [j for j in completed_jobs if (j.get("service_date") == today_str or (j.get("updated_at") and j["updated_at"].startswith(today_str)))]
+        today_earnings = sum(j.get("total_amount", 0) for j in (today_completed if today_completed else completed_jobs))
+
+        return {
+            "partner": partner,
+            "duty_status": bool(partner["is_available"]),
+            "is_available": bool(partner["is_available"]),
+            "today_earnings": today_earnings,
+            "earnings_today": today_earnings,
+            "jobs_completed": len(completed_jobs) + (partner.get("jobs_completed", 0) or 0),
+            "completed_today": len(today_completed),
+            "active_jobs": active_jobs,
+            "recent_jobs": all_jobs[:10]
+        }
+    finally:
+        conn.close()
+
+def get_partner_jobs(partner_id):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM bookings WHERE beautician_id = ? ORDER BY id DESC", (partner_id,))
+        jobs = []
+        for r in cur.fetchall():
+            job = dict(r)
+            cur.execute("SELECT * FROM booking_items WHERE booking_id = ?", (job["id"],))
+            job["items"] = [dict(it) for it in cur.fetchall()]
+            jobs.append(job)
+        return jobs
+    finally:
+        conn.close()
+
+def update_partner_duty(partner_id, is_available=None):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        if is_available is None:
+            cur.execute("UPDATE beauticians SET is_available = CASE WHEN is_available = 1 THEN 0 ELSE 1 END WHERE id = ?", (partner_id,))
+        else:
+            val = 1 if is_available else 0
+            cur.execute("UPDATE beauticians SET is_available = ? WHERE id = ?", (val, partner_id))
+        conn.commit()
+        cur.execute("SELECT is_available FROM beauticians WHERE id = ?", (partner_id,))
+        row = cur.fetchone()
+        return bool(row["is_available"]) if row else False
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     init_db()

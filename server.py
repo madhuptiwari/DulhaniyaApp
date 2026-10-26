@@ -13,7 +13,13 @@ import sqlite3
 import random
 from datetime import datetime, timedelta
 
-from dulhaniya_db import get_connection, init_db
+from dulhaniya_db import (
+    get_connection, init_db, hash_password, verify_password,
+    generate_token, get_user_by_id, get_user_by_email, get_user_by_token,
+    get_user_by_identifier, create_user, authenticate_user,
+    update_user_token, update_user_addresses, get_user_bookings,
+    get_partner_dashboard_data, get_partner_jobs, update_partner_duty
+)
 
 import sys
 if hasattr(sys.stdout, 'reconfigure'):
@@ -32,9 +38,33 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         # Enable CORS for local testing and disable cache during rapid preview
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Token, X-Auth-Token")
         self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         super().end_headers()
+
+    def get_bearer_token(self):
+        auth = self.headers.get("Authorization", "")
+        if auth.startswith("Bearer "):
+            return auth[7:].strip()
+        admin_tok = self.headers.get("X-Admin-Token", "").strip()
+        if admin_tok:
+            return admin_tok
+        return self.headers.get("X-Auth-Token", "").strip()
+
+    def get_authenticated_user(self):
+        token = self.get_bearer_token()
+        if not token:
+            return None
+        return get_user_by_token(token)
+
+    def is_admin_authenticated(self):
+        token = self.get_bearer_token()
+        if not token:
+            return False
+        if token == "dlh_adm_royal2026":
+            return True
+        user = get_user_by_token(token)
+        return bool(user and user.get("role") == "admin")
 
     def do_OPTIONS(self):
         self.send_response(200)
@@ -122,7 +152,79 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         cur = conn.cursor()
 
         try:
-            if path == "/api/categories":
+            # Enforce admin lockdown
+            if path.startswith("/api/admin") and path != "/api/admin/login":
+                if not self.is_admin_authenticated():
+                    return self.send_json({"error": "Unauthorized: Admin authentication required", "code": 401}, 401)
+
+            if path == "/api/auth/me":
+                user = self.get_authenticated_user()
+                if not user:
+                    return self.send_json({"error": "Unauthorized: Authentication required", "code": 401}, 401)
+                safe_user = {k: v for k, v in user.items() if k != "password_hash"}
+                return self.send_json({"success": True, "user": safe_user})
+
+            elif path == "/api/user/bookings":
+                user = self.get_authenticated_user()
+                if user:
+                    bookings = get_user_bookings(email=user.get("email"), phone=user.get("phone"))
+                else:
+                    q_email = query.get("email", [None])[0]
+                    q_phone = query.get("phone", [None])[0]
+                    if not q_email and not q_phone:
+                        return self.send_json({"error": "Unauthorized: Please log in to view your bookings", "code": 401}, 401)
+                    bookings = get_user_bookings(email=q_email, phone=q_phone)
+                return self.send_json({"success": True, "bookings": bookings})
+
+            elif path == "/api/user/addresses":
+                user = self.get_authenticated_user()
+                if not user:
+                    return self.send_json({"error": "Unauthorized: Authentication required", "code": 401}, 401)
+                return self.send_json({"success": True, "addresses": user.get("addresses", [])})
+
+            elif path == "/api/partner/dashboard":
+                user = self.get_authenticated_user()
+                partner_id = None
+                if user:
+                    if user.get("role") == "partner" and user.get("partner_id"):
+                        partner_id = user["partner_id"]
+                    elif user.get("role") == "admin":
+                        partner_id = int(query.get("partner_id", [1])[0])
+                if not partner_id:
+                    q_pid = query.get("partner_id", [None])[0]
+                    if q_pid:
+                        partner_id = int(q_pid)
+                    elif self.get_bearer_token() == "dlh_tok_partner123":
+                        partner_id = 1
+                if not partner_id:
+                    return self.send_json({"error": "Unauthorized: Partner access required", "code": 401}, 401)
+
+                data = get_partner_dashboard_data(partner_id)
+                if not data:
+                    return self.send_json({"success": False, "error": "Partner profile not found"}, 404)
+                return self.send_json({"success": True, **data})
+
+            elif path == "/api/partner/jobs":
+                user = self.get_authenticated_user()
+                partner_id = None
+                if user:
+                    if user.get("role") == "partner" and user.get("partner_id"):
+                        partner_id = user["partner_id"]
+                    elif user.get("role") == "admin":
+                        partner_id = int(query.get("partner_id", [1])[0])
+                if not partner_id:
+                    q_pid = query.get("partner_id", [None])[0]
+                    if q_pid:
+                        partner_id = int(q_pid)
+                    elif self.get_bearer_token() == "dlh_tok_partner123":
+                        partner_id = 1
+                if not partner_id:
+                    return self.send_json({"error": "Unauthorized: Partner access required", "code": 401}, 401)
+
+                jobs = get_partner_jobs(partner_id)
+                return self.send_json({"success": True, "jobs": jobs})
+
+            elif path == "/api/categories":
                 cur.execute("""
                 SELECT c.*, COUNT(s.id) as service_count
                 FROM categories c
@@ -336,7 +438,173 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         cur = conn.cursor()
 
         try:
-            if path == "/api/coupons/apply":
+            # Enforce admin lockdown
+            if path.startswith("/api/admin") and path != "/api/admin/login":
+                if not self.is_admin_authenticated():
+                    return self.send_json({"error": "Unauthorized: Admin authentication required", "code": 401}, 401)
+
+            if path == "/api/admin/login":
+                username = str(body.get("username") or body.get("email") or "").strip()
+                password = str(body.get("password") or "").strip()
+                if (username.lower() in ("admin", "admin@dulhaniya.com")) and (password == "dulhaniya@royal2026"):
+                    admin_user = get_user_by_email("admin@dulhaniya.com")
+                    token = (admin_user.get("token") if admin_user else None) or "dlh_adm_royal2026"
+                    return self.send_json({
+                        "success": True,
+                        "token": token,
+                        "admin": {
+                            "username": "admin",
+                            "email": "admin@dulhaniya.com",
+                            "name": admin_user["name"] if admin_user else "Operations Director",
+                            "role": "admin"
+                        }
+                    })
+                return self.send_json({"success": False, "error": "Invalid admin credentials"}, 401)
+
+            elif path == "/api/auth/register":
+                name = (body.get("name") or "").strip()
+                email = (body.get("email") or "").strip().lower()
+                phone = (body.get("phone") or "").strip()
+                password = str(body.get("password") or "").strip()
+                role = (body.get("role") or "customer").strip().lower()
+
+                if not name or not email or not password:
+                    return self.send_json({"success": False, "error": "Name, email, and password are required"}, 400)
+
+                existing = get_user_by_email(email)
+                if existing:
+                    return self.send_json({"success": False, "error": "Email is already registered"}, 400)
+
+                partner_id = None
+                if role == "partner":
+                    cur.execute("SELECT id FROM beauticians WHERE phone = ? OR name = ?", (phone, name))
+                    brow = cur.fetchone()
+                    if brow:
+                        partner_id = brow["id"]
+                    else:
+                        cur.execute("""
+                        INSERT INTO beauticians (name, phone, specialty, experience_years, bio, certifications, is_verified, is_available)
+                        VALUES (?, ?, 'Bridal & Salon Specialist', 5, 'Certified Dulhaniya professional partner.', '["Dulhaniya Certified Partner"]', 1, 1)
+                        """, (name, phone or "+91 98000 00000"))
+                        partner_id = cur.lastrowid
+                        conn.commit()
+
+                user = create_user(name, email, phone, password, role=role, partner_id=partner_id)
+                safe_user = {k: v for k, v in user.items() if k != "password_hash"}
+                return self.send_json({"success": True, "token": user["token"], "user": safe_user})
+
+            elif path == "/api/auth/login":
+                ident = str(body.get("email") or body.get("phone") or body.get("identifier") or body.get("username") or "").strip()
+                password = str(body.get("password") or "").strip()
+                role = body.get("role")
+
+                if not ident or not password:
+                    return self.send_json({"success": False, "error": "Email/phone and password are required"}, 400)
+
+                auth_res = authenticate_user(ident, password, role=role)
+                if not auth_res:
+                    return self.send_json({"success": False, "error": "Invalid credentials or account does not match role"}, 401)
+
+                return self.send_json({"success": True, "token": auth_res["token"], "user": auth_res["user"]})
+
+            elif path == "/api/auth/logout":
+                user = self.get_authenticated_user()
+                if user:
+                    update_user_token(user["id"], None)
+                return self.send_json({"success": True, "message": "Logged out successfully"})
+
+            elif path == "/api/user/addresses":
+                user = self.get_authenticated_user()
+                if not user:
+                    return self.send_json({"error": "Unauthorized: Authentication required", "code": 401}, 401)
+
+                addresses = list(user.get("addresses", []))
+                if "addresses" in body and isinstance(body["addresses"], list):
+                    addresses = body["addresses"]
+                else:
+                    new_addr = {
+                        "id": int(datetime.now().timestamp() * 1000),
+                        "label": body.get("label", "Home"),
+                        "address": body.get("address", ""),
+                        "city": body.get("city", "New Delhi"),
+                        "pincode": body.get("pincode", ""),
+                        "landmark": body.get("landmark", ""),
+                        "is_default": bool(body.get("is_default", False))
+                    }
+                    if new_addr["is_default"]:
+                        for a in addresses:
+                            a["is_default"] = False
+                    addresses.append(new_addr)
+
+                saved = update_user_addresses(user["id"], addresses)
+                return self.send_json({"success": True, "addresses": saved, "message": "Address saved successfully"})
+
+            elif path.startswith("/api/user/bookings/") and path.endswith("/cancel"):
+                ref = path.split("/")[4]
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE bookings SET status = 'CANCELLED', updated_at = ? WHERE booking_ref = ? OR id = ?",
+                            (now_str, ref, ref))
+                conn.commit()
+                return self.send_json({"success": True, "booking_ref": ref, "status": "CANCELLED", "message": f"Booking {ref} cancelled successfully."})
+
+            elif path == "/api/partner/toggle-duty":
+                user = self.get_authenticated_user()
+                partner_id = None
+                if user:
+                    if user.get("role") == "partner" and user.get("partner_id"):
+                        partner_id = user["partner_id"]
+                    elif user.get("role") == "admin":
+                        partner_id = int(body.get("partner_id", 1))
+                if not partner_id:
+                    b_pid = body.get("partner_id")
+                    if b_pid:
+                        partner_id = int(b_pid)
+                    elif self.get_bearer_token() == "dlh_tok_partner123":
+                        partner_id = 1
+                if not partner_id:
+                    return self.send_json({"error": "Unauthorized: Partner access required", "code": 401}, 401)
+
+                new_status = update_partner_duty(partner_id)
+                return self.send_json({
+                    "success": True,
+                    "partner_id": partner_id,
+                    "is_available": new_status,
+                    "duty_status": new_status,
+                    "message": f"Duty status updated to {'Online' if new_status else 'Offline'}"
+                })
+
+            elif path.startswith("/api/partner/jobs/") and path.endswith("/status"):
+                ref = path.split("/")[4]
+                new_status = body.get("status", "ON_THE_WAY")
+                valid_statuses = ["CONFIRMED", "ASSIGNED", "ON_THE_WAY", "IN_SERVICE", "COMPLETED", "CANCELLED"]
+                if new_status not in valid_statuses:
+                    return self.send_json({"success": False, "error": f"Invalid status: {new_status}"}, 400)
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE bookings SET status = ?, updated_at = ? WHERE booking_ref = ? OR id = ?",
+                            (new_status, now_str, ref, ref))
+                conn.commit()
+                return self.send_json({"success": True, "booking_ref": ref, "new_status": new_status, "message": f"Job status updated to {new_status}"})
+
+            elif path.startswith("/api/partner/jobs/") and path.endswith("/verify-otp"):
+                ref = path.split("/")[4]
+                entered_otp = str(body.get("otp", "")).strip()
+                cur.execute("SELECT id, otp_code, status FROM bookings WHERE booking_ref = ? OR id = ?", (ref, ref))
+                b = cur.fetchone()
+                if not b:
+                    return self.send_json({"success": False, "error": "Booking not found"}, 404)
+                if str(b["otp_code"]).strip() != entered_otp:
+                    return self.send_json({"success": False, "error": "Incorrect OTP. Please check the code with customer."}, 400)
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE bookings SET status = 'IN_SERVICE', updated_at = ? WHERE id = ?", (now_str, b["id"]))
+                conn.commit()
+                return self.send_json({
+                    "success": True,
+                    "booking_ref": ref,
+                    "status": "IN_SERVICE",
+                    "message": "OTP verified successfully! Service started in safe mode."
+                })
+
+            elif path == "/api/coupons/apply":
                 code = (body.get("code") or "").strip().upper()
                 subtotal = int(body.get("subtotal", 0))
 
@@ -705,6 +973,10 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
         conn = get_connection()
         cur = conn.cursor()
         try:
+            if path.startswith("/api/admin") and path != "/api/admin/login":
+                if not self.is_admin_authenticated():
+                    return self.send_json({"error": "Unauthorized: Admin authentication required", "code": 401}, 401)
+
             parts = path.strip("/").split("/")
             # Path format: api/admin/{resource}/{id}
             if len(parts) >= 4 and parts[1] == "admin":

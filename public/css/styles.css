@@ -2376,3 +2376,427 @@ select:focus:not(:focus-visible) {
   content-visibility: auto;
   contain-intrinsic-size: 0 400px;
 }
+
+/* ==========================================================================
+   Universal Authentication, Customer Portal, Partner & Admin Suite
+   ========================================================================== */
+
+/* Navbar Authentication States & Avatar Pill */
+.nav-auth-container {
+  display: flex;
+  align-items: center;
+}
+
+.btn-nav-signin {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(157, 23, 77, 0.2);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-nav-signin:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(157, 23, 77, 0.3);
+  opacity: 0.96;
+}
+
+.user-profile-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-avatar-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 5px;
+  background: var(--primary-subtle);
+  border: 1.5px solid var(--primary-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-avatar-pill:hover {
+  background: #fce7f3;
+  border-color: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-avatar-pill .avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(157, 23, 77, 0.25);
+}
+
+.nav-avatar-pill .user-pill-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.nav-avatar-pill .user-pill-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+
+.nav-avatar-pill .user-pill-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.nav-avatar-pill .chevron-icon {
+  color: var(--slate-500);
+  transition: transform var(--transition-fast);
+}
+
+/* User Dropdown Menu */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 250px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.15),
+              0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  z-index: 100;
+  overflow: hidden;
+  animation: modalSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.user-dropdown-header {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fff 100%);
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.user-dropdown-items {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--slate-700);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.user-dropdown-item:hover {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+}
+
+.user-dropdown-item.item-danger:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.user-booking-count-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--emerald-subtle);
+  color: var(--emerald);
+  padding: 2px 6px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--slate-100);
+  margin: 4px 6px;
+}
+
+/* Universal Auth Modal & Role Tabs */
+.auth-modal-content {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(157, 23, 77, 0.25);
+  border: 1.5px solid var(--primary-border);
+}
+
+.auth-modal-header {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fff 100%);
+  border-bottom: 1px solid var(--primary-border);
+}
+
+.role-tabs-container {
+  display: flex;
+  background: var(--slate-100);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid var(--slate-200);
+}
+
+.role-tab-btn {
+  flex: 1;
+  padding: 9px 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--slate-600);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.role-tab-btn.active {
+  background: var(--white);
+  color: var(--primary-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.role-tab-btn.admin-tab.active {
+  background: var(--slate-900);
+  color: var(--gold-light);
+}
+
+.demo-credentials-banner {
+  background: var(--gold-subtle);
+  border: 1px solid var(--gold-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.demo-header-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.demo-buttons-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-demo-fill {
+  background: var(--white);
+  border: 1px solid var(--gold);
+  color: var(--slate-900);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+}
+
+.btn-demo-fill:hover {
+  background: var(--gold);
+  color: #fff;
+}
+
+.mode-toggle-bar {
+  display: flex;
+  border-bottom: 2px solid var(--slate-100);
+  margin: 16px 0;
+}
+
+.mode-toggle-tab {
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--slate-400);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mode-toggle-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.auth-input-group {
+  margin-bottom: 14px;
+}
+
+.auth-input-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--slate-700);
+  margin-bottom: 4px;
+}
+
+.auth-input-wrapper {
+  position: relative;
+}
+
+.auth-input-wrapper input,
+.auth-input-wrapper select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px 10px 38px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--slate-900);
+  background: var(--slate-50);
+  transition: all var(--transition-fast);
+}
+
+.auth-input-wrapper input:focus,
+.auth-input-wrapper select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(157, 23, 77, 0.1);
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--slate-400);
+  pointer-events: none;
+  font-size: 0.95rem;
+}
+
+.btn-submit-auth {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(157, 23, 77, 0.25);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-submit-auth:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(157, 23, 77, 0.3);
+}
+
+.btn-submit-auth.admin-style {
+  background: linear-gradient(135deg, var(--slate-900) 0%, #1e1b4b 100%);
+  color: var(--gold-light);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+}
+
+/* User Booking Cards */
+.user-booking-card {
+  transition: all var(--transition-fast);
+}
+
+.user-booking-card:hover {
+  border-color: var(--primary-border);
+  box-shadow: 0 4px 16px rgba(157, 23, 77, 0.08);
+}
+
+/* Printable Luxury Invoice Rules */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-invoice-content,
+  #printable-invoice-content * {
+    visibility: visible;
+  }
+  #printable-invoice-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: #fff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Mobile & Tablet Ergonomics */
+@media (max-width: 768px) {
+  .nav-avatar-pill {
+    padding: 3px 6px;
+  }
+  .nav-avatar-pill .user-pill-info {
+    display: none;
+  }
+  .nav-avatar-pill .chevron-icon {
+    display: none;
+  }
+  .user-dropdown-menu {
+    right: -10px;
+    width: 230px;
+  }
+  .role-tab-btn {
+    font-size: 0.72rem;
+    padding: 7px 3px;
+  }
+}

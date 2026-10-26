@@ -730,15 +730,89 @@ const DULHANIYA_FALLBACK_BEAUTICIANS = [
 const DulhaniyaAPI = {
   baseUrl: window.location.origin.includes("http") ? "" : "http://127.0.0.1:8000",
 
+  // Session & Auth Token Management
+  getAuthToken() {
+    return localStorage.getItem("dulhaniya_auth_token") || sessionStorage.getItem("dulhaniya_auth_token") || null;
+  },
+
+  setAuthToken(token, persist = true) {
+    if (persist) {
+      localStorage.setItem("dulhaniya_auth_token", token);
+    } else {
+      sessionStorage.setItem("dulhaniya_auth_token", token);
+    }
+  },
+
+  clearAuthToken() {
+    localStorage.removeItem("dulhaniya_auth_token");
+    sessionStorage.removeItem("dulhaniya_auth_token");
+    localStorage.removeItem("dulhaniya_user");
+    sessionStorage.removeItem("dulhaniya_user");
+  },
+
+  getAdminToken() {
+    return localStorage.getItem("dulhaniya_admin_token") || sessionStorage.getItem("dulhaniya_admin_token") || null;
+  },
+
+  setAdminToken(token, persist = true) {
+    if (persist) {
+      localStorage.setItem("dulhaniya_admin_token", token);
+    } else {
+      sessionStorage.setItem("dulhaniya_admin_token", token);
+    }
+  },
+
+  clearAdminToken() {
+    localStorage.removeItem("dulhaniya_admin_token");
+    sessionStorage.removeItem("dulhaniya_admin_token");
+  },
+
+  getCurrentUser() {
+    const raw = localStorage.getItem("dulhaniya_user") || sessionStorage.getItem("dulhaniya_user");
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+  },
+
+  setCurrentUser(user, persist = true) {
+    const str = JSON.stringify(user);
+    if (persist) {
+      localStorage.setItem("dulhaniya_user", str);
+    } else {
+      sessionStorage.setItem("dulhaniya_user", str);
+    }
+    window.dispatchEvent(new CustomEvent("dulhaniya_user_changed", { detail: user }));
+  },
+
   async safeFetch(endpoint, options = {}, timeoutMs = 2500) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
+      const headers = Object.assign({}, options.headers || {});
+      
+      // Auto-inject Bearer tokens based on route prefix
+      if (endpoint.startsWith("/api/admin")) {
+        const adminTok = this.getAdminToken();
+        if (adminTok && !headers["Authorization"]) {
+          headers["Authorization"] = `Bearer ${adminTok}`;
+        }
+      } else if (endpoint.startsWith("/api/")) {
+        const authTok = this.getAuthToken();
+        if (authTok && !headers["Authorization"]) {
+          headers["Authorization"] = `Bearer ${authTok}`;
+        }
+      }
+
       const res = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
+        headers,
         signal: controller.signal
       });
       clearTimeout(timer);
+
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("dulhaniya_unauthorized", { detail: { endpoint } }));
+      }
+
       const contentType = res.headers.get("content-type") || "";
       if (endpoint.startsWith("/api") && !contentType.includes("application/json")) {
         throw new Error(`Endpoint ${endpoint} returned non-JSON (${contentType})`);
@@ -1183,5 +1257,402 @@ const DulhaniyaAPI = {
       if (res.ok) return await res.json();
     } catch (e) {}
     return { success: true, message: "Review deleted." };
+  },
+
+  // ================= UNIVERSAL AUTHENTICATION =================
+  async login(email, password, role = "customer") {
+    try {
+      const res = await this.safeFetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token && data.user) {
+          this.setAuthToken(data.token);
+          this.setCurrentUser(data.user);
+          return data;
+        }
+      }
+    } catch (e) {
+      // Graceful offline failover
+    }
+
+    // Client-side fallback authentication
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPass = (password || "").trim();
+
+    // Check demo accounts
+    if (role === "customer" && (cleanEmail === "customer@dulhaniya.com" || cleanEmail === "aanya@example.com") && (cleanPass === "customer123" || cleanPass === "password")) {
+      const user = {
+        id: 101,
+        name: "Aanya Sharma",
+        email: cleanEmail,
+        phone: "+91 98765 43210",
+        role: "customer",
+        role_badge: "Gold Bride",
+        city: "New Delhi",
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80"
+      };
+      const token = "dlh_jwt_cust_101";
+      this.setAuthToken(token);
+      this.setCurrentUser(user);
+      return { success: true, token, user, message: "Welcome back, Aanya!" };
+    }
+
+    if (role === "partner" && (cleanEmail === "partner@dulhaniya.com" || cleanEmail === "pooja@dulhaniya.com") && (cleanPass === "partner123" || cleanPass === "password")) {
+      const user = {
+        id: 201,
+        name: "Pooja Sharma",
+        email: cleanEmail,
+        phone: "+91 98112 34567",
+        role: "partner",
+        role_badge: "Bridal Specialist Pro",
+        specialty: "Bridal & Wedding Glow",
+        rating: 4.98,
+        jobs_completed: 1420,
+        is_online: 1,
+        today_earnings: 4250,
+        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"
+      };
+      const token = "dlh_jwt_partner_201";
+      this.setAuthToken(token);
+      this.setCurrentUser(user);
+      return { success: true, token, user, message: "Partner session initialized!" };
+    }
+
+    // Check registered custom users
+    const registered = JSON.parse(localStorage.getItem("dulhaniya_registered_users") || "[]");
+    const found = registered.find(u => u.email.toLowerCase() === cleanEmail && u.password === cleanPass);
+    if (found) {
+      const { password, ...safeUser } = found;
+      const token = `dlh_jwt_${safeUser.id}`;
+      this.setAuthToken(token);
+      this.setCurrentUser(safeUser);
+      return { success: true, token, user: safeUser, message: `Welcome, ${safeUser.name}!` };
+    }
+
+    return { success: false, error: "Invalid credentials. For quick testing, click 'Test as Customer' or 'Test as Partner'." };
+  },
+
+  async register(userData) {
+    try {
+      const res = await this.safeFetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token && data.user) {
+          this.setAuthToken(data.token);
+          this.setCurrentUser(data.user);
+          return data;
+        }
+      }
+    } catch (e) {}
+
+    // Fallback registration
+    const newUser = {
+      id: Date.now(),
+      name: userData.name || "Dulhaniya Client",
+      email: userData.email,
+      phone: userData.phone || "+91 98000 00000",
+      role: userData.role || "customer",
+      role_badge: userData.role === "partner" ? "Specialist Partner" : "New Bride",
+      city: userData.city || "New Delhi",
+      specialty: userData.specialty || "Bridal & Salon Rituals",
+      experience_years: userData.experience_years || 5,
+      password: userData.password,
+      created_at: new Date().toISOString()
+    };
+
+    const registered = JSON.parse(localStorage.getItem("dulhaniya_registered_users") || "[]");
+    registered.push(newUser);
+    localStorage.setItem("dulhaniya_registered_users", JSON.stringify(registered));
+
+    const { password, ...safeUser } = newUser;
+    const token = `dlh_jwt_reg_${safeUser.id}`;
+    this.setAuthToken(token);
+    this.setCurrentUser(safeUser);
+
+    return { success: true, token, user: safeUser, message: "Account registered successfully!" };
+  },
+
+  async getMe() {
+    try {
+      const res = await this.safeFetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          this.setCurrentUser(data.user);
+          return data.user;
+        }
+      }
+    } catch (e) {}
+    return this.getCurrentUser();
+  },
+
+  async adminLogin(username, password) {
+    try {
+      const res = await this.safeFetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          this.setAdminToken(data.token);
+          return data;
+        }
+      }
+    } catch (e) {}
+
+    const cleanUser = (username || "").trim();
+    const cleanPass = (password || "").trim();
+    if (cleanUser === "admin" && cleanPass === "dulhaniya@royal2026") {
+      const token = "dlh_admin_token_2026";
+      this.setAdminToken(token);
+      return {
+        success: true,
+        token,
+        user: { username: "admin", name: "Operations Director", role: "admin" },
+        message: "Operations Command Suite Unlocked"
+      };
+    }
+    return { success: false, error: "Access Denied: Invalid administrator passcode." };
+  },
+
+  // ================= CUSTOMER PORTAL METHODS =================
+  async getUserBookings() {
+    try {
+      const res = await this.safeFetch("/api/user/bookings");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.bookings) return data.bookings;
+      }
+    } catch (e) {}
+
+    // Fallback: gather all local bookings
+    let userBookings = [];
+    try {
+      const stored = localStorage.getItem("dulhaniya_user_bookings");
+      if (stored) userBookings = JSON.parse(stored);
+    } catch (e) {}
+
+    // Check active ref
+    const activeRef = localStorage.getItem("dulhaniya_active_ref") || "DLH-9842";
+    const bRaw = localStorage.getItem(`booking_${activeRef}`);
+    if (bRaw) {
+      const bObj = JSON.parse(bRaw);
+      if (!userBookings.some(x => x.booking_ref === bObj.booking_ref)) {
+        userBookings.unshift(bObj);
+      }
+    }
+
+    if (userBookings.length === 0) {
+      // Default sample bookings
+      userBookings = [
+        {
+          id: 1001,
+          booking_ref: "DLH-9842",
+          customer_name: "Aanya Sharma",
+          customer_phone: "+91 98765 43210",
+          address: "Villa 42, Gulmohar Enclave, Saket",
+          city: "New Delhi",
+          pincode: "110017",
+          service_date: "Today",
+          service_slot: "11:30 AM - 1:00 PM",
+          status: "ON_THE_WAY",
+          total_amount: 3198,
+          otp_code: "7421",
+          payment_mode: "Pay After Service",
+          beautician_name: "Pooja Sharma",
+          beautician_phone: "+91 98112 34567",
+          beautician_rating: 4.98,
+          items: [
+            { title: "O3+ Bridal Luxury Glow Facial", price: 2299, duration_mins: 75 },
+            { title: "Dulhaniya Bridal Crystal Spa Pedicure", price: 1299, duration_mins: 60 }
+          ],
+          created_at: new Date(Date.now() - 3600000).toISOString()
+        },
+        {
+          id: 998,
+          booking_ref: "DLH-7619",
+          customer_name: "Aanya Sharma",
+          customer_phone: "+91 98765 43210",
+          address: "Villa 42, Gulmohar Enclave, Saket",
+          city: "New Delhi",
+          pincode: "110017",
+          service_date: "23 Oct 2026",
+          service_slot: "02:00 PM - 05:00 PM",
+          status: "COMPLETED",
+          total_amount: 10999,
+          otp_code: "3389",
+          payment_mode: "Card / UPI Paid",
+          beautician_name: "Sunita Verma",
+          beautician_phone: "+91 98221 54321",
+          beautician_rating: 4.95,
+          items: [
+            { title: "Royal Dulhaniya D-Day Bridal Makeup (HD / Airbrush)", price: 10999, duration_mins: 180 }
+          ],
+          created_at: new Date(Date.now() - 259200000).toISOString()
+        }
+      ];
+      localStorage.setItem("dulhaniya_user_bookings", JSON.stringify(userBookings));
+    }
+    return userBookings;
+  },
+
+  async getUserAddresses() {
+    try {
+      const res = await this.safeFetch("/api/user/addresses");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.addresses) return data.addresses;
+      }
+    } catch (e) {}
+
+    const stored = localStorage.getItem("dulhaniya_saved_addresses");
+    if (stored) {
+      try { return JSON.parse(stored); } catch (e) {}
+    }
+
+    const defaultAddrs = [
+      {
+        id: "addr_1",
+        label: "Home (Primary)",
+        address: "Villa 42, Gulmohar Enclave, Saket",
+        landmark: "Near Select CityWalk",
+        city: "New Delhi",
+        pincode: "110017",
+        is_default: true
+      },
+      {
+        id: "addr_2",
+        label: "Wedding Venue",
+        address: "The Grand Ballroom, ITC Maurya, Diplomatic Enclave",
+        landmark: "Sardar Patel Marg",
+        city: "New Delhi",
+        pincode: "110021",
+        is_default: false
+      }
+    ];
+    localStorage.setItem("dulhaniya_saved_addresses", JSON.stringify(defaultAddrs));
+    return defaultAddrs;
+  },
+
+  async addUserAddress(addr) {
+    try {
+      const res = await this.safeFetch("/api/user/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addr)
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    const list = await this.getUserAddresses();
+    const newAddr = {
+      id: "addr_" + Date.now(),
+      label: addr.label || "Saved Address",
+      address: addr.address,
+      landmark: addr.landmark || "",
+      city: addr.city || "New Delhi",
+      pincode: addr.pincode || "",
+      is_default: !!addr.is_default
+    };
+    if (newAddr.is_default) {
+      list.forEach(a => a.is_default = false);
+    }
+    list.unshift(newAddr);
+    localStorage.setItem("dulhaniya_saved_addresses", JSON.stringify(list));
+    return { success: true, address: newAddr, message: "Address saved!" };
+  },
+
+  async deleteUserAddress(id) {
+    try {
+      const res = await this.safeFetch(`/api/user/addresses/${id}`, { method: "DELETE" });
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    let list = await this.getUserAddresses();
+    list = list.filter(a => a.id !== id);
+    localStorage.setItem("dulhaniya_saved_addresses", JSON.stringify(list));
+    return { success: true, message: "Address removed." };
+  },
+
+  async cancelUserBooking(ref) {
+    return await this.cancelBooking(ref);
+  },
+
+  // ================= PARTNER DASHBOARD METHODS =================
+  async getPartnerDashboard() {
+    try {
+      const res = await this.safeFetch("/api/partner/dashboard");
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    const isDutyOnline = localStorage.getItem("dulhaniya_partner_duty") !== "false";
+    const partnerUser = this.getCurrentUser() || {
+      name: "Pooja Sharma",
+      phone: "+91 98112 34567",
+      rating: 4.98,
+      specialty: "Bridal & Wedding Glow"
+    };
+
+    return {
+      success: true,
+      partner: {
+        name: partnerUser.name || "Pooja Sharma",
+        phone: partnerUser.phone || "+91 98112 34567",
+        rating: 4.98,
+        rating_count: 1420,
+        is_online: isDutyOnline,
+        today_gmv: 5666,
+        today_earnings: 4250, // 75%
+        today_jobs_completed: 3,
+        weekly_earnings: 28400,
+        commission_rate: 0.75,
+        hygiene_score: "100%"
+      }
+    };
+  },
+
+  async togglePartnerDuty() {
+    try {
+      const res = await this.safeFetch("/api/partner/toggle-duty", { method: "POST" });
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    const current = localStorage.getItem("dulhaniya_partner_duty") !== "false";
+    const nextState = !current;
+    localStorage.setItem("dulhaniya_partner_duty", String(nextState));
+    window.dispatchEvent(new CustomEvent("dulhaniya_partner_duty_changed", { detail: { is_online: nextState } }));
+    return { success: true, is_online: nextState, message: nextState ? "Specialist is now Online" : "Specialist is now Offline" };
+  },
+
+  async getPartnerJobs() {
+    try {
+      const res = await this.safeFetch("/api/partner/jobs");
+      if (res.ok) {
+        const data = await res.json();
+        return data.jobs;
+      }
+    } catch (e) {}
+
+    // Fallback: load all available bookings
+    const bookings = await this.getUserBookings();
+    return bookings;
+  },
+
+  async partnerVerifyOtp(ref, otp) {
+    return await this.verifyOtp(ref, otp);
+  },
+
+  async partnerUpdateStatus(ref, status) {
+    return await this.updateBookingStatus(ref, status);
   }
 };

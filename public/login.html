@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#9d174d" />
+  <title>Universal Login & Access Gateway - Dulhaniya™ Luxury Salon</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    /* Dedicated Login Page Luxury Aesthetics */
+    body.login-page-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at 10% 20%, #fdf2f8 0%, #fff 40%),
+                  radial-gradient(circle at 90% 80%, #fef3c7 0%, #fff 50%),
+                  #fdf2f8;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--slate-900);
+      overflow-x: hidden;
+    }
+
+    .login-nav-header {
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(251, 207, 232, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .login-brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .login-brand-logo .crown-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(157, 23, 77, 0.25);
+    }
+
+    .login-brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .login-brand-sub {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 3px;
+    }
+
+    .login-main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px 48px;
+    }
+
+    .login-card-wrapper {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(251, 207, 232, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px -10px rgba(157, 23, 77, 0.12),
+                  0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+      overflow: hidden;
+      animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .login-card-header {
+      background: linear-gradient(135deg, #fdf2f8 0%, #fff5f8 50%, #fff 100%);
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid var(--primary-border);
+      text-align: center;
+      position: relative;
+    }
+
+    .login-card-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+    }
+
+    .login-card-header p {
+      font-size: 0.88rem;
+      color: var(--slate-600);
+      margin: 0;
+    }
+
+    /* Role Selector Segmented Tabs */
+    .role-tabs-container {
+      display: flex;
+      background: var(--slate-100);
+      padding: 4px;
+      border-radius: 14px;
+      margin: 18px 0 6px;
+      gap: 4px;
+      border: 1px solid var(--slate-200);
+    }
+
+    .role-tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--slate-600);
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .role-tab-btn.active {
+      background: var(--white);
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .role-tab-btn.admin-tab.active {
+      background: var(--slate-900);
+      color: var(--gold-light);
+    }
+
+    .login-card-body {
+      padding: 24px 28px 28px;
+    }
+
+    /* Quick Test 1-Click Credentials Row */
+    .demo-credentials-banner {
+      background: var(--gold-subtle);
+      border: 1px solid var(--gold-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+    }
+
+    .demo-header-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .demo-buttons-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-demo-fill {
+      background: var(--white);
+      border: 1px solid var(--gold);
+      color: var(--slate-900);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-demo-fill:hover {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    /* Mode Switcher: Sign In vs Create Account */
+    .mode-toggle-bar {
+      display: flex;
+      border-bottom: 2px solid var(--slate-100);
+      margin-bottom: 20px;
+    }
+
+    .mode-toggle-tab {
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--slate-400);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-toggle-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Forms */
+    .auth-input-group {
+      margin-bottom: 16px;
+    }
+
+    .auth-input-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--slate-800);
+      margin-bottom: 6px;
+    }
+
+    .auth-input-wrapper {
+      position: relative;
+    }
+
+    .auth-input-wrapper input,
+    .auth-input-wrapper select {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      font-size: 0.92rem;
+      color: var(--slate-900);
+      background: var(--slate-50);
+      transition: all 0.2s ease;
+    }
+
+    .auth-input-wrapper input:focus,
+    .auth-input-wrapper select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(157, 23, 77, 0.12);
+    }
+
+    .auth-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate-400);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-helper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      margin-bottom: 20px;
+    }
+
+    .btn-submit-auth {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(157, 23, 77, 0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit-auth:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(157, 23, 77, 0.35);
+    }
+
+    .btn-submit-auth:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit-auth.admin-style {
+      background: linear-gradient(135deg, var(--slate-900) 0%, #1e1b4b 100%);
+      color: var(--gold-light);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.4);
+    }
+
+    /* Trust & SafeSeal Badges */
+    .auth-trust-strip {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--slate-200);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .trust-pill {
+      font-size: 0.72rem;
+      color: var(--slate-600);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trust-pill span.icon {
+      font-size: 1.1rem;
+    }
+
+    .login-footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 0.8rem;
+      color: var(--slate-500);
+    }
+
+    .login-footer a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .login-nav-header {
+        padding: 12px 16px;
+      }
+      .login-card-header {
+        padding: 20px 18px 16px;
+      }
+      .login-card-body {
+        padding: 18px 18px 24px;
+      }
+      .role-tab-btn {
+        font-size: 0.76rem;
+        padding: 8px 4px;
+      }
+    }
+  </style>
+</head>
+<body class="login-page-body">
+
+  <!-- Navigation Bar -->
+  <header class="login-nav-header">
+    <a href="index.html" class="login-brand-logo" aria-label="Dulhaniya Home">
+      <div class="crown-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"></path>
+          <circle cx="12" cy="19" r="2"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="login-brand-title">Dulhaniya™</div>
+        <div class="login-brand-sub">Universal Access Gateway</div>
+      </div>
+    </a>
+
+    <a href="index.html" class="btn-secondary" style="font-size:0.82rem; padding:6px 14px; text-decoration:none;">
+      ← Return to App
+    </a>
+  </header>
+
+  <!-- Main Login Card Area -->
+  <main class="login-main-container">
+    <div class="login-card-wrapper">
+      
+      <!-- Card Header -->
+      <div class="login-card-header">
+        <h1 id="auth-page-title">Welcome to Dulhaniya</h1>
+        <p id="auth-page-desc">Sign in to book luxury bridal appointments & salon rituals</p>
+
+        <!-- Role Selector Tabs -->
+        <div class="role-tabs-container" role="tablist">
+          <button type="button" class="role-tab-btn active" id="tab-btn-customer" onclick="LoginPage.setRole('customer')">
+            <span>👰</span> Customer
+          </button>
+          <button type="button" class="role-tab-btn" id="tab-btn-partner" onclick="LoginPage.setRole('partner')">
+            <span>👩‍💼</span> Specialist Partner
+          </button>
+          <button type="button" class="role-tab-btn admin-tab" id="tab-btn-admin" onclick="LoginPage.setRole('admin')">
+            <span>🛡️</span> Admin Gateway
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="login-card-body">
+
+        <!-- 1-Click Test Credentials Quick Bar -->
+        <div class="demo-credentials-banner">
+          <div class="demo-header-label">
+            <span>⚡</span> Instant 1-Click Test Credentials
+          </div>
+          <div class="demo-buttons-group">
+            <button type="button" class="btn-demo-fill" onclick="LoginPage.quickFill('customer')">
+              👰 Test as Customer
+            </button>
+            <button type="button" class="btn-demo-fill" onclick="LoginPage.quickFill('partner')">
+              👩‍💼 Test as Partner
+            </button>
+            <button type="button" class="btn-demo-fill" onclick="LoginPage.quickFill('admin')">
+              🛡️ Test as Admin
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Toggle: Sign In vs Create Account (Hidden for Admin) -->
+        <div class="mode-toggle-bar" id="auth-mode-toggle-bar">
+          <button type="button" class="mode-toggle-tab active" id="mode-tab-signin" onclick="LoginPage.setMode('signin')">
+            Sign In
+          </button>
+          <button type="button" class="mode-toggle-tab" id="mode-tab-register" onclick="LoginPage.setMode('register')">
+            Create Account
+          </button>
+        </div>
+
+        <!-- Notification / Error Box -->
+        <div id="auth-feedback-box" style="display:none; padding:10px 14px; border-radius:10px; font-size:0.85rem; font-weight:600; margin-bottom:16px;"></div>
+
+        <!-- ================= FORM 1: CUSTOMER SIGN IN ================= -->
+        <form id="form-customer-signin" onsubmit="LoginPage.submitCustomerLogin(event)">
+          <div class="auth-input-group">
+            <label for="cust-email">Email or Registered Phone</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="text" id="cust-email" required placeholder="customer@dulhaniya.com" autocomplete="username" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="cust-password">Security Password</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔒</span>
+              <input type="password" id="cust-password" required placeholder="••••••••" autocomplete="current-password" />
+            </div>
+          </div>
+          <div class="auth-helper-row">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="cust-remember" checked />
+              <span style="color:var(--slate-600);">Remember this device</span>
+            </label>
+            <a href="javascript:void(0)" onclick="LoginPage.showForgotPassword()" style="color:var(--primary); font-weight:600;">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn-submit-auth" id="btn-cust-signin">
+            <span>✨</span> Sign In to Dulhaniya
+          </button>
+        </form>
+
+        <!-- ================= FORM 2: CUSTOMER REGISTER ================= -->
+        <form id="form-customer-register" style="display:none;" onsubmit="LoginPage.submitCustomerRegister(event)">
+          <div class="auth-input-group">
+            <label for="cust-reg-name">Bride / Client Full Name</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" id="cust-reg-name" required placeholder="e.g. Aanya Sharma" />
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="auth-input-group">
+              <label for="cust-reg-phone">Phone Number</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon">📱</span>
+                <input type="tel" id="cust-reg-phone" required placeholder="+91 98765 43210" />
+              </div>
+            </div>
+            <div class="auth-input-group">
+              <label for="cust-reg-city">City / Metro</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon">📍</span>
+                <select id="cust-reg-city" style="padding-left:36px;">
+                  <option value="New Delhi">New Delhi</option>
+                  <option value="Gurugram">Gurugram</option>
+                  <option value="Noida">Noida</option>
+                  <option value="Mumbai">Mumbai</option>
+                  <option value="Bengaluru">Bengaluru</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="cust-reg-email">Email Address</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="email" id="cust-reg-email" required placeholder="aanya@example.com" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="cust-reg-password">Create Password</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔒</span>
+              <input type="password" id="cust-reg-password" required placeholder="Minimum 6 characters" minlength="6" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="cust-reg-referral">Referral / Wedding Code (Optional)</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🎁</span>
+              <input type="text" id="cust-reg-referral" placeholder="e.g. BRIDAL500" />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit-auth" id="btn-cust-reg">
+            <span>👑</span> Create Dulhaniya Bride Account
+          </button>
+        </form>
+
+        <!-- ================= FORM 3: PARTNER SIGN IN ================= -->
+        <form id="form-partner-signin" style="display:none;" onsubmit="LoginPage.submitPartnerLogin(event)">
+          <div class="auth-input-group">
+            <label for="partner-email">Partner Registered Email or Phone</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="text" id="partner-email" required placeholder="partner@dulhaniya.com" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="partner-password">Partner Security PIN / Password</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔒</span>
+              <input type="password" id="partner-password" required placeholder="••••••••" />
+            </div>
+          </div>
+          <div class="auth-helper-row">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" checked />
+              <span style="color:var(--slate-600);">Keep me logged in for dispatch</span>
+            </label>
+            <a href="javascript:void(0)" onclick="LoginPage.showForgotPassword()" style="color:var(--primary); font-weight:600;">Partner Help</a>
+          </div>
+          <button type="submit" class="btn-submit-auth" id="btn-partner-signin">
+            <span>👩‍💼</span> Access Partner Duty Portal
+          </button>
+        </form>
+
+        <!-- ================= FORM 4: PARTNER REGISTER ================= -->
+        <form id="form-partner-register" style="display:none;" onsubmit="LoginPage.submitPartnerRegister(event)">
+          <div class="auth-input-group">
+            <label for="partner-reg-name">Full Legal Name</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" id="partner-reg-name" required placeholder="e.g. Shalini Rajput" />
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="auth-input-group">
+              <label for="partner-reg-phone">Phone Number</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon">📱</span>
+                <input type="tel" id="partner-reg-phone" required placeholder="+91 98112 34567" />
+              </div>
+            </div>
+            <div class="auth-input-group">
+              <label for="partner-reg-exp">Experience</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon">⭐</span>
+                <select id="partner-reg-exp" style="padding-left:36px;">
+                  <option value="3">3+ Years</option>
+                  <option value="5" selected>5+ Years</option>
+                  <option value="8">8+ Years</option>
+                  <option value="10">10+ Years (Senior Lead)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="partner-reg-specialty">Primary Specialization</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">💄</span>
+              <select id="partner-reg-specialty" style="padding-left:36px;">
+                <option value="Bridal & Wedding Glow">Bridal Makeup & HD Airbrush</option>
+                <option value="Facials & Skin Rituals">Facials & Derma Skin Rituals</option>
+                <option value="Hair Care, Spa & Styling">Hair Styling & Bridal Updos</option>
+                <option value="Waxing & Smooth Skin">Rica Chocolate & Organic Waxing</option>
+                <option value="Full Body Spa & Massages">Ayurvedic Potli & Full Body Spa</option>
+              </select>
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="partner-reg-email">Email Address</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="email" id="partner-reg-email" required placeholder="shalini@dulhaniya.com" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="partner-reg-password">Create Secure Password</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔒</span>
+              <input type="password" id="partner-reg-password" required placeholder="Minimum 6 characters" minlength="6" />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit-auth" id="btn-partner-reg">
+            <span>🚀</span> Submit Specialist Onboarding Application
+          </button>
+        </form>
+
+        <!-- ================= FORM 5: ADMIN GATEWAY ================= -->
+        <form id="form-admin-signin" style="display:none;" onsubmit="LoginPage.submitAdminLogin(event)">
+          <div style="background:var(--slate-900); color:#fff; border-radius:12px; padding:14px; margin-bottom:18px; display:flex; align-items:center; gap:12px;">
+            <div style="font-size:1.6rem;">🛡️</div>
+            <div>
+              <div style="font-weight:700; font-size:0.92rem; color:var(--gold-light);">Dulhaniya Operations Command</div>
+              <div style="font-size:0.75rem; color:var(--slate-300);">Strictly authorized for operations leads & dispatch supervisors.</div>
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="admin-user">Administrator Username</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔑</span>
+              <input type="text" id="admin-user" required placeholder="admin" autocomplete="username" />
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="admin-pass">Master Passcode</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔒</span>
+              <input type="password" id="admin-pass" required placeholder="••••••••••••" autocomplete="current-password" />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit-auth admin-style" id="btn-admin-signin">
+            <span>⚡</span> Unlock Operations Control Room
+          </button>
+        </form>
+
+        <!-- SafeSeal Trust Badges Footer -->
+        <div class="auth-trust-strip">
+          <div class="trust-pill">
+            <span class="icon">🛡️</span>
+            <strong>SafeSeal™ Monodose</strong>
+            <span>Single-use sealed kits</span>
+          </div>
+          <div class="trust-pill">
+            <span class="icon">🔒</span>
+            <strong>Doorstep OTP</strong>
+            <span>Secured check-in verification</span>
+          </div>
+          <div class="trust-pill">
+            <span class="icon">✨</span>
+            <strong>Police Verified</strong>
+            <span>100% background checked</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="login-footer">
+    <p>© 2026 Dulhaniya™ Luxury Salon at Home. All Rights Reserved. • <a href="privacy.html">Privacy & Safety Policy</a></p>
+    <p style="margin-top:4px; font-size:0.75rem;">Need assistance? Call Concierge: <strong>+91 98000 DULHAN (385426)</strong></p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script>
+    const LoginPage = {
+      currentRole: 'customer', // 'customer', 'partner', 'admin'
+      currentMode: 'signin',   // 'signin', 'register'
+
+      init() {
+        // Parse URL params for pre-selecting role or redirect target
+        const params = new URLSearchParams(window.location.search);
+        const roleParam = params.get('role');
+        const modeParam = params.get('mode');
+
+        if (roleParam && ['customer', 'partner', 'admin'].includes(roleParam)) {
+          this.setRole(roleParam);
+        }
+        if (modeParam && ['signin', 'register'].includes(modeParam)) {
+          this.setMode(modeParam);
+        }
+      },
+
+      setRole(role) {
+        this.currentRole = role;
+
+        // Update tabs styling
+        document.getElementById('tab-btn-customer').classList.toggle('active', role === 'customer');
+        document.getElementById('tab-btn-partner').classList.toggle('active', role === 'partner');
+        document.getElementById('tab-btn-admin').classList.toggle('active', role === 'admin');
+
+        // Titles and Mode Bar
+        const titleEl = document.getElementById('auth-page-title');
+        const descEl = document.getElementById('auth-page-desc');
+        const modeBar = document.getElementById('auth-mode-toggle-bar');
+
+        if (role === 'customer') {
+          titleEl.textContent = "Welcome to Dulhaniya";
+          descEl.textContent = "Sign in to book luxury bridal appointments & salon rituals";
+          modeBar.style.display = "flex";
+        } else if (role === 'partner') {
+          titleEl.textContent = "Dulhaniya Partner Portal";
+          descEl.textContent = "Duty check-in, bookings dispatch, live earnings & verification";
+          modeBar.style.display = "flex";
+        } else if (role === 'admin') {
+          titleEl.textContent = "Operations Command Suite";
+          descEl.textContent = "Enterprise authentication for fleet dispatch & catalog management";
+          modeBar.style.display = "none";
+          this.currentMode = 'signin';
+        }
+
+        this.updateFormVisibility();
+        this.clearFeedback();
+      },
+
+      setMode(mode) {
+        this.currentMode = mode;
+        document.getElementById('mode-tab-signin').classList.toggle('active', mode === 'signin');
+        document.getElementById('mode-tab-register').classList.toggle('active', mode === 'register');
+        this.updateFormVisibility();
+        this.clearFeedback();
+      },
+
+      updateFormVisibility() {
+        document.getElementById('form-customer-signin').style.display = 
+          (this.currentRole === 'customer' && this.currentMode === 'signin') ? 'block' : 'none';
+        document.getElementById('form-customer-register').style.display = 
+          (this.currentRole === 'customer' && this.currentMode === 'register') ? 'block' : 'none';
+        document.getElementById('form-partner-signin').style.display = 
+          (this.currentRole === 'partner' && this.currentMode === 'signin') ? 'block' : 'none';
+        document.getElementById('form-partner-register').style.display = 
+          (this.currentRole === 'partner' && this.currentMode === 'register') ? 'block' : 'none';
+        document.getElementById('form-admin-signin').style.display = 
+          (this.currentRole === 'admin') ? 'block' : 'none';
+      },
+
+      quickFill(role) {
+        this.setRole(role);
+        this.setMode('signin');
+
+        if (role === 'customer') {
+          document.getElementById('cust-email').value = 'customer@dulhaniya.com';
+          document.getElementById('cust-password').value = 'customer123';
+          this.showFeedback('Loaded demo customer credentials! Click Sign In below.', 'info');
+        } else if (role === 'partner') {
+          document.getElementById('partner-email').value = 'partner@dulhaniya.com';
+          document.getElementById('partner-password').value = 'partner123';
+          this.showFeedback('Loaded demo beauty partner credentials! Click Access Portal.', 'info');
+        } else if (role === 'admin') {
+          document.getElementById('admin-user').value = 'admin';
+          document.getElementById('admin-pass').value = 'dulhaniya@royal2026';
+          this.showFeedback('Loaded master admin credentials! Click Unlock.', 'info');
+        }
+      },
+
+      showFeedback(msg, type = 'error') {
+        const box = document.getElementById('auth-feedback-box');
+        box.style.display = 'block';
+        if (type === 'error') {
+          box.style.background = '#fef2f2';
+          box.style.color = '#b91c1c';
+          box.style.border = '1px solid #fecaca';
+        } else if (type === 'success') {
+          box.style.background = '#ecfdf5';
+          box.style.color = '#047857';
+          box.style.border = '1px solid #a7f3d0';
+        } else {
+          box.style.background = '#eff6ff';
+          box.style.color = '#1d4ed8';
+          box.style.border = '1px solid #bfdbfe';
+        }
+        box.textContent = msg;
+      },
+
+      clearFeedback() {
+        const box = document.getElementById('auth-feedback-box');
+        box.style.display = 'none';
+      },
+
+      async submitCustomerLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('cust-email').value.trim();
+        const password = document.getElementById('cust-password').value;
+        const btn = document.getElementById('btn-cust-signin');
+        btn.disabled = true;
+        btn.textContent = "Signing In...";
+
+        try {
+          const res = await DulhaniyaAPI.login(email, password, 'customer');
+          if (res.success) {
+            this.showFeedback("🎉 Login successful! Welcome back.", "success");
+            setTimeout(() => {
+              const params = new URLSearchParams(window.location.search);
+              const redirect = params.get('redirect') || 'index.html';
+              window.location.href = redirect;
+            }, 600);
+          } else {
+            this.showFeedback(res.error || "Invalid email or password.", "error");
+          }
+        } catch (err) {
+          this.showFeedback("Authentication error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "✨ Sign In to Dulhaniya";
+        }
+      },
+
+      async submitCustomerRegister(e) {
+        e.preventDefault();
+        const name = document.getElementById('cust-reg-name').value.trim();
+        const phone = document.getElementById('cust-reg-phone').value.trim();
+        const email = document.getElementById('cust-reg-email').value.trim();
+        const city = document.getElementById('cust-reg-city').value;
+        const password = document.getElementById('cust-reg-password').value;
+        const referral = document.getElementById('cust-reg-referral').value.trim();
+        const btn = document.getElementById('btn-cust-reg');
+
+        btn.disabled = true;
+        btn.textContent = "Creating Account...";
+
+        try {
+          const res = await DulhaniyaAPI.register({
+            name,
+            phone,
+            email,
+            city,
+            password,
+            referral_code: referral,
+            role: 'customer'
+          });
+
+          if (res.success) {
+            this.showFeedback("🎉 Account created successfully! Redirecting...", "success");
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 600);
+          } else {
+            this.showFeedback(res.error || "Registration failed. Try again.", "error");
+          }
+        } catch (err) {
+          this.showFeedback("Registration error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "👑 Create Dulhaniya Bride Account";
+        }
+      },
+
+      async submitPartnerLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('partner-email').value.trim();
+        const password = document.getElementById('partner-password').value;
+        const btn = document.getElementById('btn-partner-signin');
+        btn.disabled = true;
+        btn.textContent = "Accessing Portal...";
+
+        try {
+          const res = await DulhaniyaAPI.login(email, password, 'partner');
+          if (res.success) {
+            this.showFeedback("🎉 Partner authenticated! Loading Duty Dashboard...", "success");
+            setTimeout(() => {
+              window.location.href = 'index.html?view=partner';
+            }, 600);
+          } else {
+            this.showFeedback(res.error || "Invalid partner credentials.", "error");
+          }
+        } catch (err) {
+          this.showFeedback("Authentication error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "👩‍💼 Access Partner Duty Portal";
+        }
+      },
+
+      async submitPartnerRegister(e) {
+        e.preventDefault();
+        const name = document.getElementById('partner-reg-name').value.trim();
+        const phone = document.getElementById('partner-reg-phone').value.trim();
+        const experience = document.getElementById('partner-reg-exp').value;
+        const specialty = document.getElementById('partner-reg-specialty').value;
+        const email = document.getElementById('partner-reg-email').value.trim();
+        const password = document.getElementById('partner-reg-password').value;
+        const btn = document.getElementById('btn-partner-reg');
+
+        btn.disabled = true;
+        btn.textContent = "Submitting Application...";
+
+        try {
+          const res = await DulhaniyaAPI.register({
+            name,
+            phone,
+            email,
+            experience_years: experience,
+            specialty,
+            password,
+            role: 'partner'
+          });
+
+          if (res.success) {
+            this.showFeedback("🎉 Partner application approved! Welcome to the Specialist Fleet.", "success");
+            setTimeout(() => {
+              window.location.href = 'index.html?view=partner';
+            }, 800);
+          } else {
+            this.showFeedback(res.error || "Partner onboarding failed.", "error");
+          }
+        } catch (err) {
+          this.showFeedback("Partner error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "🚀 Submit Specialist Onboarding Application";
+        }
+      },
+
+      async submitAdminLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('admin-user').value.trim();
+        const password = document.getElementById('admin-pass').value;
+        const btn = document.getElementById('btn-admin-signin');
+        btn.disabled = true;
+        btn.textContent = "Verifying Credentials...";
+
+        try {
+          const res = await DulhaniyaAPI.adminLogin(username, password);
+          if (res.success) {
+            this.showFeedback("🛡️ Master security credentials accepted. Launching Command Suite...", "success");
+            setTimeout(() => {
+              window.location.href = 'admin.html';
+            }, 500);
+          } else {
+            this.showFeedback(res.error || "Access Denied: Incorrect administrator credentials.", "error");
+          }
+        } catch (err) {
+          this.showFeedback("Admin security error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "⚡ Unlock Operations Control Room";
+        }
+      },
+
+      showForgotPassword() {
+        alert("Password Reset: A secure verification link has been simulated for your registered email/phone.");
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => LoginPage.init());
+  </script>
+</body>
+</html>

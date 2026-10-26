@@ -14,15 +14,127 @@ const Admin = {
   cachedStats: null,
 
   async init() {
+    // Listen for unauthorized 401 events on admin routes
+    if (!this._unauthBound) {
+      window.addEventListener("dulhaniya_unauthorized", (e) => {
+        if (e.detail?.endpoint?.startsWith("/api/admin")) {
+          Admin.handleUnauthorized();
+        }
+      });
+      this._unauthBound = true;
+    }
+
+    if (!this.checkAuth()) {
+      return;
+    }
+
     await this.loadAllData();
     this.renderAdminView();
   },
 
+  checkAuth() {
+    const token = DulhaniyaAPI.getAdminToken();
+    if (!token) {
+      this.showLockScreen();
+      return false;
+    }
+    this.hideLockScreen();
+    return true;
+  },
+
+  showLockScreen(errorMsg = "") {
+    const lock = document.getElementById("admin-lock-screen");
+    if (lock) {
+      lock.style.display = "flex";
+      const errEl = document.getElementById("admin-lock-error");
+      if (errEl) {
+        if (errorMsg) {
+          errEl.textContent = errorMsg;
+          errEl.style.display = "block";
+          errEl.style.background = "#7f1d1d";
+          errEl.style.color = "#fecaca";
+          errEl.style.border = "1px solid #ef4444";
+        } else {
+          errEl.style.display = "none";
+        }
+      }
+    }
+  },
+
+  hideLockScreen() {
+    const lock = document.getElementById("admin-lock-screen");
+    if (lock) lock.style.display = "none";
+  },
+
+  fillTestCredentials() {
+    const userEl = document.getElementById("admin-lock-user");
+    const passEl = document.getElementById("admin-lock-pass");
+    if (userEl) userEl.value = "admin";
+    if (passEl) passEl.value = "dulhaniya@royal2026";
+    const errEl = document.getElementById("admin-lock-error");
+    if (errEl) {
+      errEl.style.display = "block";
+      errEl.style.background = "#eff6ff";
+      errEl.style.color = "#1d4ed8";
+      errEl.style.border = "1px solid #bfdbfe";
+      errEl.textContent = "Loaded master credentials! Click Unlock below.";
+    }
+  },
+
+  async login(e) {
+    if (e) e.preventDefault();
+    const userEl = document.getElementById("admin-lock-user");
+    const passEl = document.getElementById("admin-lock-pass");
+    const user = userEl ? userEl.value.trim() : "";
+    const pass = passEl ? passEl.value : "";
+    const btn = document.getElementById("btn-admin-unlock");
+
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Verifying Credentials...";
+    }
+
+    try {
+      const res = await DulhaniyaAPI.adminLogin(user, pass);
+      if (res.success) {
+        this.hideLockScreen();
+        window.App?.showToast("Operations Room unlocked! Welcome, Director.");
+        await this.loadAllData();
+        this.renderAdminView();
+      } else {
+        this.showLockScreen(res.error || "Access Denied: Invalid admin credentials.");
+      }
+    } catch (err) {
+      this.showLockScreen("Security error: " + err.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "⚡ Unlock Operations Control Room";
+      }
+    }
+  },
+
+  logout() {
+    DulhaniyaAPI.clearAdminToken();
+    this.showLockScreen("You have been securely signed out.");
+    window.App?.showToast("Admin session ended securely.");
+  },
+
+  handleUnauthorized() {
+    DulhaniyaAPI.clearAdminToken();
+    this.showLockScreen("Session expired or unauthorized. Please re-enter credentials.");
+  },
+
   async loadAllData() {
+    if (!DulhaniyaAPI.getAdminToken()) {
+      this.showLockScreen();
+      return;
+    }
+
     try {
       const [stats, bookingsRes, services, beauticians, coupons, reviews] = await Promise.all([
         DulhaniyaAPI.getAdminStats(),
-        fetch(`${DulhaniyaAPI.baseUrl}/api/bookings`).then(r => (r.ok && r.headers.get("content-type")?.includes("json")) ? r.json() : { bookings: [] }).catch(() => ({ bookings: [] })),
+        DulhaniyaAPI.safeFetch("/api/bookings").then(r => r.ok ? r.json() : { bookings: [] }).catch(() => ({ bookings: [] })),
         DulhaniyaAPI.getServices("all"),
         DulhaniyaAPI.getAdminBeauticians(),
         DulhaniyaAPI.getAdminCoupons(),

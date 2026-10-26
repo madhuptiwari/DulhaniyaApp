@@ -86,6 +86,61 @@
 </head>
 <body>
 
+  <!-- Fullscreen Admin Security Lock Screen Overlay -->
+  <div id="admin-lock-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% 30%, #1e1b4b 0%, #0f172a 100%); z-index:99999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div style="width:100%; max-width:480px; background:rgba(30, 41, 59, 0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(245, 158, 11, 0.4); border-radius:24px; padding:36px 32px; box-shadow:0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(245,158,11,0.15); color:#fff; text-align:center;">
+      <div style="width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg, rgba(245,158,11,0.2) 0%, rgba(157,23,77,0.3) 100%); border:2px solid var(--gold-light); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:2rem; box-shadow:0 0 20px rgba(245,158,11,0.3);">
+        🛡️
+      </div>
+      <h2 style="font-family:'Playfair Display',serif; font-size:1.75rem; margin-bottom:6px; color:#fff; letter-spacing:0.5px;">
+        Dulhaniya Executive Security
+      </h2>
+      <p style="font-size:0.85rem; color:var(--slate-400); margin-bottom:20px;">
+        Operations Command & Dispatch Gateway. Authorized credentials required.
+      </p>
+
+      <!-- 1-Click Test Fill Pill -->
+      <div style="background:rgba(255,255,255,0.06); border:1px dashed rgba(245,158,11,0.4); border-radius:12px; padding:10px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:0.75rem; color:var(--gold-light); font-weight:700;">Demo Environment</span>
+        <button type="button" onclick="Admin.fillTestCredentials()" style="background:var(--gold-light); color:#0f172a; font-size:0.75rem; font-weight:800; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
+          ⚡ Fill Admin Credentials
+        </button>
+      </div>
+
+      <!-- Error / Notification Banner -->
+      <div id="admin-lock-error" style="display:none; padding:10px 14px; border-radius:10px; font-size:0.82rem; font-weight:600; margin-bottom:16px; background:#7f1d1d; color:#fecaca; border:1px solid #ef4444;"></div>
+
+      <!-- Lock Screen Form -->
+      <form onsubmit="Admin.login(event)" style="text-align:left;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--slate-300); margin-bottom:6px;">Administrator ID</label>
+          <div style="position:relative;">
+            <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--slate-400);">👤</span>
+            <input type="text" id="admin-lock-user" required placeholder="admin" style="width:100%; box-sizing:border-box; padding:12px 14px 12px 42px; border:1px solid rgba(255,255,255,0.15); border-radius:12px; background:rgba(15,23,42,0.6); color:#fff; font-size:0.92rem; outline:none;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:22px;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--slate-300); margin-bottom:6px;">Security Passcode</label>
+          <div style="position:relative;">
+            <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--slate-400);">🔒</span>
+            <input type="password" id="admin-lock-pass" required placeholder="••••••••••••" style="width:100%; box-sizing:border-box; padding:12px 14px 12px 42px; border:1px solid rgba(255,255,255,0.15); border-radius:12px; background:rgba(15,23,42,0.6); color:#fff; font-size:0.92rem; outline:none;" />
+          </div>
+        </div>
+
+        <button type="submit" id="btn-admin-unlock" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#0f172a; font-weight:800; font-size:0.95rem; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 18px rgba(245,158,11,0.35); transition:all 0.2s ease;">
+          ⚡ Unlock Operations Control Room
+        </button>
+
+        <div style="text-align:center; margin-top:20px;">
+          <a href="index.html" style="font-size:0.8rem; color:var(--slate-400); text-decoration:none;">
+            ← Return to Dulhaniya Customer App
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Admin Top Navigation Bar -->
   <header class="admin-top-bar">
     <div class="admin-brand">
@@ -104,6 +159,7 @@
       <button class="btn-admin-nav" onclick="Admin.init()">🔄 Sync Data</button>
       <button class="btn-admin-nav" onclick="Admin.exportBookingsCSV()">📥 Bookings CSV</button>
       <button class="btn-admin-nav" onclick="Admin.exportPayrollCSV()">💸 Payroll CSV</button>
+      <button class="btn-admin-nav" style="background:rgba(239,68,68,0.2); border-color:rgba(239,68,68,0.4); color:#fca5a5;" onclick="Admin.logout()">🚪 Sign Out</button>
       <div style="display:flex; align-items:center; gap:8px; padding-left:12px; border-left:1px solid rgba(255,255,255,0.2);">
         <div style="width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">
           OP
