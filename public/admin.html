@@ -101,7 +101,9 @@
 
     <div class="admin-nav-links">
       <a href="index.html" class="btn-admin-nav">← Back to Customer App</a>
-      <button class="btn-admin-nav" onclick="Admin.init()">🔄 Sync Real-Time Data</button>
+      <button class="btn-admin-nav" onclick="Admin.init()">🔄 Sync Data</button>
+      <button class="btn-admin-nav" onclick="Admin.exportBookingsCSV()">📥 Bookings CSV</button>
+      <button class="btn-admin-nav" onclick="Admin.exportPayrollCSV()">💸 Payroll CSV</button>
       <div style="display:flex; align-items:center; gap:8px; padding-left:12px; border-left:1px solid rgba(255,255,255,0.2);">
         <div style="width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">
           OP
