@@ -177,6 +177,10 @@ const Cart = {
     }
   },
 
+  applyCoupon(code) {
+    return this.applyCouponCode(code);
+  },
+
   removeCoupon() {
     this.appliedCoupon = null;
     this.saveToStorage();

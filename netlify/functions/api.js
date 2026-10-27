@@ -729,13 +729,28 @@ const store = {
       certifications: ["Kottakkal Ayurvedic Therapy Diploma", "O3+ Derma Certified Lead", "Police Background Verified", "5-Star Top Partner"],
       is_verified: 1,
       is_available: 1
+    },
+    {
+      id: 5,
+      name: "Kavita Patel",
+      photo_url: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&w=400&q=80",
+      experience_years: 8,
+      rating: 4.97,
+      jobs_completed: 1120,
+      phone: "+91 98556 78901",
+      specialty: "Bridal Henna & Pre-Wedding Artist",
+      bio: "Specialist in bridal mehendi, skin glow rituals, and traditional bridal draping. Over 8 years of creating royal bridal transformations across Delhi NCR.",
+      certifications: ["Lakme Academy Master Stylist", "SafeSeal Certified Pro", "Police Background Verified 2026"],
+      is_verified: 1,
+      is_available: 1
     }
   ],
   coupons: [
     { code: "DULHANIYA500", discount_type: "FLAT", discount_value: 500, min_order_amount: 1499, max_discount: 500, description: "Flat ₹500 off on bridal & salon bookings above ₹1499", is_active: 1 },
     { code: "FIRSTGLOW", discount_type: "PERCENTAGE", discount_value: 20, min_order_amount: 799, max_discount: 400, description: "20% off up to ₹400 on your first at-home appointment", is_active: 1 },
     { code: "BRIDALQUEEN", discount_type: "FLAT", discount_value: 1500, min_order_amount: 4999, max_discount: 1500, description: "Royal ₹1,500 privilege discount on Bridal D-Day & Pre-Bridal packages", is_active: 1 },
-    { code: "SHADI2026", discount_type: "PERCENTAGE", discount_value: 15, min_order_amount: 1999, max_discount: 1000, description: "15% off up to ₹1000 for wedding season rituals", is_active: 1 }
+    { code: "SHADI2026", discount_type: "PERCENTAGE", discount_value: 15, min_order_amount: 1999, max_discount: 1000, description: "15% off up to ₹1000 for wedding season rituals", is_active: 1 },
+    { code: "BRIDESQUAD500", discount_type: "FLAT", discount_value: 500, min_order_amount: 1499, max_discount: 500, description: "Bridal squad reward: Flat ₹500 off for your bridesmaids and family!", is_active: 1 }
   ],
   bookings: [
     {
@@ -767,6 +782,34 @@ const store = {
       created_at: new Date().toISOString()
     },
     {
+      id: 3,
+      booking_ref: "DLH-62371",
+      customer_name: "Ananya Deshmukh",
+      customer_phone: "+91 98765 22334",
+      customer_email: "ananya.deshmukh@dulhaniya.com",
+      address: "Villa 108, Magnolias, Golf Course Road",
+      city: "Gurugram",
+      pincode: "122002",
+      service_date: "Today",
+      service_slot: "03:00 PM - 06:00 PM",
+      total_amount: 8499,
+      discount_amount: 1500,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "BRIDALQUEEN",
+      status: "ON_THE_WAY",
+      otp_code: "6917",
+      payment_mode: "Pay After Service",
+      items: [
+        { title: "Royal Dulhaniya D-Day Bridal Makeup (HD / Airbrush)", price: 8499, duration_mins: 180 }
+      ],
+      beautician_id: 2,
+      beautician_name: "Sunita Verma",
+      beautician_phone: "+91 98223 45678",
+      beautician_rating: 4.95,
+      experience_years: 12,
+      created_at: new Date().toISOString()
+    },
+    {
       id: 2,
       booking_ref: "DLH-7102",
       customer_name: "Komal Singhania",
@@ -793,6 +836,93 @@ const store = {
       beautician_rating: 4.98,
       beautician_photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
       experience_years: 9,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 3,
+      booking_ref: "DLH-4590",
+      customer_name: "Ananya Sen",
+      customer_phone: "+91 98101 23456",
+      customer_email: "ananya@dulhaniya.com",
+      address: "Flat 101, Gulmohar Apartments, Green Park Extension",
+      city: "New Delhi",
+      pincode: "110016",
+      service_date: "2026-10-29",
+      service_slot: "10:00 AM - 01:00 PM",
+      total_amount: 9499,
+      discount_amount: 1500,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "BRIDALQUEEN",
+      status: "CONFIRMED",
+      otp_code: "4590",
+      payment_mode: "Pay After Service",
+      items: [
+        { title: "Royal Dulhaniya D-Day Bridal Makeup (HD / Airbrush)", price: 9499, duration_mins: 180 }
+      ],
+      beautician_id: 5,
+      beautician_name: "Kavita Patel",
+      beautician_phone: "+91 98556 78901",
+      beautician_rating: 4.97,
+      beautician_photo: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&w=400&q=80",
+      experience_years: 8,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 4,
+      booking_ref: "DLH-8721",
+      customer_name: "Rhea Sengupta",
+      customer_phone: "+91 98102 34567",
+      customer_email: "rhea@dulhaniya.com",
+      address: "B-42, Greater Kailash Part 1",
+      city: "New Delhi",
+      pincode: "110048",
+      service_date: "2026-10-28",
+      service_slot: "04:30 PM - 06:00 PM",
+      total_amount: 2299,
+      discount_amount: 0,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "",
+      status: "CONFIRMED",
+      otp_code: "8721",
+      payment_mode: "Pay After Service",
+      items: [
+        { title: "O3+ Bridal Luxury Glow Facial", price: 2299, duration_mins: 75 }
+      ],
+      beautician_id: 2,
+      beautician_name: "Sunita Verma",
+      beautician_phone: "+91 98223 45678",
+      beautician_rating: 4.95,
+      beautician_photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+      experience_years: 7,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 5,
+      booking_ref: "DLH-3245",
+      customer_name: "Tanvi Rao",
+      customer_phone: "+91 98103 45678",
+      customer_email: "tanvi@dulhaniya.com",
+      address: "Villa 14, Poorvi Marg, Vasant Vihar",
+      city: "New Delhi",
+      pincode: "110057",
+      service_date: "2026-10-29",
+      service_slot: "06:30 PM - 08:00 PM",
+      total_amount: 1299,
+      discount_amount: 0,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "",
+      status: "CONFIRMED",
+      otp_code: "6512",
+      payment_mode: "Pay After Service",
+      items: [
+        { title: "Dulhaniya Bridal Crystal Spa Pedicure", price: 1299, duration_mins: 60 }
+      ],
+      beautician_id: 2,
+      beautician_name: "Sunita Verma",
+      beautician_phone: "+91 98223 45678",
+      beautician_rating: 4.95,
+      beautician_photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+      experience_years: 7,
       created_at: new Date().toISOString()
     }
   ],
@@ -860,6 +990,72 @@ const store = {
       role: "admin",
       partner_id: null,
       token: "dlh_adm_royal2026",
+      addresses: [],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 4,
+      name: "Ananya Sen",
+      email: "ananya@dulhaniya.com",
+      phone: "+91 98101 23456",
+      password_hash: crypto.createHash("sha256").update("customer123").digest("hex"),
+      role: "customer",
+      partner_id: null,
+      token: "dlh_tok_ananya123",
+      addresses: [
+        { id: 1, label: "Home", address: "Flat 101, Gulmohar Apartments, Green Park Extension", city: "New Delhi", pincode: "110016", is_default: true }
+      ],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 5,
+      name: "Rhea Sengupta",
+      email: "rhea@dulhaniya.com",
+      phone: "+91 98102 34567",
+      password_hash: crypto.createHash("sha256").update("customer123").digest("hex"),
+      role: "customer",
+      partner_id: null,
+      token: "dlh_tok_rhea123",
+      addresses: [
+        { id: 1, label: "Home", address: "B-42, Greater Kailash Part 1", city: "New Delhi", pincode: "110048", is_default: true }
+      ],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 6,
+      name: "Tanvi Rao",
+      email: "tanvi@dulhaniya.com",
+      phone: "+91 98103 45678",
+      password_hash: crypto.createHash("sha256").update("customer123").digest("hex"),
+      role: "customer",
+      partner_id: null,
+      token: "dlh_tok_tanvi123",
+      addresses: [
+        { id: 1, label: "Home", address: "Villa 14, Poorvi Marg, Vasant Vihar", city: "New Delhi", pincode: "110057", is_default: true }
+      ],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 7,
+      name: "Sunita Verma",
+      email: "sunita@dulhaniya.com",
+      phone: "+91 98223 45678",
+      password_hash: crypto.createHash("sha256").update("partner123").digest("hex"),
+      role: "partner",
+      partner_id: 2,
+      token: "dlh_tok_sunita",
+      addresses: [],
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 8,
+      name: "Kavita Patel",
+      email: "kavita@dulhaniya.com",
+      phone: "+91 98556 78901",
+      password_hash: crypto.createHash("sha256").update("partner123").digest("hex"),
+      role: "partner",
+      partner_id: 5,
+      token: "dlh_tok_kavita",
       addresses: [],
       created_at: new Date().toISOString()
     }
@@ -1159,6 +1355,18 @@ exports.handler = async (event, context) => {
       user.addresses.push(newAddr);
     }
     return jsonResponse(200, { success: true, addresses: user.addresses, message: "Address saved successfully" });
+  }
+
+  // Route: DELETE /user/addresses/:id (or POST /user/addresses/:id/delete)
+  const userAddrDeleteMatch = path.match(/^\/user\/addresses\/([A-Za-z0-9_\-]+)(?:\/delete)?$/);
+  if (userAddrDeleteMatch && (method === "DELETE" || method === "POST")) {
+    const user = getAuthenticatedUser(event);
+    if (!user) {
+      return jsonResponse(401, { error: "Unauthorized: Authentication required", code: 401 });
+    }
+    const id = userAddrDeleteMatch[1];
+    user.addresses = (user.addresses || []).filter(a => String(a.id) !== id);
+    return jsonResponse(200, { success: true, addresses: user.addresses, message: "Address deleted successfully." });
   }
 
   // Route: POST /user/bookings/:ref/cancel

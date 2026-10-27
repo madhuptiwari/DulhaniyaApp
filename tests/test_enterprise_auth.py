@@ -263,5 +263,38 @@ class TestDulhaniyaAuth(unittest.TestCase):
         self.assertTrue(body.get("success"))
         self.assertIsInstance(body.get("jobs"), list)
 
+    def test_08_doorstep_otp_verification(self):
+        """Verify 4-digit doorstep OTP state machine: invalid OTP rejected (400), valid OTP transitions to IN_SERVICE"""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT booking_ref, otp_code, status FROM bookings WHERE status != 'COMPLETED' LIMIT 1")
+        row = cur.fetchone()
+        conn.close()
+        self.assertIsNotNone(row, "At least one active booking should exist for OTP verification test")
+
+        ref = row["booking_ref"]
+        real_otp = str(row["otp_code"]).strip()
+        fake_otp = "0000" if real_otp != "0000" else "9999"
+
+        # Test invalid OTP rejection
+        code, body = self._call_handler("POST", f"/api/bookings/{ref}/verify-otp", body={"otp": fake_otp})
+        self.assertEqual(code, 400)
+        self.assertFalse(body.get("success", True))
+        self.assertIn("Incorrect OTP", body.get("error", ""))
+
+        # Test valid OTP verification
+        code, body = self._call_handler("POST", f"/api/bookings/{ref}/verify-otp", body={"otp": real_otp})
+        self.assertEqual(code, 200)
+        self.assertTrue(body.get("success"))
+        self.assertEqual(body.get("status"), "IN_SERVICE")
+
+        # Verify status in database
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT status FROM bookings WHERE booking_ref = ?", (ref,))
+        updated_status = cur.fetchone()["status"]
+        conn.close()
+        self.assertEqual(updated_status, "IN_SERVICE")
+
 if __name__ == "__main__":
     unittest.main()

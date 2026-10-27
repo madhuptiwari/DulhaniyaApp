@@ -3,11 +3,13 @@
  * Version: 1.1.0
  */
 
-const CACHE_NAME = "dulhaniya-cache-v1";
+const CACHE_NAME = "dulhaniya-cache-v2";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
+  "/login.html",
   "/admin.html",
+  "/privacy.html",
   "/css/styles.css",
   "/js/data.js",
   "/js/cart.js",

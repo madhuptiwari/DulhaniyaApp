@@ -202,6 +202,28 @@ async function runTests() {
     assert.ok(Array.isArray(body.jobs));
   });
 
+  // 6. Doorstep 4-Digit OTP Security State Machine
+  console.log("\n--- 6. Testing Doorstep 4-Digit OTP Security State Machine ---");
+  const jobs = JSON.parse(res.body).jobs;
+  assert.ok(jobs && jobs.length > 0, "Partner should have assigned jobs");
+  const testJob = jobs[0];
+  const jobRef = testJob.booking_ref;
+  const correctOtp = testJob.otp_code;
+
+  res = await callNetlify("POST", `/api/bookings/${jobRef}/verify-otp`, { otp: correctOtp === "0000" ? "9999" : "0000" });
+  test("Doorstep OTP invalid code rejects with 400", () => {
+    assert.strictEqual(res.statusCode, 400);
+    const body = JSON.parse(res.body);
+    assert.strictEqual(body.success, false);
+  });
+
+  res = await callNetlify("POST", `/api/bookings/${jobRef}/verify-otp`, { otp: correctOtp });
+  test("Doorstep OTP valid code transitions status to IN_SERVICE", () => {
+    assert.strictEqual(res.statusCode, 200);
+    const body = JSON.parse(res.body);
+    assert.strictEqual(body.success, true);
+  });
+
   console.log(`\n========================================`);
   console.log(`  ALL ${passed}/${total} NODE & NETLIFY TESTS PASSED!`);
   console.log(`========================================\n`);

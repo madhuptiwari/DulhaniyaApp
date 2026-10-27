@@ -101,15 +101,26 @@ const Partner = {
               ${(this.currentBeautician.name || "P")[0]}
             </div>
             <div>
-              <div style="display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <h2 style="margin:0; font-family:'Playfair Display',serif; color:var(--slate-900);">${this.currentBeautician.name}</h2>
-                <span class="badge badge-bridal" style="font-size:0.75rem;">Verified Pro</span>
+                <span class="badge badge-bridal" style="font-size:0.75rem;">Verified Pro Specialist</span>
+                <span class="badge" style="background:#059669; color:#fff; font-size:0.75rem;">🛡️ Police Background Verified 2026</span>
               </div>
               <p style="color:var(--slate-600); font-size:0.85rem; margin-top:3px;">
-                📞 ${this.currentBeautician.phone} • Senior Bridal & Salon Specialist
+                📞 ${this.currentBeautician.phone} • ${this.currentBeautician.specialty || 'Senior Bridal & Ayurvedic Specialist'}
               </p>
-              <div style="font-weight:700; color:var(--gold); font-size:0.85rem; margin-top:2px;">
-                ★ ${this.currentBeautician.rating} Rating (1,420 5-Star Reviews) • 100% Hygiene Score
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                <span style="font-weight:700; color:var(--gold); font-size:0.85rem;">
+                  ★ ${this.currentBeautician.rating} Rating (1,420 5-Star Reviews) • 100% Hygiene Score
+                </span>
+                <span style="font-size:0.75rem; background:var(--primary-subtle); color:var(--primary-dark); padding:2px 8px; border-radius:12px; font-weight:700;">
+                  📍 ${this.currentBeautician.hub || 'Regional Hub: South Delhi / Bengaluru Hub'}
+                </span>
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+                <span style="font-size:0.7rem; background:#f1f5f9; color:#334155; padding:2px 7px; border-radius:4px; border:1px solid #cbd5e1;">🎓 CIDESCO International Diploma</span>
+                <span style="font-size:0.7rem; background:#f1f5f9; color:#334155; padding:2px 7px; border-radius:4px; border:1px solid #cbd5e1;">🌿 Kottakkal Ayurvedic & VLCC Master Certified</span>
+                <span style="font-size:0.7rem; background:#ecfdf5; color:#047857; padding:2px 7px; border-radius:4px; border:1px solid #a7f3d0;">✨ SafeSeal™ Single-Use Sterile Kit Master</span>
               </div>
             </div>
           </div>
@@ -367,34 +378,75 @@ const Partner = {
         </div>
 
         <div style="background:var(--white); border:1px solid var(--slate-200); border-radius:var(--radius-lg); padding:24px;">
-          <h4 style="margin-bottom:16px; font-size:1.1rem; color:var(--slate-800);">💰 Calculate Your Monthly Income</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+            <h4 style="margin:0; font-size:1.15rem; color:var(--slate-800);">💰 Transparent Partner Income Simulator (75% Labor Payout + 100% Tips)</h4>
+            <div style="display:flex; gap:8px;">
+              <button type="button" id="calc-tier-luxury" onclick="Partner.setEarningsTier('luxury')" class="btn-secondary" style="font-size:0.78rem; padding:5px 12px; font-weight:700; background:var(--primary); color:#fff; border-color:var(--primary);">
+                👑 Luxury Bridal & Ayurvedic
+              </button>
+              <button type="button" id="calc-tier-standard" onclick="Partner.setEarningsTier('standard')" class="btn-secondary" style="font-size:0.78rem; padding:5px 12px; font-weight:700;">
+                💆 Standard Salon & Spa
+              </button>
+            </div>
+          </div>
           
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; align-items:center;">
             <div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <label style="font-size:0.85rem; font-weight:700;">Appointments per day:</label>
-                <strong style="color:var(--primary);" id="calc-jobs-label">3 appointments</strong>
+              <div style="margin-bottom:14px; background:#f8fafc; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; font-size:0.82rem;">
+                <span id="calc-tier-desc"><strong>Luxury Tier:</strong> Avg ticket ₹2,200. Guaranteed 75% labor payout = <strong>₹1,650/ritual</strong> + 100% customer tips.</span>
               </div>
-              <input type="range" min="1" max="6" value="3" id="calc-jobs-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
+
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <label style="font-size:0.85rem; font-weight:700;">Rituals / Appointments per day:</label>
+                <strong style="color:var(--primary);" id="calc-jobs-label">4 rituals</strong>
+              </div>
+              <input type="range" min="1" max="6" value="4" id="calc-jobs-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
 
               <div style="display:flex; justify-content:space-between; margin:16px 0 6px;">
                 <label style="font-size:0.85rem; font-weight:700;">Working days per month:</label>
-                <strong style="color:var(--primary);" id="calc-days-label">24 days</strong>
+                <strong style="color:var(--primary);" id="calc-days-label">26 days</strong>
               </div>
-              <input type="range" min="15" max="28" value="24" id="calc-days-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
+              <input type="range" min="15" max="28" value="26" id="calc-days-input" style="width:100%; accent-color:var(--primary);" oninput="Partner.updateEarningsCalc()" />
             </div>
 
-            <div style="background:var(--primary-subtle); border:1.5px solid var(--primary-border); border-radius:var(--radius-md); padding:20px; text-align:center;">
-              <span style="font-size:0.8rem; font-weight:700; color:var(--primary); text-transform:uppercase;">Estimated Monthly Payout</span>
-              <div style="font-size:2.4rem; font-weight:900; color:var(--primary-dark); margin:6px 0;" id="calc-monthly-payout">₹64,800</div>
-              <p style="font-size:0.75rem; color:var(--slate-600); margin:0;">
-                Includes ~₹12,000 in customer tips (100% kept by you) + 75% service labor share. Zero equipment deductions.
+            <div style="background:linear-gradient(135deg, #fdf2f8 0%, #fff 100%); border:2px solid var(--primary-border); border-radius:var(--radius-lg); padding:22px; text-align:center; box-shadow:var(--shadow-sm);">
+              <span style="font-size:0.78rem; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em;">Estimated Monthly Take-Home</span>
+              <div style="font-size:2.5rem; font-weight:900; color:var(--primary-dark); margin:6px 0;" id="calc-monthly-payout">₹171,600</div>
+              <div style="font-size:0.78rem; color:var(--slate-700); font-weight:600; margin-bottom:8px;" id="calc-payout-breakdown">
+                75% Service Labor: ₹171,600 • 100% Tips Retained: ~₹20,800
+              </div>
+              <p style="font-size:0.72rem; color:var(--slate-500); margin:0; line-height:1.4;">
+                🛡️ 0% commission on tips. 100% direct bank transfer every Monday. Zero product kit deductions or hidden franchise fees.
               </p>
             </div>
           </div>
         </div>
       </div>
     `;
+  },
+
+  earningsTier: 'luxury', // 'luxury' or 'standard'
+
+  setEarningsTier(tier) {
+    this.earningsTier = tier;
+    const luxBtn = document.getElementById('calc-tier-luxury');
+    const stdBtn = document.getElementById('calc-tier-standard');
+    const descEl = document.getElementById('calc-tier-desc');
+    const jobsInput = document.getElementById('calc-jobs-input');
+    const daysInput = document.getElementById('calc-days-input');
+
+    if (tier === 'luxury') {
+      if (luxBtn) { luxBtn.style.background = 'var(--primary)'; luxBtn.style.color = '#fff'; luxBtn.style.borderColor = 'var(--primary)'; }
+      if (stdBtn) { stdBtn.style.background = 'transparent'; stdBtn.style.color = 'var(--slate-700)'; stdBtn.style.borderColor = 'var(--slate-300)'; }
+      if (descEl) descEl.innerHTML = '<strong>Luxury Bridal & Ayurvedic:</strong> Avg ticket ₹2,200. Guaranteed 75% labor payout = <strong>₹1,650/ritual</strong> + 100% customer tips.';
+      if (jobsInput && daysInput) { jobsInput.value = 4; daysInput.value = 26; }
+    } else {
+      if (stdBtn) { stdBtn.style.background = 'var(--primary)'; stdBtn.style.color = '#fff'; stdBtn.style.borderColor = 'var(--primary)'; }
+      if (luxBtn) { luxBtn.style.background = 'transparent'; luxBtn.style.color = 'var(--slate-700)'; luxBtn.style.borderColor = 'var(--slate-300)'; }
+      if (descEl) descEl.innerHTML = '<strong>Standard Salon & Spa:</strong> Avg ticket ₹1,200. Guaranteed 75% labor payout = <strong>₹900/ritual</strong> + 100% customer tips.';
+      if (jobsInput && daysInput) { jobsInput.value = 3; daysInput.value = 24; }
+    }
+    this.updateEarningsCalc();
   },
 
   updateEarningsCalc() {
@@ -405,14 +457,24 @@ const Partner = {
     const jobs = Number(jobsInput.value);
     const days = Number(daysInput.value);
 
-    document.getElementById('calc-jobs-label').textContent = `${jobs} appointment${jobs > 1 ? 's' : ''}`;
+    document.getElementById('calc-jobs-label').textContent = `${jobs} ritual${jobs > 1 ? 's' : ''}`;
     document.getElementById('calc-days-label').textContent = `${days} days`;
 
-    // Average order: ₹1,200. Partner gets 75% = ₹900/job + ₹150 tip = ₹1,050/job
-    const monthlyPayout = jobs * days * 1050;
+    const isLuxury = this.earningsTier !== 'standard';
+    const ratePerJob = isLuxury ? 1650 : 900; // 75% of ₹2,200 or ₹1,200
+    const tipPerJob = isLuxury ? 200 : 150;
+
+    const laborPayout = jobs * days * ratePerJob;
+    const estTips = jobs * days * tipPerJob;
+
     const payoutEl = document.getElementById('calc-monthly-payout');
+    const breakdownEl = document.getElementById('calc-payout-breakdown');
+
     if (payoutEl) {
-      payoutEl.textContent = `₹${monthlyPayout.toLocaleString('en-IN')}`;
+      payoutEl.textContent = `₹${laborPayout.toLocaleString('en-IN')}`;
+    }
+    if (breakdownEl) {
+      breakdownEl.textContent = `75% Service Labor: ₹${laborPayout.toLocaleString('en-IN')} • 100% Tips Retained: ~₹${estTips.toLocaleString('en-IN')}`;
     }
   },
 
@@ -440,14 +502,28 @@ const Partner = {
                   <input type="tel" name="phone" required placeholder="+91 98xxx xxxxx" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
                 </div>
                 <div>
-                  <label style="font-size:0.8rem; font-weight:700;">City / Region:</label>
-                  <select name="city" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
-                    <option value="New Delhi">New Delhi</option>
-                    <option value="Gurugram">Gurugram</option>
-                    <option value="Noida">Noida</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Bengaluru">Bengaluru</option>
-                    <option value="Jaipur">Jaipur</option>
+                  <label style="font-size:0.8rem; font-weight:700;">Regional Fulfillment Hub:</label>
+                  <select name="hub" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+                    <option value="South Delhi Regional Hub (Saket / GK)">South Delhi Regional Hub (Saket / GK)</option>
+                    <option value="Gurugram Cyber Hub (DLF Phase 1-5)">Gurugram Cyber Hub (DLF Phase 1-5)</option>
+                    <option value="Noida Sector 62 Expressway Hub">Noida Sector 62 Expressway Hub</option>
+                    <option value="Bengaluru Indiranagar & Koramangala Hub">Bengaluru Indiranagar & Koramangala Hub</option>
+                    <option value="Mumbai Bandra & Juhu Hub">Mumbai Bandra & Juhu Hub</option>
+                    <option value="Jaipur C-Scheme Hub">Jaipur C-Scheme Hub</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">Govt ID / Aadhaar KYC (Masked):</label>
+                  <input type="text" name="kyc_id" placeholder="XXXX-XXXX-4921" required style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700;">Police Clearance Certificate:</label>
+                  <select name="police_cleared" style="width:100%; padding:8px; border:1px solid var(--slate-300); border-radius:var(--radius-sm);">
+                    <option value="Verified / In Hand">Verified / In Hand (Valid 2026)</option>
+                    <option value="Applied / Under Processing">Applied / Under Processing</option>
+                    <option value="Request Dulhaniya Verification">Request Dulhaniya Verification Support</option>
                   </select>
                 </div>
               </div>

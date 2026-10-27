@@ -756,7 +756,8 @@ const INITIAL_STORE = {
     { code: "DULHANIYA500", discount_type: "flat", discount_value: 500, min_order_value: 1499, max_discount: 500, description: "Flat ₹500 off on bridal & salon bookings above ₹1499" },
     { code: "FIRSTGLOW", discount_type: "percent", discount_value: 20, min_order_value: 799, max_discount: 400, description: "20% off on your very first salon-at-home order!" },
     { code: "BRIDALQUEEN", discount_type: "flat", discount_value: 1500, min_order_value: 4999, max_discount: 1500, description: "Save ₹1500 on all D-Day Bridal Makeup & Countdown rituals" },
-    { code: "SHADI2026", discount_type: "percent", discount_value: 15, min_order_value: 1999, max_discount: 750, description: "Wedding season special: 15% off up to ₹750" }
+    { code: "SHADI2026", discount_type: "percent", discount_value: 15, min_order_value: 1999, max_discount: 750, description: "Wedding season special: 15% off up to ₹750" },
+    { code: "BRIDESQUAD500", discount_type: "flat", discount_value: 500, min_order_value: 1499, max_discount: 500, description: "Bridal squad reward: Flat ₹500 off for your bridesmaids and family!" }
   ],
   bookings: [
     {
@@ -899,6 +900,38 @@ function getStore() {
       created_at: new Date().toISOString(),
       items: [
         { title: "O3+ Bridal Luxury Glow Facial", price: 2299, duration_mins: 75 }
+      ]
+    });
+    modified = true;
+  }
+
+  if (!storeData.bookings.some(b => b.booking_ref === "DLH-62371")) {
+    storeData.bookings.unshift({
+      id: 3,
+      booking_ref: "DLH-62371",
+      customer_name: "Ananya Deshmukh",
+      customer_phone: "+91 98765 22334",
+      customer_email: "ananya.deshmukh@dulhaniya.com",
+      address: "Villa 108, Magnolias, Golf Course Road",
+      city: "Gurugram",
+      pincode: "122002",
+      service_date: "Today",
+      service_slot: "03:00 PM - 06:00 PM",
+      beautician_id: 2,
+      beautician_name: "Sunita Verma",
+      beautician_phone: "+91 98223 45678",
+      beautician_rating: 4.95,
+      experience_years: 12,
+      total_amount: 8499,
+      discount_amount: 1500,
+      kit_type: "dulhaniya_kit",
+      coupon_code: "BRIDALQUEEN",
+      status: "ON_THE_WAY",
+      otp_code: "6917",
+      payment_mode: "Pay After Service",
+      created_at: new Date().toISOString(),
+      items: [
+        { title: "Royal Dulhaniya D-Day Bridal Makeup (HD / Airbrush)", price: 8499, duration_mins: 180 }
       ]
     });
     modified = true;

@@ -201,12 +201,13 @@ const Tracker = {
     const comment = commentInput ? commentInput.value.trim() : "Wonderful experience!";
 
     await DulhaniyaAPI.submitReview(this.activeBooking.booking_ref, rating, comment, this.activeBooking.customer_name);
-    window.App?.showToast("Thank you for your feedback! ❤️");
+    window.App?.showToast("Thank you for your feedback! ₹200 Glow Credit added to your wallet 🎉");
     const reviewBox = document.getElementById("tracker-completed-review-box");
     if (reviewBox) {
       reviewBox.innerHTML = `
-        <div style="background: var(--emerald-subtle); border: 1px solid var(--emerald); padding: 14px; border-radius: var(--radius-md); text-align: center; color: var(--emerald);">
-          ✓ Thank you! Your review has been published.
+        <div style="background: var(--emerald-subtle); border: 1.5px solid var(--emerald); padding: 16px; border-radius: var(--radius-md); text-align: center; color: var(--emerald);">
+          <div style="font-size:1.15rem; font-weight:800; margin-bottom:4px;">✨ ₹200 Glow Credit Unlocked!</div>
+          <p style="font-size:0.85rem; margin:0; color:#065f46;">Your verified review has been published. Use code <strong>FIRSTGLOW</strong> on your next booking or invite your bridal squad with code <strong>BRIDALQUEEN</strong> for ₹1,500 off!</p>
         </div>
       `;
     }
@@ -224,7 +225,37 @@ const Tracker = {
       `*Doorstep Safe OTP:* ${b.otp_code}\n\n` +
       `*Selected Services:*\n${itemsList}\n\n` +
       `*Payable Amount:* ₹${b.total_amount}\n\n` +
-      `Track live appointment: https://dulhaniya.netlify.app/`;
+      `Track live appointment: https://dulhaniya.app/`;
+    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  },
+
+  shareBridalSquad() {
+    if (!this.activeBooking) return;
+    const b = this.activeBooking;
+    const msg = `👑 *Hey Gorgeous! Join My Dulhaniya Bridal Squad* 👰✨\n\n` +
+      `I just booked my luxury bridal beauty session with Dulhaniya™ (Ref: ${b.booking_ref}) in ${b.city || 'Delhi NCR'}!\n` +
+      `Their 100% police-verified female master artists deliver royal pampering with sealed single-use kits and transparent labor pricing right at home.\n\n` +
+      `🎁 *Bridal Squad Exclusive Privilege Vouchers:*\n` +
+      `• Code *BRIDESQUAD500* : Flat ₹500 OFF for my Bridesmaids & Family!\n` +
+      `• Code *BRIDALQUEEN* : Flat ₹1,500 OFF Bridal Packages & Countdown\n` +
+      `• Code *DULHANIYA500* : Flat ₹500 OFF Salon-at-Home Rituals\n` +
+      `• Code *FIRSTGLOW* : 20% OFF First Booking\n\n` +
+      `Claim your wedding squad discount pass here:\n` +
+      `👉 https://dulhaniya.app/?ref=${b.booking_ref}&voucher=BRIDESQUAD500`;
+    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  },
+
+  shareVoucherWhatsApp(friendName = "") {
+    if (!this.activeBooking) return;
+    const b = this.activeBooking;
+    const msg = `👑 *Dulhaniya Exclusive Bridal Gift Card for You!* 🎁\n\n` +
+      `Hey${friendName ? ' ' + friendName : ''}! I have gifted you an exclusive *₹500 Wedding Beauty Voucher* on *Dulhaniya™*.\n\n` +
+      `🎟️ *Voucher Code:* BRIDESQUAD500\n` +
+      `💰 *Benefit:* Flat ₹500 OFF across all Bridal Makeovers & Salon Rituals\n` +
+      `🛡️ *Guarantee:* 100% Sealed Single-Use Kits & Police-Verified Female Specialists\n\n` +
+      `Book in 60 seconds: https://dulhaniya.app/?voucher=BRIDESQUAD500&from=${b.booking_ref}`;
     const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   },

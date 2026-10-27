@@ -539,6 +539,15 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                 saved = update_user_addresses(user["id"], addresses)
                 return self.send_json({"success": True, "addresses": saved, "message": "Address saved successfully"})
 
+            elif path.startswith("/api/user/addresses/") and path.endswith("/delete"):
+                user = self.get_authenticated_user()
+                if not user:
+                    return self.send_json({"error": "Unauthorized: Authentication required", "code": 401}, 401)
+                addr_id = str(path.split("/")[4])
+                addrs = [a for a in user.get("addresses", []) if str(a.get("id")) != addr_id]
+                saved = update_user_addresses(user["id"], addrs)
+                return self.send_json({"success": True, "addresses": saved, "message": "Address deleted successfully"})
+
             elif path.startswith("/api/user/bookings/") and path.endswith("/cancel"):
                 ref = path.split("/")[4]
                 now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -684,8 +693,8 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                         else:
                             discount = min(int((subtotal * c_row["discount_value"]) / 100), c_row["max_discount"])
 
-                # Safety & Disposable hygiene kit charge (₹49 standard, waived if > ₹1999)
-                hygiene_charge = 0 if subtotal > 1999 else 49
+                # Safety & Disposable hygiene kit charge (₹49 standard, waived if >= ₹1999)
+                hygiene_charge = 0 if subtotal >= 1999 else 49
                 total_amount = max(0, subtotal - discount + hygiene_charge)
 
                 # Generate Unique Reference and 4-digit OTP
@@ -978,6 +987,16 @@ class DulhaniyaRequestHandler(http.server.SimpleHTTPRequestHandler):
                     return self.send_json({"error": "Unauthorized: Admin authentication required", "code": 401}, 401)
 
             parts = path.strip("/").split("/")
+            # Path format: api/user/addresses/{id}
+            if len(parts) >= 4 and parts[1] == "user" and parts[2] == "addresses":
+                user = self.get_authenticated_user()
+                if not user:
+                    return self.send_json({"error": "Unauthorized: Authentication required", "code": 401}, 401)
+                addr_id = str(parts[3])
+                addrs = [a for a in user.get("addresses", []) if str(a.get("id")) != addr_id]
+                saved = update_user_addresses(user["id"], addrs)
+                return self.send_json({"success": True, "addresses": saved, "message": "Address deleted successfully"})
+
             # Path format: api/admin/{resource}/{id}
             if len(parts) >= 4 and parts[1] == "admin":
                 resource = parts[2]
@@ -1055,12 +1074,14 @@ def run(port=None):
     print(f"Serving static files from: {PUBLIC_DIR}")
     print("Press Ctrl+C to stop.")
 
-    # Automatically launch browser at bound port
-    try:
-        import webbrowser
-        webbrowser.open(server_url)
-    except Exception:
-        pass
+    # Automatically launch browser in background thread without blocking server loop
+    if os.environ.get("NO_BROWSER") != "1":
+        try:
+            import threading
+            import webbrowser
+            threading.Thread(target=lambda: webbrowser.open(server_url), daemon=True).start()
+        except Exception:
+            pass
 
     try:
         httpd.serve_forever()

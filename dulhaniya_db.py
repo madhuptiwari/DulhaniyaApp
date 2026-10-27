@@ -167,6 +167,16 @@ def init_db():
     )
     """)
 
+    # 9. Performance Secondary Indexes
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_bookings_beautician ON bookings(beautician_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_bookings_phone ON bookings(customer_phone);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(customer_email);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_booking_items_booking ON booking_items(booking_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_services_category ON services(category_slug);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_users_token ON users(token);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);")
+
     conn.commit()
     seed_if_empty(conn)
     conn.close()
