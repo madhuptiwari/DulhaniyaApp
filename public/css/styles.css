@@ -2800,3 +2800,127 @@ select:focus:not(:focus-visible) {
     padding: 7px 3px;
   }
 }
+
+
+/* ================= CUSTOMER PORTAL VIP BANNER ================= */
+.customer-portal-banner {
+  margin: 16px auto 24px;
+  max-width: 1240px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fff7ed 50%, #fff 100%);
+  border: 1.5px solid rgba(251, 207, 232, 0.8);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(157, 23, 77, 0.08);
+}
+
+.customer-portal-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.customer-avatar-badge {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  box-shadow: 0 3px 10px rgba(157, 23, 77, 0.25);
+  flex-shrink: 0;
+}
+
+.customer-info-box {
+  flex: 1;
+  min-width: 240px;
+}
+
+.customer-title-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.customer-greeting {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.customer-tier-badge {
+  background: var(--gold-subtle);
+  border: 1px solid var(--gold-border);
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+
+.customer-sub-text {
+  font-size: 0.85rem;
+  color: var(--slate-600);
+  margin: 0;
+}
+
+.customer-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-portal-pill {
+  background: #fff;
+  border: 1px solid var(--primary-border);
+  color: var(--primary-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.btn-portal-pill:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Unified Account Type Cards in Modal */
+.account-type-card {
+  border: 2px solid var(--slate-200);
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--slate-50);
+  transition: all 0.2s ease;
+}
+
+.account-type-card:hover {
+  border-color: var(--primary-border);
+  background: #fff;
+}
+
+.account-type-card.active {
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+  box-shadow: 0 4px 12px rgba(157, 23, 77, 0.1);
+}
